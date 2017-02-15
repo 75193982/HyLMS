@@ -1,0 +1,6 @@
+2016-09-28 12:12:51 [main] ERROR (com.jshpsoft.listener.InitListener.java:20) - *******************************listener init*************************
+2016-09-28 12:12:51 [main] ERROR (com.jshpsoft.listener.InitListener.java:22) - Constants.CTX=
+2016-09-28 16:02:04 [main] ERROR (com.jshpsoft.listener.InitListener.java:20) - *******************************listener init*************************
+2016-09-28 16:02:04 [main] ERROR (com.jshpsoft.listener.InitListener.java:22) - Constants.CTX=
+2016-09-28 16:02:22 [main] ERROR (com.jshpsoft.listener.InitListener.java:20) - *******************************listener init*************************
+2016-09-28 16:02:22 [main] ERROR (com.jshpsoft.listener.InitListener.java:22) - Constants.CTX=

@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.SupplierMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.Supplier" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="link_user" property="linkUser" jdbcType="VARCHAR" />
+    <result column="brithday" property="brithday" jdbcType="TIMESTAMP" />
+    <result column="link_telephone" property="linkTelephone" jdbcType="VARCHAR" />
+    <result column="link_mobile" property="linkMobile" jdbcType="VARCHAR" />
+    <result column="start_time" property="startTime" />
+    <result column="end_time" property="endTime" />
+    <result column="balance_type" property="balanceType" jdbcType="VARCHAR" />
+    <result column="need_invoice_flag" property="needInvoiceFlag" jdbcType="VARCHAR" />
+    <result column="invoice_order" property="invoiceOrder" jdbcType="VARCHAR" />
+    <result column="stocks" property="stocks" jdbcType="VARCHAR" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  	<select id="getById" resultMap="BaseResultMap" parameterType="int">
+		select *
+		from basic_supplier
+		where id = #{id}
+	</select>
+	
+	<select id="getByConditions" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+		Select a.*
+		From basic_supplier a 
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="name != null and name != ''">
+				and a.name like '%'+#{name}+'%'
+			</if>
+			<if test="needInvoiceFlag != null and needInvoiceFlag != ''">
+				and a.need_invoice_flag = #{needInvoiceFlag} 
+			</if>
+			<if test="invoiceOrder != null and invoiceOrder != ''">
+				and a.invoice_order = #{invoiceOrder} 
+			</if>
+			<if test="beforeDays != null">
+				and month( a.brithday ) = month( dateadd (dd, #{beforeDays} ,getdate() ) ) and day( a.brithday ) = day( dateadd( dd, #{beforeDays} ,getdate() ) )
+			</if> 
+		</where>
+		order by a.insert_time desc
+	</select>
+	
+	<select id="getPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	  	SELECT * from (
+			SELECT row_number() over(order by a.id asc) as rownumber,a.*
+			From basic_supplier a
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="name != null and name != ''">
+				and a.name like '%'+#{name}+'%'
+			</if>
+			<if test="needInvoiceFlag != null and needInvoiceFlag != ''">
+				and a.need_invoice_flag = #{needInvoiceFlag} 
+			</if>
+			<if test="invoiceOrder != null and invoiceOrder != ''">
+				and a.invoice_order = #{invoiceOrder} 
+			</if>
+		</where>
+		) as t 
+		WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+		ORDER BY t.insert_time desc
+	</select>
+	  
+	<select id="getPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+		SELECT count(*)
+		FROM basic_supplier a
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="name != null and name != ''">
+				and a.name like '%'+#{name}+'%'
+			</if>
+			<if test="needInvoiceFlag != null and needInvoiceFlag != ''">
+				and a.need_invoice_flag = #{needInvoiceFlag} 
+			</if>
+			<if test="invoiceOrder != null and invoiceOrder != ''">
+				and a.invoice_order = #{invoiceOrder} 
+			</if>
+		</where>
+	</select>
+	
+	<insert id="insert" parameterType="com.jshpsoft.domain.Supplier">
+		insert into basic_supplier 
+		( name, address, link_user, brithday, link_telephone, link_mobile, start_time, end_time, balance_type, need_invoice_flag, 
+      		invoice_order, stocks, insert_time, insert_user, update_time, update_user, del_flag)
+    	values 
+    	( #{name}, #{address}, #{linkUser}, #{brithday}, #{linkTelephone}, #{linkMobile}, #{startTime}, #{endTime}, #{balanceType}, #{needInvoiceFlag}, 
+      		#{invoiceOrder}, #{stocks}, #{insertTime}, #{insertUser}, #{updateTime}, #{updateUser}, #{delFlag})
+	</insert>
+	
+ 	<update id="update" parameterType="com.jshpsoft.domain.Supplier">
+		update basic_supplier
+	    <set >
+	      <if test="name != null and name != ''" >
+	        name = #{name},
+	      </if>
+	      <if test="address != null and address != ''" >
+	        address = #{address},
+	      </if>
+	      <if test="linkUser != null and linkUser != ''" >
+	        link_user = #{linkUser},
+	      </if>
+	      <if test="brithday != null" >
+	        brithday = #{brithday},
+	      </if>
+	      <if test="linkTelephone != null " >
+	        link_telephone = #{linkTelephone},
+	      </if>
+	      <if test="linkMobile != null " >
+	        link_mobile = #{linkMobile},
+	      </if>
+	      <if test="startTime != null" >
+	        start_time = #{startTime},
+	      </if>
+	      <if test="endTime != null" >
+	        end_time = #{endTime},
+	      </if>
+	      <if test="balanceType != null and balanceType != ''" >
+	         balance_type = #{balanceType},
+	      </if>
+	      <if test="needInvoiceFlag != null and needInvoiceFlag != ''" >
+	        need_invoice_flag = #{needInvoiceFlag},
+	      </if>
+	      <if test="invoiceOrder != null and invoiceOrder != ''" >
+	        invoice_order = #{invoiceOrder},
+	      </if>
+	      <if test="stocks != null and stocks != ''" >
+	        stocks = #{stocks},
+	      </if>
+	      <if test="updateTime != null" >
+	        update_time = #{updateTime},
+	      </if>
+	      <if test="updateUser != null and updateUser != ''" >
+	        update_user = #{updateUser},
+	      </if>
+	      <if test="delFlag != null and delFlag != ''" >
+	        del_flag = #{delFlag},
+	      </if>
+	    </set>
+	    where id = #{id}
+  	</update>
+	
+	<update id="updateById"  parameterType="java.util.HashMap">
+		Update basic_supplier set update_time = #{updateTime}, update_user = #{updateUser}, del_flag = #{delFlag}
+		where id = #{id}
+	</update>
+
+</mapper>

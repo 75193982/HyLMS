@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.CashInOutMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.CashInOut" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="department_id" property="departmentId" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="business_type" property="businessType" jdbcType="VARCHAR" />
+    <result column="detail_id" property="detailId" jdbcType="INTEGER" />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+    <result column="money" property="money"  />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="system_flag" property="systemFlag" jdbcType="VARCHAR" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+    <result column="departmentName" property="departmentName" jdbcType="VARCHAR" />
+    <result column="receive_user" property="receiveUser" />
+  </resultMap>
+  
+  <insert id="insert" parameterType="com.jshpsoft.domain.CashInOut" >
+    insert into cashInOut 
+    ( department_id,type, business_type, detail_id, mark, money, status, system_flag, insert_time, insert_user, update_time, update_user, del_flag ,receive_user)
+    values 
+    ( #{departmentId},#{type}, #{businessType}, #{detailId}, #{mark}, #{money}, #{status}, #{systemFlag}, #{insertTime}, #{insertUser}, #{updateTime}, #{updateUser}, #{delFlag} ,#{receiveUser} )
+  </insert>
+  
+  <update id="update" parameterType="com.jshpsoft.domain.CashInOut" >
+    update cashInOut
+    <set >
+      <if test="departmentId != null" >
+        department_id = #{departmentId},
+      </if>
+      <if test="type != null" >
+        type = #{type},
+      </if>
+      <if test="businessType != null" >
+        business_type = #{businessType},
+      </if>
+      <if test="detailId != null" >
+        detail_id = #{detailId},
+      </if>
+      <if test="mark != null" >
+        mark = #{mark},
+      </if>
+      <if test="money != null" >
+        money = #{money},
+      </if>
+      <if test="status != null" >
+        status = #{status},
+      </if>
+      <if test="systemFlag != null" >
+        system_flag = #{systemFlag},
+      </if>
+      <if test="insertTime != null" >
+        insert_time = #{insertTime},
+      </if>
+      <if test="insertUser != null" >
+        insert_user = #{insertUser},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag},
+      </if>
+      <if test="receiveUser != null" >
+        receive_user = #{receiveUser},
+      </if>
+    </set>
+    where id = #{id}
+  </update>
+ 
+    <select id="getPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	  	SELECT * from (
+			SELECT row_number() over(order by a.id desc) as rownumber,
+			a.id,a.department_id,a.business_type,a.type,a.mark,a.money,a.status,a.insert_time,
+			(select name from sys_user b where a.insert_user=b.id) insert_user,d.name as departmentName,a.receive_user
+			From cashInOut a
+			left join sys_department d on d.id = a.department_id
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="departmentId != null and departmentId != ''">
+				and a.department_id = #{departmentId} 
+			</if>
+			<if test="businessType != null and businessType != ''">
+				and a.business_type = #{businessType} 
+			</if>
+			<if test="type != null and type != ''">
+				and a.type = #{type} 
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status} 
+			</if>
+			<if test="mark != null and mark != ''">
+				and a.mark like '%'+#{mark}+'%'
+			</if>
+			<if test="startTime != null and startTime != ''">
+				and convert(char(10), a.insert_time,120) &gt;= convert(char(10), #{startTime},120)
+			</if>
+			<if test="endTime != null and endTime != ''">
+				and convert(char(10), a.insert_time,120) &lt;= convert(char(10), #{endTime},120)
+			</if>
+		</where>
+		) as t 
+		WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+	</select>
+	  
+	<select id="getPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+		SELECT count(*)
+		FROM cashInOut a
+		left join sys_department d on d.id = a.department_id
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="departmentId != null and departmentId != ''">
+				and a.department_id = #{departmentId} 
+			</if>
+			<if test="businessType != null and businessType != ''">
+				and a.business_type = #{businessType} 
+			</if>
+			<if test="type != null and type != ''">
+				and a.type = #{type} 
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status} 
+			</if>
+			<if test="mark != null and mark != ''">
+				and a.mark like '%'+#{mark}+'%'
+			</if>
+			<if test="startTime != null and startTime != ''">
+				and convert(char(10), a.insert_time,120) &gt;= convert(char(10), #{startTime},120)
+			</if>
+			<if test="endTime != null and endTime != ''">
+				and convert(char(10), a.insert_time,120) &lt;= convert(char(10), #{endTime},120)
+			</if>
+		</where>
+	</select>
+		
+	<select id="getByConditions" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+		Select a.id,a.department_id,a.type,a.business_type,a.mark,a.money,a.status,a.insert_time,
+			(select name from sys_user b where a.insert_user=b.id) insert_user,d.name as departmentName,a.receive_user
+		From cashInOut a 
+		left join sys_department d on d.id = a.department_id
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="departmentId != null and departmentId != ''">
+				and a.department_id = #{departmentId} 
+			</if>
+			<if test="businessType != null and businessType != ''">
+				and a.business_type = #{businessType} 
+			</if>
+			<if test="type != null and type != ''">
+				and a.type = #{type} 
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status} 
+			</if>
+			<if test="mark != null and mark != ''">
+				and a.mark like '%'+#{mark}+'%'
+			</if>
+			<if test="startTime != null and startTime != ''">
+				and convert(char(10), a.insert_time,120) &gt;= convert(char(10), #{startTime},120)
+			</if>
+			<if test="endTime != null and endTime != ''">
+				and convert(char(10), a.insert_time,120) &lt;= convert(char(10), #{endTime},120)
+			</if>
+		</where>
+		order by a.insert_time asc
+	</select>
+	
+  <select id="getById" resultMap="BaseResultMap" parameterType="Integer">
+  	Select a.id,a.department_id,a.type,a.business_type,a.mark,a.money,a.status,a.insert_time,
+			(select name from sys_user b where a.insert_user=b.id) insert_user,a.receive_user
+	From cashInOut a where a.id = #{id}
+  </select>
+  
+   	<update id="updateById"  parameterType="java.util.HashMap">
+		Update cashInOut 
+		<set>
+			<if test="updateTime != null" >
+	        	update_time = #{updateTime},
+	      	</if>
+	      	<if test="updateUser != null and updateUser != ''" >
+	        	update_user = #{updateUser},
+	      	</if>
+	      	<if test="delFlag != null and delFlag != ''" >
+	        	del_flag = #{delFlag},
+	      	</if>
+	      	<if test="status != null and status != ''" >
+        		status = #{status},
+      		</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	
+</mapper>

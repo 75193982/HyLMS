@@ -1,0 +1,321 @@
+ /*附件上传*/
+ .table-upload{
+	width: 70px;
+	height: 30px;
+	display: inline-block;
+	cursor: pointer;
+	text-decoration: none;
+	background: #2ca9e1;
+	color: #fff;
+	text-align: center;
+	font-size: 13px;
+	line-height: 24px;
+	border-radius: 3px;
+	padding: 3px;
+	margin-right:5px;
+	margin-left:5px;
+}
+.table-upload:hover{color:#fff;} 
+
+#modal-upload{
+    width: 600px;
+    height: 500px;
+    margin: auto;
+    background: rgb(255, 255, 255);
+    overflow: auto;
+    } 
+     
+ .form-new{
+float:right;
+width:460px;
+} 
+  
+  .titleprint{
+	height: 25px;
+    line-height: 25px;
+    font-size: 10px;
+    font-family:"Microsoft YaHei";
+}
+ /*较长按钮*/
+ .table-bigbtn{
+	width: 100px;
+	height: 30px;
+	display: inline-block;
+	cursor: pointer;
+	text-decoration: none;
+	background: #2ca9e1;
+	color: #fff;
+	text-align: center;
+	font-size: 13px;
+	line-height: 24px;
+	border-radius: 3px;
+	padding: 3px;
+	margin-right:5px;
+	margin-left:5px;
+}
+.table-bigbtn:hover{color:#fff;} 
+ #modal-setprice{
+    width: 770px;
+    height: 600px;
+    margin: auto;
+    background: rgb(255, 255, 255);
+    overflow: auto;
+    }
+   #modal-setuser{
+    width: 1000px;
+    height: 600px;
+    margin: auto;
+    background: rgb(255, 255, 255);
+    overflow: auto;
+   
+   } 
+ .bigdialog{
+	 width: 1000px;
+	}
+	.treeleft{
+	float:left;
+	width: 200px;
+	}
+	.userlistright{
+	float:left;
+	width: 700px;
+	}
+	.list li{list-style-type:none}
+	.shouye{
+	 display:none;
+	}
+	#modal-message{
+    width: 700px;
+    height: 400px;
+    margin: auto;
+    background: rgb(255, 255, 255);
+    overflow: auto;
+    }
+    
+    .searchboxs{width:100%;height:45px;margin-bottom:15px;}
+.searchboxs .title{margin-right:8px;font-family:"Microsoft YaHei";}
+.searchboxs .titletwo{margin:0 8px 0 12px;font-family:"Microsoft YaHei";}
+.searchboxs .form-box{width:180px;font-size:14px;height: 30px;margin-right:15px;}
+.searchboxs .itemBtn{width: 65px;height: 34px;display: inline-block;cursor: pointer;
+    text-decoration: none;background: #2ca9e1;color: #fff;margin: 0px 15px;text-align: center;
+    font-size: 14px;line-height: 30px;border-radius: 3px;padding: 3px;
+}  
+.searchboxs .itemBtn:hover{background: #2E8EB9;} 
+.table-audit{
+	width: 60px;
+	height: 30px;
+	display: inline-block;
+	cursor: pointer;
+	text-decoration: none;
+	background: #2ca9e1;
+	color: #fff;
+	text-align: center;
+	font-size: 13px;
+	line-height: 24px;
+	border-radius: 3px;
+	padding: 3px;
+	margin-right:5px;
+	
+}
+.table-audit:hover{color:#fff;} 
+/* .form-new{
+float:right;
+width:480px;
+} */
+#modal-shedeinfo{
+    width: 1200px;
+    height: 600px;
+    margin: auto;
+    background: rgb(255, 255, 255);
+    overflow: auto;
+    }
+    
+.table-audits{
+	width: 75px;
+	height: 30px;
+	display: inline-block;
+	cursor: pointer;
+	text-decoration: none;
+	background: #2ca9e1;
+	color: #fff;
+	text-align: center;
+	font-size: 13px;
+	line-height: 24px;
+	border-radius: 3px;
+	padding: 3px;
+	margin-right:5px;
+}  
+.table-bingcars{
+	width: 75px;
+	height: 30px;
+	display: inline-block;
+	cursor: pointer;
+	text-decoration: none;
+	background: #2ca9e1;
+	color: #fff;
+	text-align: center;
+	font-size: 13px;
+	line-height: 24px;
+	border-radius: 3px;
+	padding: 3px;
+	margin-left:5px;
+	margin-right:5px;
+}   
+.table-audits:hover{color:#fff;}
+.table-bingcars:hover{color:#fff;} 
+#modal-carinfo{
+    width: 1200px;
+    height: 600px;
+    margin: auto;
+    background: rgb(255, 255, 255);
+    overflow: auto;
+    }
+    #modal-attachmentinfo{
+    width: 1000px;
+    height: 600px;
+    margin: auto;
+    background: rgb(255, 255, 255);
+    overflow: auto;
+    }  
+    #modal-detilinfo{
+    width: 1000px;
+    height: 600px;
+    margin: auto;
+    background: rgb(255, 255, 255);
+    overflow: auto;
+    }  
+    /*首页调度单信息*/
+    #modal-shedeinfo{
+    width: 1200px;
+    height: 600px;
+    margin: auto;
+    background: rgb(255, 255, 255);
+    overflow: auto;
+    }
+    #modal-reminder{
+     width: 600px;
+    height: 400px;
+    margin: auto;
+    background: rgb(255, 255, 255);
+    overflow: auto;
+    }
+    /*首页运单信息*/  
+    #modal-waybilldetilinfo{
+    width: 1200px;
+    height: 700px;
+    margin: auto;
+    background: rgb(255, 255, 255);
+    overflow: auto;
+    }  
+    .titlecenter{
+    height: 15px;
+	line-height: 15px;
+	font-size: 15px;
+	font-family:"Microsoft YaHei";	
+	margin-left:450px;
+    } 
+    .tobold{
+    font-weight:bold;
+    }
+    .detilbtns{
+    margin-left:0px;
+    }
+    .add-item-btn .add-detilBtn{
+     width: 85px; 
+    height: 36px;
+    display: block;
+    float: left;
+    cursor: pointer;
+    text-decoration: none;
+    background: #2ca9e1;
+    color: #fff;
+    margin: 10px 25px;
+    text-align: center;
+    font-size: 14px;
+    line-height: 30px;
+    border-radius: 3px;
+    padding:3px;
+    }
+.add-item-btn .add-detilBtn:hover{background: #2E8EB9;}
+ .add-item-btn .audit-detilBtn{
+     width: 120px; 
+    height: 36px;
+    display: block;
+    float: left;
+    cursor: pointer;
+    text-decoration: none;
+    background: #2ca9e1;
+    color: #fff;
+    margin: 10px 25px;
+    text-align: center;
+    font-size: 14px;
+    line-height: 30px;
+    border-radius: 3px;
+    padding:3px;
+    }
+.add-item-btn .audit-detilBtn:hover{background: #2E8EB9;}
+
+  .editlink{
+    width:200px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    }
+      /*首页消息信息*/  
+    #modal-message{
+    width: 700px;
+    height: 400px;
+    margin: auto;
+    background: rgb(255, 255, 255);
+    overflow: auto;
+    }
+    /*首页表格去掉边框信息*/  
+    .novertical td{
+     border:0px;
+     }
+     .novertical>thead>tr>th, .novertical>tbody>tr>th, .novertical>tfoot>tr>th, .novertical>thead>tr>td, .novertical>tbody>tr>td, .novertical>tfoot>tr>td{
+     border:0px;
+    }
+  /*首页装运预付申请信息*/  
+     #modal-prepayinfo{
+    width: 1200px;
+    height: 600px;
+    margin: auto;
+    background: rgb(255, 255, 255);
+    overflow: auto;
+    }
+    
+     /*首页装运费用核算申请信息*/  
+     #modal-portcostinfo{
+    width: 1200px;
+    height: 600px;
+    margin: auto;
+    background: rgb(255, 255, 255);
+    overflow: auto;
+    }
+    
+     /*业务流程明细信息*/  
+     #modal-procedetinfo{
+    width: 700px;
+    height: 600px;
+    margin: auto;
+    background: rgb(255, 255, 255);
+    overflow: auto;
+    }
+    /*打印字体*/
+    .titleprints{
+     height: 30px;  
+    line-height: 20px; 
+    font-size: 5px;
+    font-family:"Microsoft YaHei";
+    word-wrap:break-word; /* 只对英文起作用，以单词作为换行依据。*/
+    word-break:break-all; /*只对英文起作用，以字母作为换行依据。*/
+    white-space: pre-wrap;/*只对中文起作用，强制换行。*/
+    /* word-wrap:break-word; */
+}
+/**列表展示超出固定长度自动换行**/
+.wordwear{
+	word-wrap:break-word;
+}
+
+ 

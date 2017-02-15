@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.WaybillLogMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.WaybillLog" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="waybill_id" property="waybillId" jdbcType="INTEGER" />
+    <result column="tracking_no" property="trackingNo" jdbcType="VARCHAR" />
+    <result column="back_tracking_no" property="backTrackingNo" jdbcType="VARCHAR" />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+  </resultMap>
+  
+    <select id="getByWaybillId" resultMap="BaseResultMap" parameterType="int">
+		select *
+		from waybillLog
+		where waybill_id = #{waybillId}
+	</select>
+	
+  <insert id="insert" parameterType="com.jshpsoft.domain.WaybillLog" >
+    insert into waybillLog (waybill_id, tracking_no,back_tracking_no, mark, insert_time, 
+      insert_user, update_time, update_user,del_flag)
+    values (#{waybillId}, #{trackingNo},#{backTrackingNo}, #{mark}, #{insertTime}, 
+      #{insertUser}, #{updateTime}, #{updateUser},#{delFlag})
+  </insert>
+ 
+  <update id="update" parameterType="com.jshpsoft.domain.WaybillLog" >
+    update waybillLog
+    <set >
+      <if test="waybillId != null" >
+        waybill_id = #{waybillId},
+      </if>
+      <if test="trackingNo != null" >
+        tracking_no = #{trackingNo},
+      </if>
+      <if test="backTrackingNo != null" >
+        back_tracking_no = #{backTrackingNo},
+      </if>
+      <if test="mark != null" >
+        mark = #{mark},
+      </if>
+    </set>
+    where id = #{id}
+  </update>
+ 
+</mapper>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.DicPyMapper">
+
+	<resultMap id="BaseResultMap" type="com.jshpsoft.domain.DicPy">
+		<id column="chn" property="chn"  />
+		<result column="py" property="py" />
+	</resultMap>
+
+	<select id="getByChn" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select top(1) * 
+		from dic_py
+		where chn = #{chn}
+	</select>
+	
+</mapper>

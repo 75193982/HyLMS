@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.BusinessOperateLogMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.BusinessOperateLog" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="detail_id" property="detailId" jdbcType="INTEGER" />
+    <result column="operate" property="operate" jdbcType="VARCHAR" />
+    <result column="old_status" property="oldStatus" jdbcType="VARCHAR" />
+    <result column="new_status" property="newStatus" jdbcType="VARCHAR" />
+    <result column="operator" property="operator" jdbcType="VARCHAR" />
+    <result column="operate_time" property="operateTime" jdbcType="TIMESTAMP" />
+    <result column="operate_detail" property="operateDetail" jdbcType="VARCHAR" />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <insert id="insert" parameterType="com.jshpsoft.domain.BusinessOperateLog" >
+    insert into sys_businessOperateLog (type, detail_id, 
+      operate, old_status, new_status, 
+      operator, operate_time, operate_detail, 
+      mark)
+    values ( #{type}, #{detailId}, 
+      #{operate}, #{oldStatus}, #{newStatus}, 
+      #{operator}, #{operateTime}, #{operateDetail}, 
+      #{mark})
+  </insert>
+ 
+ 	<select id="getByConditions" parameterType="java.util.HashMap" resultMap="BaseResultMap" >
+	    select * 
+	      from sys_businessOperateLog
+	    <where>
+	    	<if test="type != null and type != ''">
+	    		type = #{type}
+	    	</if>
+	    	<if test="operator != null and operator != ''">
+	    		and operator =  #{operator}
+	    	</if>
+	    	<if test="operateName != null and operateName != ''">
+	    		and operate_name like CONCAT('%',#{operateName},'%') 
+	    	</if>
+	    	<if test="startTime != null and startTime != ''">
+	    		and convert(char(10),operate_time,120) &gt;= #{startTime}
+	    	</if>
+	    	<if test="endTime != null and endTime != ''">
+				and convert(char(10),operate_time,120) &lt;= #{endTime}
+			</if>
+	    </where>
+	    order by operate_time desc
+	  </select>
+</mapper>

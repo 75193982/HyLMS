@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.OfficeReminderMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.OfficeReminder" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  	<select id="getById" resultMap="BaseResultMap" parameterType="int">
+		select *
+		from office_reminder
+		where id = #{id}
+	</select>
+	
+	<select id="getPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	  	SELECT * from (
+			SELECT row_number() over(order by a.update_time desc) as rownumber,
+			a.id,a.mark,a.insert_time,a.update_time,
+			(select name from sys_user b where a.insert_user=b.id) insert_user
+			From office_reminder a
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="mark != null and mark != ''">
+				and a.mark like '%'+#{mark}+'%'
+			</if>
+			<if test="insertUser != null and insertUser != ''">
+				and a.insert_user = #{insertUser} 
+			</if>
+		</where>
+		) as t 
+		WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+	</select>
+	  
+	<select id="getPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+		SELECT count(*)
+		FROM office_reminder a
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="mark != null and mark != ''">
+				and a.mark like '%'+#{mark}+'%'
+			</if>
+			<if test="insertUser != null and insertUser != ''">
+				and a.insert_user = #{insertUser} 
+			</if>
+		</where>
+	</select>
+	
+  	<insert id="insert" parameterType="com.jshpsoft.domain.OfficeReminder" >
+    	insert into office_reminder 
+    	( mark, insert_time, insert_user, update_time, update_user, del_flag )
+    	values 
+    	( #{mark}, #{insertTime}, #{insertUser}, #{updateTime}, #{updateUser}, #{delFlag} )
+  	</insert>
+  
+  	<update id="update" parameterType="com.jshpsoft.domain.OfficeReminder" >
+	    update office_reminder
+	    <set >
+	      <if test="mark != null and mark != ''" >
+	        mark = #{mark},
+	      </if>
+	      <if test="updateTime != null" >
+	        update_time = #{updateTime},
+	      </if>
+	      <if test="updateUser != null and updateUser != ''" >
+	        update_user = #{updateUser},
+	      </if>
+	      <if test="delFlag != null and delFlag != ''" >
+	        del_flag = #{delFlag},
+	      </if>
+	    </set>
+	    where id = #{id}
+  	</update>
+  	
+  	<update id="updateById"  parameterType="java.util.HashMap">
+		Update office_reminder set update_time = #{updateTime}, update_user = #{updateUser}, del_flag = #{delFlag}
+		where id = #{id}
+	</update>
+  
+</mapper>

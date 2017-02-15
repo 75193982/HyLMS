@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.CarDamageCostApplyMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.CarDamageCostApply" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="schedule_bill_no" property="scheduleBillNo" jdbcType="VARCHAR" />
+    <result column="car_number" property="carNumber" jdbcType="VARCHAR" />
+    <result column="driver_id" property="driverId" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+    <result column="attach_file_path" property="attachFilePath" jdbcType="VARCHAR" />
+    <result column="bank_name" property="bankName" jdbcType="VARCHAR" />
+    <result column="account_name" property="accountName" jdbcType="VARCHAR" />
+    <result column="account_no" property="accountNo" jdbcType="VARCHAR" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="insurance_flag" property="insuranceFlag" jdbcType="VARCHAR" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+    <result column="driverName" property="driverName" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <insert id="insert" parameterType="com.jshpsoft.domain.CarDamageCostApply" useGeneratedKeys="true" keyProperty="id">
+    insert into carDamageCostApply (type, schedule_bill_no, 
+    	car_number,driver_id,
+      status, mark, attach_file_path, 
+      bank_name, account_name, account_no, 
+      amount, insurance_flag, insert_time, 
+      insert_user, update_time, update_user, 
+      del_flag)
+    values (#{type}, #{scheduleBillNo}, 
+    	#{carNumber}, #{driverId},
+      #{status}, #{mark}, #{attachFilePath}, 
+      #{bankName}, #{accountName}, #{accountNo}, 
+      #{amount}, #{insuranceFlag}, #{insertTime}, 
+      #{insertUser}, #{updateTime}, #{updateUser}, 
+      #{delFlag})
+  </insert>
+  
+  <update id="update" parameterType="com.jshpsoft.domain.CarDamageCostApply" >
+    update carDamageCostApply
+    <set >
+      <if test="type != null" >
+        type = #{type},
+      </if>
+      <if test="scheduleBillNo != null" >
+        schedule_bill_no = #{scheduleBillNo},
+      </if>
+      <if test="carNumber != null" >
+        car_number = #{carNumber},
+      </if>
+      <if test="driverId != null" >
+        driver_id = #{driverId},
+      </if>
+      <if test="status != null" >
+        status = #{status},
+      </if>
+      <if test="mark != null" >
+        mark = #{mark},
+      </if>
+      <if test="attachFilePath != null" >
+        attach_file_path = #{attachFilePath},
+      </if>
+      <if test="bankName != null" >
+        bank_name = #{bankName},
+      </if>
+      <if test="accountName != null" >
+        account_name = #{accountName},
+      </if>
+      <if test="accountNo != null" >
+        account_no = #{accountNo},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount},
+      </if>
+      <if test="insuranceFlag != null" >
+        insurance_flag = #{insuranceFlag},
+      </if>
+      <if test="insertTime != null" >
+        insert_time = #{insertTime},
+      </if>
+      <if test="insertUser != null" >
+        insert_user = #{insertUser},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag},
+      </if>
+    </set>
+    where id = #{id}
+  </update>
+  
+  <select id="getById" resultMap="BaseResultMap" parameterType="Integer">
+  	select a.*,u.name as driverName
+  		from carDamageCostApply a
+  		left join sys_user u on u.id = a.driver_id
+		where a.id = #{id}
+  </select>
+  
+  <select id="getPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	  	SELECT * from (
+			SELECT row_number() over(order by a.id desc) as rownumber,a.*,u.name as driverName
+			from carDamageCostApply a
+			left join sys_user u on u.id = a.driver_id
+			<where>
+				<if test="delFlag != null and delFlag != ''">
+					and a.del_flag = #{delFlag} 
+				</if>
+				<if test="scheduleBillNo != null and scheduleBillNo != ''">
+					and a.schedule_bill_no like CONCAT('%',#{scheduleBillNo},'%') 
+				</if>
+				<if test="carNumber != null and carNumber != ''">
+					and a.car_number like CONCAT('%',#{carNumber},'%') 
+				</if>
+				<if test="driverName != null and driverName != ''">
+					and u.name like CONCAT('%',#{driverName},'%') 
+				</if>
+				<if test="startTime != null and startTime != ''">
+					and convert(char(10), a.insert_time,120) &gt;= convert(char(10), #{startTime},120)
+				</if>
+				<if test="endTime != null and endTime != ''">
+					and convert(char(10), a.insert_time,120) &lt;= convert(char(10), #{endTime},120)
+				</if>
+				<if test="type != null and type != ''">
+					and a.type = #{type} 
+				</if>
+				<if test="insertUser != null and insertUser != ''">
+					and a.insert_user = #{insertUser} 
+				</if>
+			</where>
+		) as t 
+		WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+	</select>
+	  
+	<select id="getPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+		SELECT count(*)
+		FROM carDamageCostApply a
+		left join sys_user u on u.id = a.driver_id
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="scheduleBillNo != null and scheduleBillNo != ''">
+				and a.schedule_bill_no like CONCAT('%',#{scheduleBillNo},'%') 
+			</if>
+			<if test="carNumber != null and carNumber != ''">
+				and a.car_number like CONCAT('%',#{carNumber},'%') 
+			</if>
+			<if test="driverName != null and driverName != ''">
+				and u.name like CONCAT('%',#{driverName},'%') 
+			</if>
+			<if test="startTime != null and startTime != ''">
+				and convert(char(10), a.insert_time,120) &gt;= convert(char(10), #{startTime},120)
+			</if>
+			<if test="endTime != null and endTime != ''">
+				and convert(char(10), a.insert_time,120) &lt;= convert(char(10), #{endTime},120)
+			</if>
+			<if test="type != null and type != ''">
+				and a.type = #{type} 
+			</if>
+			<if test="insertUser != null and insertUser != ''">
+				and a.insert_user = #{insertUser} 
+			</if>
+		</where>
+	</select>
+		
+	<select id="getByConditions" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+		select *,u.name as driverName
+		from transportPrepayApply a 
+		left join sys_user u on u.id = a.driver_id
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="scheduleBillNo != null">
+				and a.schedule_bill_no = #{scheduleBillNo} 
+			</if>
+			<if test="startTime != null and startTime != ''">
+				and convert(char(10), a.insert_time,120) &gt;= convert(char(10), #{startTime},120)
+			</if>
+			<if test="endTime != null and endTime != ''">
+				and convert(char(10), a.insert_time,120) &lt;= convert(char(10), #{endTime},120)
+			</if>
+			<if test="type != null">
+				and a.type = #{type} 
+			</if>
+		</where>
+		order by a.insert_time desc
+	</select>
+
+</mapper>

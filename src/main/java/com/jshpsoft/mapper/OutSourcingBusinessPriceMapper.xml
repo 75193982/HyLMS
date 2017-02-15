@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.OutSourcingBusinessPriceMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.OutSourcingBusinessPrice" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="out_sourcing_id" property="outSourcingId" jdbcType="INTEGER" />
+    <result column="business_id" property="businessId" jdbcType="INTEGER" />
+    <result column="lib_name" property="libName" jdbcType="VARCHAR" />
+    <result column="start_address" property="startAddress" jdbcType="VARCHAR" />
+    <result column="end_province" property="endProvince" jdbcType="VARCHAR" />
+    <result column="end_address" property="endAddress" jdbcType="VARCHAR" />
+    <result column="price" property="price" jdbcType="DECIMAL" />
+    <result column="distance" property="distance" jdbcType="INTEGER" />
+    <result column="car_type" property="carType" jdbcType="VARCHAR" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+    <result column="outSourcingName" property="outSourcingName" jdbcType="VARCHAR" />
+    <result column="brandName" property="brandName" jdbcType="VARCHAR" />
+    <result column="supplierName" property="supplierName" />
+  </resultMap>
+   <select id="getByConditions" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+      Select a.*
+		From basic_outSourcingBusinessPrice a 
+		<where>
+		    a.del_flag = 'N'
+		    <if test="outSourcingId != null and outSourcingId != ''">
+		        and a.out_sourcing_id = #{outSourcingId} 
+		    </if>
+			<if test="businessId != null and businessId != ''">
+				and a.business_id = #{businessId}
+			</if>
+			<if test="libName != null and libName != ''">
+			    and a.lib_name = #{libName}
+			</if>
+			<if test="carType != null and carType != ''">
+			    and ( a.car_type LIKE concat('%', #{carType}, '%')  )
+			</if>
+			
+			<if test="carTypeCheck != null and carTypeCheck != ''">
+			    and a.car_type = #{carTypeCheck}
+			</if>
+			<if test="startAddress != null and startAddress != ''">
+			    and ( a.start_address LIKE concat('%', #{startAddress}, '%')  )
+			</if>
+			<if test="endProvince != null and endProvince != ''">
+			    and ( a.end_province LIKE concat('%', #{endProvince}, '%')  )
+			</if>
+			<if test="endAddress != null and endAddress != ''">
+			    and ( a.end_address LIKE concat('%', #{endAddress}, '%')  )
+			</if>
+		</where>
+		order by a.insert_time desc
+      
+  </select>
+  
+  <insert id="insert" parameterType="com.jshpsoft.domain.OutSourcingBusinessPrice">
+		insert into basic_outSourcingBusinessPrice 
+		( out_sourcing_id, business_id, lib_name, start_address, end_province, end_address, price, distance, car_type, 
+      	  insert_time, insert_user, update_time, update_user, del_flag)
+    	values 
+    	( #{outSourcingId}, #{businessId}, #{libName}, #{startAddress}, #{endProvince}, #{endAddress}, #{price}, #{distance}, #{carType}, 
+      	  #{insertTime}, #{insertUser}, #{updateTime}, #{updateUser}, #{delFlag})
+	</insert>
+	
+  	<update id="updateByBusinessId" parameterType="com.jshpsoft.domain.OutSourcingBusinessPrice">
+  	    update basic_outSourcingBusinessPrice 
+  	    <set>
+  	        <if test="updateTime != null ">
+  	          update_time = #{updateTime},
+  	        </if>
+  	        <if test="updateUser != null and updateUser != ''">
+  	          update_user = #{updateUser},
+  	        </if>
+  	        <if test="delFlag != null and delFlag != ''">
+  	          del_flag = #{delFlag}
+  	        </if>
+  	    </set>
+  	    where business_id = #{businessId}
+  	</update>
+  	<update id="update" parameterType="com.jshpsoft.domain.OutSourcingBusinessPrice">
+  	    update basic_outSourcingBusinessPrice 
+  	    <set>
+  	         <if test="outSourcingId != null and outSourcingId != ''">
+		        out_sourcing_id = #{outSourcingId},
+		    </if>
+			<if test="businessId != null and businessId != ''">
+				business_id = #{businessId},
+			</if>
+  	        <if test="libName != null and libName != ''">
+  	            lib_name = #{libName},
+  	        </if>
+  	        <if test="startAddress != null and startAddress != ''">
+  	            start_address = #{startAddress},
+  	        </if>
+  	        <if test="endProvince != null and endProvince != ''">
+  	            end_province = #{endProvince},
+  	        </if>
+  	        <if test="endAddress != null and endAddress != ''">
+  	            end_address = #{endAddress},
+  	        </if>
+  	        <if test="price != null">
+  	            price = #{price},
+  	        </if>
+  	        <if test="distance != null">
+  	            distance = #{distance},
+  	        </if>
+  	        <if test="carType != null and carType != ''">
+  	            car_type = #{carType},
+  	        </if>
+  	        <if test="updateTime != null ">
+  	          update_time = #{updateTime},
+  	        </if>
+  	        <if test="updateUser != null and updateUser != ''">
+  	          update_user = #{updateUser},
+  	        </if>
+  	        <if test="delFlag != null and delFlag != ''">
+  	          del_flag = #{delFlag}
+  	        </if>
+  	    </set>
+  	    where id = #{id}
+  	</update>
+  	<select id="getPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+  	   SELECT * from (
+			SELECT row_number() over(order by a.id asc) as rownumber,a.*,b.name as outSourcingName,
+			s.name as supplierName,c.brand_name as brandName
+			From basic_outSourcingBusinessPrice a
+			left join basic_outSourcing b on b.id = a.out_sourcing_id
+			left join basic_outSourcingBusiness c on c.id = a.business_id
+			left join basic_supplier s on s.id = c.supplier_id
+		<where>
+		    a.del_flag = 'N'
+			<if test="outSourcingId != null and outSourcingId != ''">
+				and a.out_sourcing_id = #{outSourcingId} 
+			</if>
+			<if test="businessId != null and businessId !=''">
+				and a.business_id = #{businessId}
+			</if>
+			<if test="libName != null and libName != ''">
+			    and ( a.lib_name LIKE concat('%', #{libName}, '%')  )
+			</if>
+			<if test="brandName != null and brandName != ''">
+			    and ( c.brand_name LIKE concat('%', #{brandName}, '%')  )
+			</if>
+			<if test="supplierName != null and supplierName != ''">
+			    and ( s.name LIKE concat('%', #{supplierName}, '%')  )
+			</if>
+			<if test="carType != null and carType != ''">
+			    and ( a.car_type LIKE concat('%', #{carType}, '%')  )
+			</if>
+			<if test="startAddress != null and startAddress != ''">
+			    and ( a.start_address LIKE concat('%', #{startAddress}, '%')  )
+			</if>
+			<if test="endProvince != null and endProvince != ''">
+			    and ( a.end_province LIKE concat('%', #{endProvince}, '%')  )
+			</if>
+			<if test="endAddress != null and endAddress != ''">
+			    and ( a.end_address LIKE concat('%', #{endAddress}, '%')  )
+			</if>
+		</where>
+		) as t 
+		WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+		ORDER BY t.id asc 
+  	</select>
+  	
+  	<select id="getPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+			SELECT count(*)
+			From basic_outSourcingBusinessPrice a
+			left join basic_outSourcing b on b.id = a.out_sourcing_id
+			left join basic_outSourcingBusiness c on c.id = a.business_id
+			left join basic_supplier s on s.id = c.supplier_id
+		<where>
+		    a.del_flag = 'N'
+			<if test="outSourcingId != null and outSourcingId != ''">
+				and a.out_sourcing_id = #{outSourcingId} 
+			</if>
+			<if test="businessId != null and businessId !=''">
+				and a.business_id = #{businessId}
+			</if>
+			<if test="libName != null and libName != ''">
+			    and ( a.lib_name LIKE concat('%', #{libName}, '%')  )
+			</if>
+			<if test="brandName != null and brandName != ''">
+			    and ( c.brand_name LIKE concat('%', #{brandName}, '%')  )
+			</if>
+			<if test="supplierName != null and supplierName != ''">
+			    and ( s.name LIKE concat('%', #{supplierName}, '%')  )
+			</if>
+			<if test="carType != null and carType != ''">
+			    and ( a.car_type LIKE concat('%', #{carType}, '%')  )
+			</if>
+			<if test="startAddress != null and startAddress != ''">
+			    and ( a.start_address LIKE concat('%', #{startAddress}, '%')  )
+			</if>
+			<if test="endProvince != null and endProvince != ''">
+			    and ( a.end_province LIKE concat('%', #{endProvince}, '%')  )
+			</if>
+			<if test="endAddress != null and endAddress != ''">
+			    and ( a.end_address LIKE concat('%', #{endAddress}, '%')  )
+			</if>
+		</where>
+  	</select>
+  	
+  	<select id="getById" resultMap="BaseResultMap" parameterType="int">
+  	    select * from basic_outSourcingBusinessPrice where id = #{id}
+  	</select> 
+  	
+  	<select id="getLibNameByOs" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+      Select distinct a.lib_name
+		From basic_outSourcingBusinessPrice a 
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				a.del_flag = #{delFlag} 
+			</if>
+			<if test="outSourcingId != null and outSourcingId != ''">
+			    and a.out_sourcing_id = #{outSourcingId}
+			</if>
+		</where>
+  </select>
+  
+</mapper>

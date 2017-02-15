@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.DutyMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.Duty" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="salary_type" property="salaryType" jdbcType="INTEGER" />
+    <result column="salary" property="salary" jdbcType="NUMERIC" />
+    <result column="order_id" property="orderId" jdbcType="INTEGER" />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <insert id="insert" parameterType="com.jshpsoft.domain.Duty" >
+    insert into sys_duty (name, salary_type, 
+      salary, order_id, mark, 
+      insert_time, insert_user, update_time, 
+      update_user, del_flag)
+    values (#{name,jdbcType=VARCHAR}, #{salaryType,jdbcType=INTEGER}, 
+      #{salary,jdbcType=NUMERIC}, #{orderId,jdbcType=INTEGER}, #{mark,jdbcType=VARCHAR}, 
+      #{insertTime,jdbcType=TIMESTAMP}, #{insertUser,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{updateUser,jdbcType=VARCHAR}, #{delFlag,jdbcType=VARCHAR})
+  </insert>
+  
+  <update id="update" parameterType="com.jshpsoft.domain.Duty" >
+    update sys_duty
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="salaryType != null" >
+        salary_type = #{salaryType,jdbcType=INTEGER},
+      </if>
+      <if test="salary != null" >
+        salary = #{salary,jdbcType=NUMERIC},
+      </if>
+      <if test="orderId != null" >
+        order_id = #{orderId,jdbcType=INTEGER},
+      </if>
+      <if test="mark != null" >
+        mark = #{mark,jdbcType=VARCHAR},
+      </if>
+      <if test="insertTime != null" >
+        insert_time = #{insertTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="insertUser != null" >
+        insert_user = #{insertUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null and delFlag != ''" >
+        del_flag = #{delFlag,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <select id="getPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+  	SELECT * from (
+		SELECT row_number() over(order by p.id asc) as rownumber,p.* 
+			FROM sys_duty p
+			<where>
+				<if test="delFlag != null and delFlag != ''" >
+			        AND p.del_flag = #{delFlag,jdbcType=VARCHAR}
+			    </if>
+				<if test="name != null and name != ''" >
+					AND ( p.name LIKE concat('%', #{name}, '%') )
+				</if> 
+			</where> 
+	) as t 
+	WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+  </select>
+  
+  <select id="getPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+	SELECT count(*)
+		FROM sys_duty p
+		<where>
+			<if test="delFlag != null and delFlag != ''" >
+		        AND p.del_flag = #{delFlag,jdbcType=VARCHAR}
+		    </if>
+			<if test="name != null and name != ''" >
+				AND ( p.name LIKE concat('%', #{name}, '%') )
+			</if> 
+		</where>  
+  </select>
+  
+  <select id="getByConditions" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	SELECT p.*
+		FROM sys_duty p
+		<where>
+			<if test="delFlag != null and delFlag != ''" >
+		        AND p.del_flag = #{delFlag,jdbcType=VARCHAR}
+		    </if>
+			<if test="name != null and name != ''" >
+				AND ( p.name LIKE concat('%', #{name}, '%') )
+			</if> 
+		</where>
+		ORDER BY order_id ASC 
+  </select>
+	
+  <select id="getById" parameterType="int"  resultMap="BaseResultMap">
+	SELECT *
+		FROM sys_duty
+		WHERE id = #{id}
+  </select>
+  
+</mapper>

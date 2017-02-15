@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.SalaryPayDetailMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.SalaryPayDetail" >
+	<id column="id" property="id" jdbcType="INTEGER" />
+    <result column="parent_id" property="parentId" jdbcType="INTEGER" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="department_id" property="departmentId" jdbcType="INTEGER" />
+    <result column="department_name" property="departmentName" jdbcType="VARCHAR" />
+    <result column="user_name" property="userName" jdbcType="VARCHAR" />
+    <result column="duty_name" property="dutyName" jdbcType="VARCHAR" />
+    <result column="salary_time" property="salaryTime" jdbcType="VARCHAR" />
+    <result column="work_days" property="workDays" jdbcType="INTEGER" />
+    <result column="leave_days" property="leaveDays" jdbcType="INTEGER" />
+    <result column="basic_salary" property="basicSalary" jdbcType="NUMERIC" />
+    <result column="allowance_amount" property="allowanceAmount" jdbcType="NUMERIC" />
+    <result column="allowance_distance" property="allowanceDistance" jdbcType="NUMERIC" />
+    <result column="fine_amount" property="fineAmount" jdbcType="NUMERIC" />
+    <result column="amount" property="amount" jdbcType="NUMERIC" />
+    <result column="status" property="status"  />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+    
+  </resultMap>
+  
+  <insert id="insert" parameterType="com.jshpsoft.domain.SalaryPayDetail" useGeneratedKeys="true" keyProperty="id">
+    insert into salary_payDetail (parent_id, user_id, 
+      department_id, department_name, user_name, 
+      duty_name, salary_time, work_days, 
+      leave_days, basic_salary, allowance_amount, allowance_distance,
+      fine_amount, amount, status, mark, insert_time, 
+      insert_user, update_time, update_user, 
+      del_flag)
+    values ( #{parentId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, 
+      #{departmentId,jdbcType=INTEGER}, #{departmentName,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR}, 
+      #{dutyName,jdbcType=VARCHAR}, #{salaryTime,jdbcType=VARCHAR}, #{workDays,jdbcType=INTEGER}, 
+      #{leaveDays,jdbcType=INTEGER}, #{basicSalary,jdbcType=NUMERIC}, #{allowanceAmount,jdbcType=NUMERIC}, #{allowanceDistance,jdbcType=NUMERIC},
+      #{fineAmount,jdbcType=NUMERIC}, #{amount}, #{status}, #{mark,jdbcType=VARCHAR}, #{insertTime,jdbcType=TIMESTAMP}, 
+      #{insertUser,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{updateUser,jdbcType=VARCHAR}, 
+      #{delFlag,jdbcType=VARCHAR})
+  </insert>
+  
+  <update id="update" parameterType="com.jshpsoft.domain.SalaryPayDetail" >
+    update salary_payDetail
+    <set >
+      <if test="parentId != null" >
+        parent_id = #{parentId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="departmentId != null" >
+        department_id = #{departmentId,jdbcType=INTEGER},
+      </if>
+      <if test="departmentName != null" >
+        department_name = #{departmentName,jdbcType=VARCHAR},
+      </if>
+      <if test="userName != null" >
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="dutyName != null" >
+        duty_name = #{dutyName,jdbcType=VARCHAR},
+      </if>
+      <if test="salaryTime != null" >
+        salary_time = #{salaryTime,jdbcType=VARCHAR},
+      </if>
+      <if test="workDays != null" >
+        work_days = #{workDays,jdbcType=INTEGER},
+      </if>
+      <if test="leaveDays != null" >
+        leave_days = #{leaveDays,jdbcType=INTEGER},
+      </if>
+      <if test="basicSalary != null" >
+        basic_salary = #{basicSalary,jdbcType=NUMERIC},
+      </if>
+      <if test="allowanceAmount != null" >
+        allowance_amount = #{allowanceAmount,jdbcType=NUMERIC},
+      </if>
+      <if test="allowanceDistance != null" >
+        allowance_distance = #{allowanceDistance,jdbcType=NUMERIC},
+      </if>
+      <if test="fineAmount != null" >
+        fine_amount = #{fineAmount,jdbcType=NUMERIC},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount,jdbcType=NUMERIC},
+      </if>
+      <if test="mark != null" >
+        mark = #{mark,jdbcType=VARCHAR},
+      </if>
+      <if test="insertTime != null" >
+        insert_time = #{insertTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="insertUser != null" >
+        insert_user = #{insertUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <select id="getPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+  	SELECT * from (
+		SELECT row_number() over(order by p.id asc) as rownumber,p.* 
+			FROM salary_payDetail p
+			<where>
+				<if test="parentId != null" >
+			        AND p.parent_id = #{parentId}
+			    </if>
+				<if test="type != null" >
+			        AND p.type = #{type}
+			    </if>
+				<if test="delFlag != null and delFlag != ''" >
+			        AND p.del_flag = #{delFlag}
+			    </if>
+			    <if test="name != null and name != ''" >
+		           	AND ( p.name LIKE concat('%', #{name}, '%') )
+		      	</if>
+		      	<if test="status != null" >
+			        AND p.status = #{status}
+			    </if>
+			</where> 
+	) as t 
+	WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+  </select>
+  
+  <select id="getPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+	SELECT count(*)
+		FROM salary_payDetail p
+		<where>
+			<if test="parentId != null" >
+		        AND p.parent_id = #{parentId}
+		    </if>
+			<if test="type != null" >
+		        AND p.type = #{type}
+		    </if>
+			<if test="delFlag != null and delFlag != ''" >
+		        AND p.del_flag = #{delFlag}
+		    </if>
+		    <if test="name != null and name != ''" >
+	           	AND ( p.name LIKE concat('%', #{name}, '%') )
+	      	</if>
+	      	<if test="status != null" >
+		        AND p.status = #{status}
+		    </if>
+		</where>  
+  </select>
+  
+  <select id="getByConditions" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	SELECT p.*
+		FROM salary_payDetail p,salary_pay s
+		<where>
+		    p.parent_id = s.id
+			<if test="parentId != null" >
+		        AND p.parent_id = #{parentId}
+		    </if>
+			<if test="type != null" >
+		        AND p.type = #{type}
+		    </if>
+			<if test="delFlag != null and delFlag != ''" >
+		        AND p.del_flag = #{delFlag}
+		    </if>
+		    <if test="driverFlag != null and driverFlag != ''">
+		        and s.driver_flag = #{driverFlag}
+		    </if>
+		    <if test="salaryTime != null and salaryTime != ''">
+		        and convert(char(4), p.salary_time,120) = #{salaryTime}
+		    </if>
+		    <if test="name != null and name != ''" >
+	           	AND ( p.name LIKE concat('%', #{name}, '%') )
+	      	</if>
+	      	<if test="status != null" >
+		        AND p.status = #{status}
+		    </if>
+	      	<if test="userId != null" >
+		        AND p.user_id = #{userId}
+		    </if>
+		</where> 
+		ORDER BY p.id ASC 
+  </select>
+	
+  <select id="getById" parameterType="int"  resultMap="BaseResultMap">
+	SELECT *
+		FROM salary_payDetail
+		WHERE id = #{id}
+  </select>
+  
+  <update id="deleteByParentId" parameterType="int">
+    update salary_payDetail
+    set del_flag = 'Y'
+    where parent_id = #{parentId,jdbcType=INTEGER}
+  </update>
+  
+</mapper>

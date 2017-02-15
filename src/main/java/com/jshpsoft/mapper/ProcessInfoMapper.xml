@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.ProcessMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.ProcessInfo" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="stock_id" property="stockId" jdbcType="INTEGER" />
+    <result column="item_type_id" property="itemTypeId" jdbcType="INTEGER" />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+    <result column="system_flag" property="systemFlag" jdbcType="VARCHAR" />
+  </resultMap>
+  
+    <select id="getPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+  	SELECT * from (
+		SELECT row_number() over(order by p.id asc) as rownumber,p.* 
+			FROM office_process p
+			LEFT JOIN office_itemType it
+			ON p.item_type_id = it.id
+			WHERE 
+				p.del_flag = 'N'
+				<if test="processName != null and processName != ''" >
+					AND ( it.name LIKE concat('%', #{processName}, '%') )
+				</if> 
+	) as t 
+	WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+  </select>
+  
+  <select id="getPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+	SELECT count(*)
+		FROM office_process p
+		LEFT JOIN office_itemType it
+		ON p.item_type_id = it.id
+		WHERE 
+			p.del_flag = 'N'
+			<if test="processName != null and processName != ''" >
+				AND ( it.name LIKE concat('%', #{processName}, '%') )
+			</if> 
+  </select>
+  
+  <select id="getByConditions" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	SELECT p.*
+		FROM office_process p
+		LEFT JOIN office_itemType it
+		ON p.item_type_id = it.id
+		WHERE 
+			p.del_flag = 'N'
+			<if test="systemFlag != null and systemFlag != ''" >
+				AND p.system_flag = #{systemFlag}
+			</if>
+			<if test="stockId != null" >
+				AND p.stock_id = #{stockId}
+			</if>
+			<if test="status != null" >
+				AND p.status = #{status}
+			</if>
+  </select>
+  
+  <insert id="insert" parameterType="com.jshpsoft.domain.ProcessInfo" >
+    insert into office_process (stock_id, item_type_id, mark, 
+      status, insert_time, insert_user, 
+      update_time, update_user, del_flag,system_flag
+      )
+    values (#{stockId,jdbcType=INTEGER}, #{itemTypeId}, #{mark},
+      #{status,jdbcType=VARCHAR}, #{insertTime,jdbcType=TIMESTAMP}, #{insertUser,jdbcType=VARCHAR}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{updateUser,jdbcType=VARCHAR}, #{delFlag,jdbcType=VARCHAR}, #{systemFlag}
+      )
+  </insert>
+  
+  <select id="getById" parameterType="int"  resultMap="BaseResultMap">
+	SELECT *
+		FROM office_process
+		WHERE id = #{id}
+  </select>
+  
+  <update id="update" parameterType="com.jshpsoft.domain.ProcessInfo" >
+    update office_process
+    <set >
+      <if test="stockId != null" >
+        stock_id = #{stockId,jdbcType=INTEGER},
+      </if>
+      <if test="itemTypeId != null" >
+        item_type_id = #{itemTypeId,jdbcType=INTEGER},
+      </if>
+      <if test="mark != null" >
+        mark = #{mark,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="insertTime != null" >
+        insert_time = #{insertTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="insertUser != null" >
+        insert_user = #{insertUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="systemFlag != null" >
+        system_flag = #{systemFlag,jdbcType=VARCHAR}
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+</mapper>

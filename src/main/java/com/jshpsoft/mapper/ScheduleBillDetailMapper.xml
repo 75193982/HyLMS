@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.ScheduleBillDetailMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.ScheduleBillDetail" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="schedule_bill_no" property="scheduleBillNo" jdbcType="VARCHAR" />
+    <result column="type" property="type" />
+    <result column="car_shop_id" property="carShopId" jdbcType="INTEGER" />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+    <result column="amount" property="amount" jdbcType="INTEGER" />
+    <result column="car_stock_ids" property="carStockIds" jdbcType="VARCHAR" />
+    <result column="attachment_ids" property="attachmentIds" jdbcType="VARCHAR" />
+    <result column="attachment_counts" property="attachmentCounts" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="start_province" property="startProvince" jdbcType="VARCHAR" />
+    <result column="start_address" property="startAddress" jdbcType="VARCHAR" />
+    <result column="target_province" property="targetProvince" jdbcType="VARCHAR" />
+    <result column="target_city" property="targetCity" jdbcType="VARCHAR" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+    <result column="carShopName" property="carShopName" jdbcType="VARCHAR" />
+    
+    <result column="send_time" property="sendTime"/>
+    <result column="arrival_time" property="arrivalTime"/>
+    <result column="waybill_no" property="waybillNo"/>
+        
+  </resultMap>
+  
+  
+  <insert id="insert" parameterType="com.jshpsoft.domain.ScheduleBillDetail" >
+    insert into scheduleBillDetail 
+    ( schedule_bill_no, type,car_shop_id, mark, amount, car_stock_ids, attachment_ids, attachment_counts, status, 
+      start_province,start_address,target_province,target_city,insert_time, insert_user, update_time, update_user, del_flag,
+      send_time,arrival_time,waybill_no)
+    values 
+    ( #{scheduleBillNo}, #{type}, #{carShopId}, #{mark}, #{amount}, #{carStockIds}, #{attachmentIds}, #{attachmentCounts}, #{status}, 
+      #{startProvince},#{startAddress},#{targetProvince},#{targetCity},#{insertTime}, #{insertUser}, #{updateTime}, #{updateUser}, #{delFlag},
+      #{sendTime},#{arrivalTime},#{waybillNo})
+  </insert>
+  
+  <update id="update" parameterType="com.jshpsoft.domain.ScheduleBillDetail" >
+    update scheduleBillDetail
+    <set >
+      <if test="scheduleBillNo != null and scheduleBillNo != ''" >
+        schedule_bill_no = #{scheduleBillNo},
+      </if>
+      <if test="type != null" >
+        type = #{type},
+      </if>
+      <if test="carShopId != null" >
+        car_shop_id = #{carShopId},
+      </if>
+      <if test="mark != null and mark != ''" >
+        mark = #{mark},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount},
+      </if>
+      <if test="carStockIds != null and carStockIds != ''" >
+        car_stock_ids = #{carStockIds},
+      </if>
+      <if test="attachmentIds != null and attachmentIds != ''" >
+        attachment_ids = #{attachmentIds},
+      </if>
+      <if test="attachmentCounts != null and attachmentCounts != ''" >
+        attachment_counts = #{attachmentCounts},
+      </if>
+      <if test="status != null and status != ''" >
+        status = #{status},
+      </if>
+      <if test="startProvince != null and startProvince != ''" >
+        start_province = #{startProvince},
+      </if>
+      <if test="startAddress != null and startAddress != ''" >
+        start_address = #{startAddress},
+      </if>
+      <if test="targetProvince != null and targetProvince != ''" >
+        target_province = #{targetProvince},
+      </if>
+      <if test="targetCity != null and targetCity != ''" >
+        target_city = #{targetCity},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime},
+      </if>
+      <if test="updateUser != null and updateUser != ''" >
+        update_user = #{updateUser},
+      </if>
+      <if test="delFlag != null and delFlag != ''" >
+        del_flag = #{delFlag},
+      </if>
+      <if test="sendTime != null" >
+        send_time = #{sendTime},
+      </if>
+      <if test="arrivalTime != null" >
+        arrival_time = #{arrivalTime},
+      </if>
+      <if test="waybillNo != null ">
+          waybill_no = #{waybillNo}
+      </if>
+    </set>
+    where id = #{id}
+  </update>
+  
+  	<update id="updateByBillNo"  parameterType="java.util.HashMap">
+		Update scheduleBillDetail 
+		<set>
+			<if test="updateTime != null" >
+	        	update_time = #{updateTime},
+	      	</if>
+	      	<if test="updateUser != null and updateUser != ''" >
+	        	update_user = #{updateUser},
+	      	</if>
+	      	<if test="delFlag != null and delFlag != ''" >
+	        	del_flag = #{delFlag},
+	      	</if>
+	      	<if test="status != null and status != ''" >
+	        	status = #{status},
+	      	</if>
+		</set>
+		where schedule_bill_no = #{scheduleBillNo} and del_flag = 'N'
+			<if test="carShopId != null and carShopId != ''" >
+	        	and car_shop_id = #{carShopId} 
+	      	</if>
+	</update>
+	
+	  <update id="updateById"  parameterType="java.util.HashMap">
+		Update scheduleBillDetail 
+		<set>
+			<if test="updateTime != null" >
+	        	update_time = #{updateTime},
+	      	</if>
+	      	<if test="updateUser != null and updateUser != ''" >
+	        	update_user = #{updateUser},
+	      	</if>
+	      	<if test="status != null and status != ''" >
+	        	status = #{status},
+	      	</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete" parameterType="java.lang.String">
+		delete from scheduleBillDetail where schedule_bill_no = #{scheduleBillNo} 
+	</delete>
+	
+	<select id="getByBillNo" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select a.*,b.name carShopName
+		from scheduleBillDetail a
+		left join basic_carShop b on a.car_shop_id = b.id
+		where a.schedule_bill_no = #{scheduleBillNo} and a.del_flag='N'
+	</select>
+	
+	<select id="getStatusByBillNo" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select distinct status
+		from scheduleBillDetail
+		where schedule_bill_no = #{scheduleBillNo} and del_flag='N'
+	</select>
+	
+		<select id="getByConditions" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+		Select a.schedule_bill_no,a.car_stock_ids,b.status
+		From scheduleBillDetail a,scheduleBill b
+		<where>
+			a.schedule_bill_no = b.schedule_bill_no
+			<if test="delFlag != null and delFlag != ''">
+				and b.del_flag = #{delFlag} 
+			</if>
+			<if test="statusIn != null and statusIn != ''">
+				and b.status in (${statusIn})
+			</if>
+			<if test="type != null and type != ''">
+			    and a.type in (${type})
+			</if>
+		</where>
+			order by a.schedule_bill_no asc
+	</select>
+	
+</mapper>

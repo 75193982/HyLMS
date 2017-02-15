@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.CostApplyReturnMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.CostApplyReturn" >
+    <result column="id" property="id" jdbcType="INTEGER" />
+    <result column="cost_apply_bill_no" property="costApplyBillNo" jdbcType="NVARCHAR" />
+    <result column="department_id" property="departmentId" jdbcType="INTEGER" />
+    <result column="apply_user_id" property="applyUserId" jdbcType="INTEGER" />
+    <result column="apply_time" property="applyTime" jdbcType="TIMESTAMP" />
+    <result column="prepay_amount" property="prepayAmount"  />
+    <result column="real_use_amount" property="realUseAmount"  />
+    <result column="return_amount" property="returnAmount"  />
+    <result column="mark" property="mark" jdbcType="NVARCHAR" />
+    <result column="status" property="status" jdbcType="NVARCHAR" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+    <result column="departmentName" property="departmentName" jdbcType="NVARCHAR" />
+    <result column="applyUserName" property="applyUserName" jdbcType="NVARCHAR" />
+    
+  </resultMap>
+  
+  <insert id="insert" parameterType="com.jshpsoft.domain.CostApplyReturn" >
+    insert into office_costApplyReturn (cost_apply_bill_no, department_id, apply_user_id, apply_time, 
+      prepay_amount,real_use_amount,return_amount, mark, status,insert_time,insert_user, update_time,update_user,del_flag)
+    values ( #{costApplyBillNo}, #{departmentId},#{applyUserId},#{applyTime},#{prepayAmount}, 
+      #{realUseAmount},#{returnAmount},#{mark}, #{status}, #{insertTime}, #{insertUser},#{updateTime},#{updateUser},#{delFlag})
+  </insert>
+  
+  <select id="getPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+  	SELECT * from (
+		SELECT row_number() over(order by a.id desc) as rownumber,a.*,d.name as departmentName,
+		u.name as applyUserName
+			FROM office_costApplyReturn a
+			left join sys_department d on d.id = a.department_id
+			left join sys_user u on u.id = a.apply_user_id
+			WHERE 
+				a.del_flag = 'N'
+		    	<if test="costApplyBillNo != null and costApplyBillNo != ''">
+		    		and a.cost_apply_bill_no = #{costApplyBillNo}
+		    	</if>
+		    	<if test="departmentId != null and departmentId != ''">
+		    		and a.department_id = #{departmentId}
+		    	</if>
+		    	<if test="startTime != null and startTime != ''">
+					and convert(char(16), a.apply_time,120) &gt;= convert(char(16), #{startTime},120) 
+				</if>
+				<if test="endTime != null and endTime != ''">
+					and convert(char(16), a.apply_time,120) &lt;= convert(char(16), #{endTime},120) 
+				</if>
+				<if test="insertUser != null and insertUser != ''">
+				    and a.insert_user =#{insertUser}
+				</if>
+		    	
+	) as t 
+	WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+	ORDER BY t.id desc
+  </select>
+  
+  <select id="getPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+	SELECT count(*)
+		FROM office_costApplyReturn a
+		left join sys_department d on d.id = a.department_id
+		left join sys_user u on u.id = a.apply_user_id
+		WHERE 
+			a.del_flag = 'N'
+			<if test="costApplyBillNo != null and costApplyBillNo != ''">
+		    		and a.cost_apply_bill_no = #{costApplyBillNo}
+		    	</if>
+		    	<if test="departmentId != null and departmentId != ''">
+		    		and a.department_id = #{departmentId}
+		    	</if>
+		    	<if test="startTime != null and startTime != ''">
+					and convert(char(16), a.apply_time,120) &gt;= convert(char(16), #{startTime},120)
+				</if>
+				<if test="endTime != null and endTime != ''">
+					and convert(char(16), a.apply_time,120) &lt;= convert(char(16), #{endTime},120) 
+				</if>
+				<if test="insertUser != null and insertUser != ''">
+				    and a.insert_user =#{insertUser}
+				</if>
+  </select>
+  
+  <select id="getByConditions" parameterType="java.util.HashMap" resultMap="BaseResultMap" >
+    select * 
+      from office_costApplyReturn
+    <where>
+    	del_flag='N'
+    	<if test="costApplyBillNo != null and costApplyBillNo != ''">
+		    		and cost_apply_bill_no = #{costApplyBillNo}
+		    	</if>
+		    	<if test="departmentId != null and departmentId != ''">
+		    		and department_id = #{departmentId}
+		    	</if>
+		    	<if test="startTime != null and startTime != ''">
+					and convert(char(16), apply_time,120) &gt;= convert(char(16), #{startTime},120)
+				</if>
+				<if test="endTime != null and endTime != ''">
+					and convert(char(16), apply_time,120) &lt;= convert(char(16), #{endTime},120)
+				</if>
+				<if test="insertUser != null and insertUser != ''">
+				    and a.insert_user =#{insertUser}
+				</if>
+    </where>
+    order by insert_time desc
+  </select>
+  
+  <select id="getById" parameterType="int"  resultMap="BaseResultMap">
+  	select a.*,d.name as departmentName,
+	u.name as applyUserName
+  	from 
+  	office_costApplyReturn a
+  	left join sys_department d on d.id = a.department_id
+	left join sys_user u on u.id = a.apply_user_id
+  	where a.id = #{id}
+  </select>
+  
+  <update id="update" parameterType="com.jshpsoft.domain.CostApplyReturn">
+  	update office_costApplyReturn
+  	<set>
+  	    <if test="costApplyBillNo != null and costApplyBillNo != ''">
+  	        cost_apply_bill_no = #{costApplyBillNo},
+  	    </if>
+    	<if test="departmentId != null and departmentId != ''">
+		    department_id = #{departmentId},
+		</if>
+		<if test="applyUserId != null and applyUserId != ''">
+		    apply_user_id = #{applyUserId},
+		</if>
+		<if test="applyTime != null ">
+		    apply_time = #{applyTime},
+		</if>
+    	<if test="prepayAmount != null ">
+    		prepay_amount = #{prepayAmount},
+    	</if>
+    	<if test="realUseAmount != null ">
+    		real_use_amount = #{realUseAmount},
+    	</if>
+    	<if test="returnAmount != null ">
+    		return_amount = #{returnAmount},
+    	</if>
+    	<if test="mark != null">
+    		mark = #{mark},
+    	</if>
+    	<if test="status != null and status != ''">
+    		status = #{status},
+    	</if>
+    	<if test="updateTime != null ">
+    		update_time = #{updateTime},
+    	</if>
+    	<if test="updateUser != null ">
+    		update_user = #{updateUser},
+    	</if>
+    	<if test="delFlag != null and delFlag != ''">
+    		del_flag = #{delFlag} 
+    	</if>
+  	</set>
+  	where id = #{id}
+  </update> 
+  
+  
+</mapper>

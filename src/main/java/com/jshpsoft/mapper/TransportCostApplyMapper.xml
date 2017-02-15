@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.TransportCostApplyMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.TransportCostApply" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="apply_time" property="applyTime" jdbcType="TIMESTAMP" />
+    <result column="car_number" property="carNumber" jdbcType="VARCHAR" />
+    <result column="driver_id" property="driverId"/>
+    <result column="codriver_id" property="codriverId"/>
+    <result column="schedule_bill_no" property="scheduleBillNo" jdbcType="VARCHAR" />
+    <result column="amount" property="amount"  />
+    <result column="oil_amount" property="oilAmount"  />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+    <result column="prepay_apply_ids" property="prepayApplyIds" jdbcType="VARCHAR" />
+    <result column="balance_cash" property="balanceCash" />
+    <result column="balance_oil" property="balanceOil"/>
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+    <result column="distance" property="distance"  />
+    <result column="standard_oil_wear" property="standardOilWear"  />
+    <result column="oil_price" property="oilPrice"  />
+    <result column="discount_flag" property="discountFlag"  />
+    <result column="oil_discount_limit" property="oilDiscountLimit"  />
+    <result column="oil_discount_point" property="oilDiscountPoint" />
+    <result column="balance_cash_next_month" property="balanceCashNextMonth" />
+    
+    <result column="driverName" property="driverName" jdbcType="VARCHAR"/>
+    <result column="codriverName" property="codriverName" jdbcType="VARCHAR"/>
+  </resultMap>
+  
+  <insert id="insert" parameterType="com.jshpsoft.domain.TransportCostApply"  useGeneratedKeys="true" keyProperty= "id" >
+    insert into transportCostApply 
+    (apply_time, car_number, driver_id, codriver_id,schedule_bill_no, amount, oil_amount, status, mark, 
+      prepay_apply_ids, balance_cash, balance_oil, insert_time, insert_user, update_time, update_user, del_flag,
+      distance, standard_oil_wear, oil_price,discount_flag, oil_discount_limit, oil_discount_point, balance_cash_next_month )
+    values 
+    (#{applyTime}, #{carNumber}, #{driverId}, #{codriverId},#{scheduleBillNo}, #{amount}, #{oilAmount}, #{status}, #{mark}, 
+      #{prepayApplyIds}, #{balanceCash}, #{balanceOil}, #{insertTime}, #{insertUser}, #{updateTime}, #{updateUser}, #{delFlag},
+      #{distance}, #{standardOilWear}, #{oilPrice}, #{discountFlag}, #{oilDiscountLimit}, #{oilDiscountPoint}, #{balanceCashNextMonth} )
+  </insert>
+ 
+  <update id="update" parameterType="com.jshpsoft.domain.TransportCostApply" >
+    update transportCostApply
+    <set >
+      <if test="applyTime != null" >
+        apply_time = #{applyTime},
+      </if>
+      <if test="carNumber != null" >
+        car_number = #{carNumber},
+      </if>
+      <if test="driverId != null" >
+        driver_id = #{driverId},
+      </if>
+      <if test="codriverId != null" >
+        codriver_id = #{codriverId},
+      </if>
+      <if test="scheduleBillNo != null" >
+        schedule_bill_no = #{scheduleBillNo},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount},
+      </if>
+      <if test="oilAmount != null" >
+        oil_amount = #{oilAmount},
+      </if>
+      <if test="status != null" >
+        status = #{status},
+      </if>
+      <if test="mark != null" >
+        mark = #{mark},
+      </if>
+      <if test="prepayApplyIds != null" >
+        prepay_apply_ids = #{prepayApplyIds},
+      </if>
+      <if test="balanceCash != null" >
+        balance_cash = #{balanceCash},
+      </if>
+      <if test="balanceOil != null" >
+        balance_oil = #{balanceOil},
+      </if>
+      <if test="insertTime != null" >
+        insert_time = #{insertTime},
+      </if>
+      <if test="insertUser != null" >
+        insert_user = #{insertUser},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag},
+      </if>
+      <if test="distance != null" >
+        distance = #{distance},
+      </if>
+      <if test="standardOilWear != null" >
+        standard_oil_wear = #{standardOilWear},
+      </if>
+      <if test="oilPrice != null" >
+        oil_price = #{oilPrice},
+      </if>
+      <if test="discountFlag != null" >
+        discount_flag = #{discountFlag},
+      </if>
+      <if test="oilDiscountLimit != null" >
+        oil_discount_limit = #{oilDiscountLimit},
+      </if>
+      <if test="oilDiscountPoint != null" >
+        oil_discount_point = #{oilDiscountPoint},
+      </if>
+      <if test="balanceCashNextMonth != null" >
+        balance_cash_next_month = #{balanceCashNextMonth},
+      </if>
+      
+    </set>
+    where id = #{id}
+  </update>
+ 
+      <select id="getPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	  	SELECT * from (
+			SELECT row_number() over(order by a.id desc) as rownumber,a.*,u2.name as driverName,d.name as codriverName
+			From transportCostApply a
+			left join sys_user u on u.id = a.insert_user
+			left join sys_user u2 on u2.id = a.driver_id
+			left join sys_user d on d.id = a.codriver_id
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="carNumber != null and carNumber != ''">
+				and a.car_number = #{carNumber} 
+			</if>
+			<if test="driverId != null">
+				and a.driver_id = #{driverId}
+			</if>
+			<if test="driverName != null and driverName != ''">
+				and (u2.name like '%'+#{driverName}+'%' or d.name like '%'+#{driverName}+'%' )
+			</if>
+			<if test="startTime != null and startTime != ''">
+				and convert(char(16), a.apply_time,120) &gt;= convert(char(16), #{startTime},120)
+			</if>
+			<if test="endTime != null and endTime != ''">
+				and convert(char(16), a.apply_time,120) &lt;= convert(char(16), #{endTime},120)
+			</if>
+			<if test="insertUser != null and insertUser != ''">
+				and a.insert_user = #{insertUser} 
+			</if>
+			<if test="statusIn != null and statusIn != ''">
+				and a.status in (${statusIn})
+			</if>
+			<if test="stockId != null and stockId != ''">
+			    and u.stock_id = #{stockId}
+			</if>
+			<if test="scheduleBillNo != null and scheduleBillNo != ''">
+			    and a.schedule_bill_no like '%'+#{scheduleBillNo}+'%'
+			</if>
+		</where>
+		) as t 
+		WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+		ORDER BY t.id DESC
+	</select>
+	  
+	<select id="getPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+		SELECT count(*)
+		FROM transportCostApply a
+		left join sys_user u on u.id = a.insert_user
+		left join sys_user u2 on u2.id = a.driver_id
+		left join sys_user d on d.id = a.codriver_id
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="carNumber != null and carNumber != ''">
+				and a.car_number = #{carNumber} 
+			</if>
+			<if test="driverId != null">
+				and a.driver_id = #{driverId}
+			</if>
+			<if test="driverName != null and driverName != ''">
+				and (u2.name like '%'+#{driverName}+'%' or d.name like '%'+#{driverName}+'%' )
+			</if>
+			<if test="startTime != null and startTime != ''">
+				and convert(char(16), a.apply_time,120) &gt;= convert(char(16), #{startTime},120)
+			</if>
+			<if test="endTime != null and endTime != ''">
+				and convert(char(16), a.apply_time,120) &lt;= convert(char(16), #{endTime},120)
+			</if>
+			<if test="insertUser != null and insertUser != ''">
+				and a.insert_user = #{insertUser} 
+			</if>
+			<if test="statusIn != null and statusIn != ''">
+				and a.status in (${statusIn})
+			</if>
+			<if test="stockId != null and stockId != ''">
+			    and u.stock_id = #{stockId}
+			</if>
+			<if test="scheduleBillNo != null and scheduleBillNo != ''">
+			    and a.schedule_bill_no like '%'+#{scheduleBillNo}+'%'
+			</if>
+		</where>
+	</select>
+	
+	<select id="getByConditions" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+		Select a.id,a.apply_time,a.car_number,a.driver_id,a.schedule_bill_no,a.amount,a.oil_amount,
+  				a.status,a.mark,a.prepay_apply_ids,a.insert_time,a.update_time,
+  				u.name as insert_user,
+  				c.name as update_user,
+  				u2.name as driverName,d.name as codriverName,
+  				a.distance,a.standard_oil_wear, a.oil_price,a.discount_flag, a.oil_discount_limit, a.oil_discount_point,a.balance_cash_next_month
+		From transportCostApply a 
+		left join sys_user u on u.id = a.insert_user
+		left join sys_user c on c.id = a.update_user
+		left join sys_user u2 on u2.id = a.driver_id
+		left join sys_user d on d.id = a.codriver_id
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="carNumber != null and carNumber != ''">
+				and a.car_number = #{carNumber} 
+			</if>
+			<if test="driverId != null">
+				and a.driver_id = #{driverId}
+			</if>
+			<if test="driverName != null and driverName != ''">
+				and (u2.name like '%'+#{driverName}+'%' or d.name like '%'+#{driverName}+'%' )
+			</if>
+			<if test="startTime != null and startTime != ''">
+				and convert(char(10), a.apply_time,120) &gt;= convert(char(10), #{startTime},120)
+			</if>
+			<if test="endTime != null and endTime != ''">
+				and convert(char(10), a.apply_time,120) &lt;= convert(char(10), #{endTime},120)
+			</if>
+			<if test="insertUser != null and insertUser != ''">
+				and a.insert_user = #{insertUser} 
+			</if>
+			<if test="statusIn != null and statusIn != ''">
+				and a.status in (${statusIn})
+			</if>
+			<if test="stockId != null and stockId != ''">
+			    and u.stock_id = #{stockId}
+			</if>
+			<if test="applyTime != null and applyTime != ''">
+			    and convert(char(4), a.apply_time,120) = #{applyTime}
+			</if>
+			<if test="scheduleBillNo != null and scheduleBillNo != ''">
+			    and a.schedule_bill_no like '%'+#{scheduleBillNo}+'%'
+			</if>
+		</where>
+		ORDER BY a.id DESC
+	</select>
+	
+  <select id="getById" resultMap="BaseResultMap" parameterType="Integer">
+  	select a.*,
+  			(select name from sys_user d where a.driver_id=d.id) as driverName,
+  			u.name as codriverName
+  	from transportCostApply a 
+  	left join sys_user u on u.id = a.codriver_id
+  	where a.id = #{id}
+  </select>
+  
+  <select id="getTotalDistanceForDriver" resultType="Integer" parameterType="java.util.HashMap">
+  	select sum(distance)
+  	from transportCostApply
+  	where
+  		distance is not null
+  		<if test="userId != null">
+  			and ( driver_id = #{userId} or codriver_id = #{userId} )
+  		</if>
+  		<if test="delFlag != null and delFlag != ''">
+			and del_flag = #{delFlag} 
+		</if>
+		<if test="statusLess != null and statusLess != ''">
+			and status &gt;= #{statusLess}
+		</if>
+		<if test="updateTimeYearMonth != null and updateTimeYearMonth != ''">
+			and convert(nvarchar(6), update_time,112) = #{updateTimeYearMonth}
+		</if>
+  </select>
+  
+    <update id="updateById"  parameterType="java.util.HashMap">
+		Update transportCostApply 
+		<set>
+			<if test="updateTime != null" >
+	        	update_time = #{updateTime},
+	      	</if>
+	      	<if test="updateUser != null and updateUser != ''" >
+	        	update_user = #{updateUser},
+	      	</if>
+	      	<if test="delFlag != null and delFlag != ''" >
+	        	del_flag = #{delFlag},
+	      	</if>
+	      	<if test="status != null and status != ''" >
+        		status = #{status},
+      		</if>
+      		<if test="amount != null" >
+        		amount = #{amount},
+      		</if>
+      		<if test="oilAmount != null" >
+        		oil_amount = #{oilAmount},
+      		</if>
+      		<if test="balanceCash != null" >
+		        balance_cash = #{balanceCash},
+		    </if>
+		    <if test="balanceOil != null" >
+		        balance_oil = #{balanceOil}
+		    </if>
+		      <if test="distance != null" >
+		        distance = #{distance},
+		      </if>
+		      <if test="standardOilWear != null" >
+		        standard_oil_wear = #{standardOilWear},
+		      </if>
+		      <if test="oilPrice != null" >
+		        oil_price = #{oilPrice},
+		      </if>
+		      <if test="discountFlag != null" >
+		        discount_flag = #{discountFlag},
+		      </if>
+		      <if test="oilDiscountLimit != null" >
+		        oil_discount_limit = #{oilDiscountLimit},
+		      </if>
+		      <if test="oilDiscountPoint != null" >
+		        oil_discount_point = #{oilDiscountPoint},
+		      </if>
+		      <if test="balanceCashNextMonth != null" >
+		        balance_cash_next_month = #{balanceCashNextMonth},
+		      </if>
+		</set>
+		where id = #{id}
+	</update>
+	
+</mapper>

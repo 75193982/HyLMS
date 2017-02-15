@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.OutSourcingBusinessMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.OutSourcingBusiness" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="out_sourcing_id" property="outSourcingId" jdbcType="INTEGER" />
+    <result column="supplier_id" property="supplierId" jdbcType="INTEGER" />
+    <result column="brand_name" property="brandName" jdbcType="VARCHAR" />
+    <result column="account_type" property="accountType" jdbcType="VARCHAR" />
+    <result column="balance_type" property="balanceType" jdbcType="VARCHAR" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+    <result column="outSourcingName" property="outSourcingName" jdbcType="VARCHAR" />
+    <result column="supplierName" property="supplierName" jdbcType="VARCHAR" />
+     <result column="updateUserName" property="updateUserName" jdbcType="VARCHAR" />
+  </resultMap>
+  
+   <select id="getById" resultMap="BaseResultMap" parameterType="int">
+		select a.*,b.name as supplierName
+		from basic_outSourcingBusiness a
+		left join basic_supplier b on a.supplier_id = b.id
+		where a.id = #{id}
+	</select>
+	
+	<select id="getByConditions" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+		Select a.*
+		From basic_outSourcingBusiness a 
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="outSourcingId != null and outSourcingId !=''">
+				and a.out_sourcing_id = #{outSourcingId}
+			</if>
+			<if test="brandName != null and brandName != ''">
+				and a.brand_name = #{brandName}
+			</if>
+			<if test="supplierId != null and supplierId != ''">
+			    and a.supplier_id = #{supplierId}
+			</if>
+		</where>
+		order by a.id asc
+	</select>
+	
+  <insert id="insert" parameterType="com.jshpsoft.domain.OutSourcingBusiness" useGeneratedKeys="true" keyProperty= "id">
+    insert into basic_outSourcingBusiness (out_sourcing_id,supplier_id, brand_name, account_type, balance_type, insert_time, 
+      insert_user, update_time, update_user, del_flag)
+    values ( #{outSourcingId},#{supplierId}, #{brandName},#{accountType}, #{balanceType}, #{insertTime}, 
+      #{insertUser}, #{updateTime}, #{updateUser}, #{delFlag})
+  </insert>
+  
+  <update id="update" parameterType="com.jshpsoft.domain.OutSourcingBusiness" >
+    update basic_outSourcingBusiness
+    <set >
+      <if test="outSourcingId != null and outSourcingId != ''" >
+        out_sourcing_id = #{outSourcingId},
+      </if>
+      <if test="supplierId != null and supplierId != ''">
+         supplier_id = #{supplierId},
+      </if>
+      <if test="brandName != null and brandName != ''" >
+        brand_name = #{brandName},
+      </if>
+      <if test="accountType != null and accountType != ''" >
+        account_type = #{accountType},
+      </if>
+      <if test="balanceType != null" >
+        balance_type = #{balanceType},
+      </if>
+      <if test="insertTime != null" >
+        insert_time = #{insertTime},
+      </if>
+      <if test="insertUser != null" >
+        insert_user = #{insertUser},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag}
+      </if>
+    </set>
+    where id = #{id}
+  </update>
+  
+  <select id="getPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	  	SELECT * from (
+			SELECT row_number() over(order by a.id desc) as rownumber,a.*,
+			u.name as updateUserName,
+			b.name as outSourcingName,c.name as supplierName
+			From basic_outSourcingBusiness a
+			left join basic_outSourcing b on b.id = a.out_sourcing_id
+			left join basic_supplier c on a.supplier_id = c.id
+			left join sys_user u on u.id = a.update_user
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="brandName != null and brandName != ''">
+				and a.brand_name like '%'+#{brandName}+'%'
+			</if>
+			<if test="outSourcingId != null and outSourcingId != ''">
+				and a.out_sourcing_id = #{outSourcingId}
+			</if>
+			<if test="supplierId != null and supplierId != ''">
+			    and a.supplier_id = #{supplierId}
+			</if>
+		</where>
+		) as t 
+		WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+		ORDER BY t.id desc
+	</select>
+	  
+	<select id="getPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+		SELECT count(*)
+		FROM basic_outSourcingBusiness a
+		left join basic_outSourcing b on b.id = a.out_sourcing_id
+		left join basic_supplier c on a.supplier_id = c.id
+		left join sys_user u on u.id = a.update_user
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="brandName != null and brandName != ''">
+				and a.brand_name like '%'+#{brandName}+'%'
+			</if>
+			<if test="outSourcingId != null and outSourcingId != ''">
+				and a.out_sourcing_id = #{outSourcingId}
+			</if>
+			<if test="supplierId != null and supplierId != ''">
+			    and a.supplier_id = #{supplierId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getBrandNameByOs" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+      Select distinct a.brand_name
+		From basic_outSourcingBusiness a 
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				a.del_flag = #{delFlag} 
+			</if>
+			<if test="outSourcingId != null and outSourcingId != ''">
+			    and a.out_sourcing_id = #{outSourcingId}
+			</if>
+		</where>
+  </select>
+  
+</mapper>

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.TrackMaintenanceApplyMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.TrackMaintenanceApply" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="car_number" property="carNumber" jdbcType="VARCHAR" />
+    <result column="current_mileage" property="currentMileage" jdbcType="INTEGER" />
+    <result column="detail_info" property="detailInfo" jdbcType="VARCHAR" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <insert id="insert" parameterType="com.jshpsoft.domain.TrackMaintenanceApply" >
+    insert into trackMaintenanceApply 
+    ( car_number, current_mileage, detail_info, amount, mark, 
+      status, insert_time, insert_user, update_time, update_user, del_flag )
+    values 
+    ( #{carNumber}, #{currentMileage}, #{detailInfo}, #{amount}, #{mark}, 
+      #{status}, #{insertTime}, #{insertUser}, #{updateTime}, #{updateUser}, #{delFlag} )
+  </insert>
+  
+  <update id="update" parameterType="com.jshpsoft.domain.TrackMaintenanceApply" >
+    update trackMaintenanceApply
+    <set >
+      <if test="carNumber != null and carNumber != ''" >
+        car_number = #{carNumber},
+      </if>
+      <if test="currentMileage != null and currentMileage != ''" >
+        current_mileage = #{currentMileage},
+      </if>
+      <if test="detailInfo != null and detailInfo != ''" >
+        detail_info = #{detailInfo},
+      </if>
+      <if test="amount != null and amount != ''" >
+        amount = #{amount},
+      </if>
+      <if test="mark != null and mark != ''" >
+        mark = #{mark},
+      </if>
+      <if test="status != null and status != ''" >
+        status = #{status},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime},
+      </if>
+      <if test="updateUser != null and updateUser != ''" >
+        update_user = #{updateUser},
+      </if>
+      <if test="delFlag != null and delFlag != ''" >
+        del_flag = #{delFlag},
+      </if>
+    </set>
+    where id = #{id}
+  </update>
+
+ 	<select id="getPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	  	SELECT * from (
+			SELECT row_number() over(order by a.id asc) as rownumber,a.*
+			From trackMaintenanceApply a
+			left join sys_user u on u.id = a.insert_user
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="carNumber != null and carNumber != ''">
+				and a.car_number = #{carNumber} 
+			</if>
+			<if test="detailInfo != null and detailInfo != ''">
+				and a.detail_info like '%'+#{detailInfo}+'%'
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status} 
+			</if>
+			<if test="startTime != null and startTime != ''">
+				and convert(char(10), a.insert_time,120) &gt;= convert(char(10), #{startTime},120)
+			</if>
+			<if test="endTime != null and endTime != ''">
+				and convert(char(10), a.insert_time,120) &lt;= convert(char(10), #{endTime},120)
+			</if>
+			<if test="stockId != null and stockId != ''">
+			    and u.stock_id = #{stockId}
+			</if>
+		</where>
+		) as t 
+		WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+		ORDER BY t.insert_time ASC
+	</select>
+	  
+	<select id="getPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+		SELECT count(*)
+		FROM trackMaintenanceApply a
+		left join sys_user u on u.id = a.insert_user
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="carNumber != null and carNumber != ''">
+				and a.car_number = #{carNumber} 
+			</if>
+			<if test="detailInfo != null and detailInfo != ''">
+				and a.detail_info like '%'+#{detailInfo}+'%'
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status} 
+			</if>
+			<if test="startTime != null and startTime != ''">
+				and convert(char(10), a.insert_time,120) &gt;= convert(char(10), #{startTime},120)
+			</if>
+			<if test="endTime != null and endTime != ''">
+				and convert(char(10), a.insert_time,120) &lt;= convert(char(10), #{endTime},120)
+			</if>
+			<if test="stockId != null and stockId != ''">
+			    and u.stock_id = #{stockId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getById" resultMap="BaseResultMap" parameterType="int">
+ 		select * from trackMaintenanceApply where id = #{id}
+ 	</select>
+ 	
+ 	<update id="updateById"  parameterType="java.util.HashMap">
+		Update trackMaintenanceApply 
+		<set>
+			<if test="updateTime != null" >
+	        	update_time = #{updateTime},
+	      	</if>
+	      	<if test="updateUser != null and updateUser != ''" >
+	        	update_user = #{updateUser},
+	      	</if>
+	      	<if test="delFlag != null and delFlag != ''" >
+	        	del_flag = #{delFlag},
+	      	</if>
+	      	<if test="status != null and status != ''" >
+	        	status = #{status},
+	      	</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<select id="getTrackMaintenanceApply" parameterType="HashMap" resultMap="BaseResultMap" >
+		select * from trackMaintenanceApply 
+		where car_number = #{carNumber} 
+		and del_flag = #{delFlag} 
+		order by id desc
+	</select>
+	
+	<select id="getByConditions" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+		select a.*
+	    From trackMaintenanceApply a
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="carNumber != null and carNumber != ''">
+				and a.car_number = #{carNumber} 
+			</if>
+			<if test="insertTime != null and insertTime != ''">
+				and convert(char(4), a.insert_time,120) = #{insertTime}
+			</if>
+			
+		</where>
+	</select>
+</mapper>

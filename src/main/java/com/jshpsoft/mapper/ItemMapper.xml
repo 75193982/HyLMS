@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.ItemMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.Item" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="process_id" property="processId" jdbcType="INTEGER" />
+    <result column="detail_id" property="detailId" jdbcType="INTEGER" />
+    <result column="item_name" property="itemName" jdbcType="VARCHAR" />
+    <result column="apply_time" property="applyTime" jdbcType="TIMESTAMP" />
+    <result column="start_time" property="startTime" jdbcType="VARCHAR" />
+    <result column="end_time" property="endTime" jdbcType="VARCHAR" />
+    <result column="apply_user_id" property="applyUserId" jdbcType="INTEGER" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="cash_advance" property="cashAdvance" jdbcType="DECIMAL"/>
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+    <result column="business_type" property="businessType" jdbcType="VARCHAR" />
+    
+    <result column="depName" property="depName" jdbcType="VARCHAR" />
+    <result column="typeName" property="typeName" jdbcType="VARCHAR"/>
+    <result column="applyUserName" property="applyUserName" jdbcType="VARCHAR"/>
+  </resultMap>
+  
+  <insert id="insert" parameterType="com.jshpsoft.domain.Item" useGeneratedKeys="true" keyProperty="id">
+    insert into office_item (process_id, detail_id,
+      item_name, apply_time, start_time, end_time,apply_user_id, 
+      amount,cash_advance, mark, status, 
+      insert_time, insert_user, update_time, 
+      update_user, del_flag, business_type)
+    values ( #{processId}, #{detailId}, 
+      #{itemName}, #{applyTime}, #{startTime}, #{endTime}, #{applyUserId}, 
+      #{amount},#{cashAdvance}, #{mark}, #{status}, 
+      #{insertTime}, #{insertUser}, #{updateTime}, 
+      #{updateUser}, #{delFlag}, #{businessType})
+  </insert>
+  
+  <select id="getPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+  	SELECT * from (
+		SELECT row_number() over(order by a.insert_time desc) as rownumber,a.*,u.name as applyUserName,d.name as depName,o.name as typeName
+			FROM 
+			(
+				select i.*,p.item_type_id
+					from office_item i,office_process p
+					where p.id = i.process_id
+					<if test="systemFlag != null and systemFlag != ''" >
+						AND p.system_flag = #{systemFlag}
+					</if>
+			 ) a
+			left join sys_user u on u.id = a.apply_user_id
+			left join sys_department d on d.id = u.department_id 
+			left join office_itemType o on o.id = a.item_type_id
+			WHERE 
+				a.del_flag = 'N'
+				<if test="itemName != null and itemName != ''" >
+					AND ( a.item_name LIKE concat('%', #{itemName}, '%') )
+				</if>  
+				<if test="insertUser != null and insertUser != ''" >
+					AND a.insert_user = #{insertUser}
+				</if>  
+				<if test="startTime != null and startTime !='' ">
+				    and convert(char(16), a.apply_time,120) &gt;= convert(char(16), #{startTime},120)
+				</if>
+				<if test="endTime != null and endTime !='' ">
+				    and convert(char(16), a.apply_time,120) &lt;= convert(char(16), #{endTime},120)
+				</if>
+				<if test="stockId != null and stockId !='' ">
+				    and u.stock_id = #{stockId}
+				</if>
+				<if test="businessType != null" >
+			        and a.business_type = #{businessType}
+			    </if>
+	) as t 
+	WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+  </select>
+  
+  <select id="getPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+	SELECT count(a.id)
+		FROM 
+			(
+				select i.*,p.item_type_id
+					from office_item i,office_process p
+					where p.id = i.process_id
+					<if test="systemFlag != null and systemFlag != ''" >
+						AND p.system_flag = #{systemFlag}
+					</if>
+			 ) a
+		left join sys_user u on u.id = a.apply_user_id
+		left join sys_department d on d.id = u.department_id 
+		left join office_itemType o on o.id = a.item_type_id
+		WHERE 
+			a.del_flag = 'N'
+			<if test="itemName != null and itemName != ''" >
+				AND ( a.item_name LIKE concat('%', #{itemName}, '%') )
+			</if>  
+			<if test="insertUser != null and insertUser != ''" >
+				AND a.insert_user = #{insertUser}
+			</if>  
+			<if test="startTime != null and startTime !='' ">
+				and convert(char(16), a.apply_time,120) &gt;= convert(char(16), #{startTime},120)
+			</if>
+			<if test="endTime != null and endTime !='' ">
+				and convert(char(16), a.apply_time,120) &lt;= convert(char(16), #{endTime},120)
+			</if>
+			<if test="stockId != null and stockId !='' ">
+				and u.stock_id = #{stockId}
+			</if>
+			<if test="businessType != null" >
+		        and a.business_type = #{businessType}
+		    </if>
+  </select>
+	
+  <select id="getByConditions" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	SELECT row_number() over(order by a.insert_time desc) as rownumber,a.*,u.name as applyUserName,d.name as depName,o.name as typeName
+			FROM 
+			(
+				select i.*,p.item_type_id
+					from office_item i,office_process p
+					where p.id = i.process_id 
+					<if test="system_flag != null" >
+						and p.system_flag = #{system_flag}
+					</if>
+
+			 ) a
+			left join sys_user u on u.id = a.apply_user_id
+			left join sys_department d on d.id = u.department_id 
+			left join office_itemType o on o.id = a.item_type_id
+		WHERE 
+			a.del_flag = 'N'
+			<if test="itemName != null and itemName != ''" >
+				AND ( a.item_name LIKE concat('%', #{itemName}, '%') )
+			</if>  
+			<if test="detailId != null" >
+				AND a.detail_id = #{detailId}
+			</if>
+			<if test="processId != null" >
+				AND a.process_id = #{processId}
+			</if>
+			<if test="startTime != null and startTime != ''">
+				and convert(char(10), a.apply_time,120) &gt;= convert(char(10), #{startTime},120)
+			</if>
+			<if test="endTime != null and endTime != ''">
+				and convert(char(10), a.apply_time,120) &lt;= convert(char(10), #{endTime},120)
+			</if> 
+			<if test="status != null">
+				and a.status = #{status}
+			</if>
+			<if test="stockId != null and stockId !='' ">
+				and u.stock_id = #{stockId}
+			</if>
+			<if test="businessType != null" >
+		        and a.business_type = #{businessType}
+		    </if>
+			order by a.insert_time desc
+  </select>
+	
+  <select id="getById" parameterType="int"  resultMap="BaseResultMap">
+	SELECT *
+		FROM office_item
+		WHERE id = #{id}
+  </select>
+  
+   <select id="getBydetilId" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	SELECT *
+		FROM office_item
+		WHERE detail_id = #{detailId} and process_id=#{ProcessId}
+  </select>
+  
+  <update id="updateBySelective" parameterType="com.jshpsoft.domain.Item" >
+    update office_item
+    <set >
+      <if test="processId != null" >
+        process_id = #{processId,jdbcType=INTEGER},
+      </if>
+      <if test="detailId != null" >
+        detail_id = #{detailId,jdbcType=INTEGER},
+      </if>
+      <if test="itemName != null" >
+        item_name = #{itemName,jdbcType=VARCHAR},
+      </if>
+      <if test="applyTime != null" >
+        apply_time = #{applyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="startTime != null and startTime != ''" >
+        start_time = #{startTime},
+      </if>
+      <if test="endTime != null and endTime != ''" >
+        end_time = #{endTime},
+      </if>
+      <if test="applyUserId != null" >
+        apply_user_id = #{applyUserId,jdbcType=INTEGER},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="cashAdvance != null">
+      	cash_advance = #{cashAdvance},
+      </if>
+      <if test="mark != null" >
+        mark = #{mark,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="insertTime != null" >
+        insert_time = #{insertTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="insertUser != null" >
+        insert_user = #{insertUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="businessType != null" >
+        business_type = #{businessType},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+</mapper>

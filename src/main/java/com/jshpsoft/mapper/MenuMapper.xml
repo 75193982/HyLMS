@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.MenuMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.Menu" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="NVARCHAR" />
+    <result column="url" property="url" jdbcType="NVARCHAR" />
+    <result column="order_id" property="orderId" jdbcType="INTEGER" />
+    <result column="parent_id" property="parentId" jdbcType="INTEGER" />
+    <result column="mark" property="mark" />
+  </resultMap>
+  
+  <select id="getMenuList" resultMap="BaseResultMap" parameterType="java.util.HashMap" >
+		select * from sys_menu order by order_id asc
+	</select>
+  
+  <select id="getById" resultMap="BaseResultMap" parameterType="int">
+		select *
+		from sys_menu
+		where id = #{id}
+	</select>
+	
+	<insert id="insert" parameterType="com.jshpsoft.domain.Menu">
+  		insert into sys_menu(name,url,order_id,parent_id,mark) 
+  		values(#{name},#{url},#{orderId},#{parentId},#{mark})
+   </insert>
+   
+    <update id="update" parameterType="com.jshpsoft.domain.Menu">
+  	update sys_menu
+  	<set>
+  		<if test="name != null and name != ''">
+  			name = #{name},
+  		</if>
+  		<if test="parentId != null and parentId != ''">
+  			parent_id = #{parentId},
+  		</if>
+  		<if test="url != null and url != ''">
+  			url = #{url},
+  		</if>
+  		<if test="orderId != null and orderId != ''">
+  			order_id = #{orderId},
+  		</if>
+  		<if test="mark != null">
+  			mark = #{mark}
+  		</if>
+  	</set>
+  	where id = #{id}
+  </update>
+  
+  <delete id="delete" parameterType="int">
+  	delete from sys_menu where id=#{id}
+  </delete>
+
+  	<select id="getUserMenuList" resultMap="BaseResultMap" parameterType="int">
+		select distinct a.*
+		from sys_menu a,sys_roleMenus b,sys_userRoles c
+		where a.id = b.menu_id and b.role_id = c.role_id and c.user_id = #{userId} order by parent_id,order_id
+	</select>
+	
+	<select id="getRoleMenuList" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select a.*
+		from sys_menu a,sys_roleMenus b,sys_role c
+		where a.id = b.menu_id and b.role_id = c.id and c.name = #{roleName}
+	</select>
+	
+	<select id="getRoleMenuListForApp" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select a.*
+		from sys_menu a,sys_roleMenus b,sys_role c
+		where a.id = b.menu_id and b.role_id = c.id and a.parent_id != 0 and c.name = #{roleName}
+		order by parent_id,order_id
+	</select>
+	
+	<select id="getByParentId" resultMap="BaseResultMap" parameterType="int">
+	    select * from sys_menu where parent_id = #{parentId}
+	    
+	</select>
+</mapper>

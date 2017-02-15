@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.OilCardStockMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.OilCardStock" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="source" property="source" jdbcType="VARCHAR" />
+    <result column="card_type" property="cardType" jdbcType="VARCHAR" />
+    <result column="card_no" property="cardNo" jdbcType="VARCHAR" />
+    <result column="money" property="money" jdbcType="DECIMAL" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="receive_time" property="receiveTime" jdbcType="TIMESTAMP" />
+    <result column="receive_user" property="receiveUser" jdbcType="VARCHAR" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+    <result column="receiveUserName" property="receiveUserName" jdbcType="VARCHAR" />
+    <result column="insertUserName" property="insertUserName" jdbcType="VARCHAR" />
+  </resultMap>
+
+    <select id="getById" resultMap="BaseResultMap" parameterType="int">
+		select a.*,b.name as receiveUserName,c.name as insertUserName
+		From oilCardStock a 
+		left join sys_user b on a.receive_user=b.id
+		left join sys_user c on a.insert_user=c.id
+		where a.id = #{id}
+	</select>
+	
+	<select id="getByConditions" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+		Select a.*,b.name as receiveUserName,c.name as insertUserName
+		From oilCardStock a
+		left join sys_user b on a.receive_user=b.id
+		left join sys_user c on a.insert_user=c.id
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="type != null and type != ''">
+				and a.type = #{type} 
+			</if>
+			<if test="source != null and source != ''">
+				and a.source like '%'+#{source}+'%'
+			</if>
+			<if test="cardType != null and cardType != ''">
+				and a.card_type = #{cardType} 
+			</if>
+			<if test="cardNo != null and cardNo != ''">
+				and a.card_no like '%'+#{cardNo}+'%'
+			</if>
+			<if test="cardNoCheck != null and cardNoCheck != ''">
+				and a.card_no = #{cardNoCheck}
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status} 
+			</if>
+			<if test="startTime != null and startTime != ''">
+				and convert(char(10), a.insert_time,120) &gt;= convert(char(10), #{startTime},120)
+			</if>
+			<if test="endTime != null and endTime != ''">
+				and convert(char(10), a.insert_time,120) &lt;= convert(char(10), #{endTime},120)
+			</if>
+			<if test="receiveUserName != null and receiveUserName != ''">
+			    and b.name like '%'+#{receiveUserName}+'%'
+			</if>
+			<if test="receiveStartTime != null and receiveStartTime != ''">
+				and convert(char(10), a.receive_time,120) &gt;= convert(char(10), #{receiveStartTime},120)
+			</if>
+			<if test="receiveEndTime != null and receiveEndTime != ''">
+				and convert(char(10), a.receive_time,120) &lt;= convert(char(10), #{receiveEndTime},120)
+			</if>
+			<if test="receiveUser != null and receiveUser != ''">
+			    and a.receive_user = #{receiveUser}
+			</if>
+		</where>
+		order by a.id desc
+	</select>
+
+	<select id="getPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	  	SELECT * from (
+			SELECT row_number() over(order by a.id desc) as rownumber,
+			a.*,b.name as receiveUserName,c.name as insertUserName
+			From oilCardStock a
+			left join sys_user b on a.receive_user=b.id
+			left join sys_user c on a.insert_user=c.id
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="type != null and type != ''">
+				and a.type = #{type} 
+			</if>
+			<if test="source != null and source != ''">
+				and a.source like '%'+#{source}+'%'
+			</if>
+			<if test="cardType != null and cardType != ''">
+				and a.card_type = #{cardType} 
+			</if>
+			<if test="cardNo != null and cardNo != ''">
+				and a.card_no like '%'+#{cardNo}+'%'
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status} 
+			</if>
+			<if test="startTime != null and startTime != ''">
+				and convert(char(10), a.insert_time,120) &gt;= convert(char(10), #{startTime},120)
+			</if>
+			<if test="endTime != null and endTime != ''">
+				and convert(char(10), a.insert_time,120) &lt;= convert(char(10), #{endTime},120)
+			</if>
+			<if test="receiveUserName != null and receiveUserName != ''">
+			    and b.name like '%'+#{receiveUserName}+'%'
+			</if>
+			<if test="receiveStartTime != null and receiveStartTime != ''">
+				and convert(char(10), a.receive_time,120) &gt;= convert(char(10), #{receiveStartTime},120)
+			</if>
+			<if test="receiveEndTime != null and receiveEndTime != ''">
+				and convert(char(10), a.receive_time,120) &lt;= convert(char(10), #{receiveEndTime},120)
+			</if>
+		</where>
+		) as t 
+		WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+		ORDER BY t.id desc
+	</select>
+	  
+	<select id="getPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+		SELECT count(*)
+		FROM oilCardStock a
+		left join sys_user b on a.receive_user=b.id
+		left join sys_user c on a.insert_user=c.id
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="type != null and type != ''">
+				and a.type = #{type} 
+			</if>
+			<if test="source != null and source != ''">
+				and a.source like '%'+#{source}+'%'
+			</if>
+			<if test="cardType != null and cardType != ''">
+				and a.card_type = #{cardType} 
+			</if>
+			<if test="cardNo != null and cardNo != ''">
+				and a.card_no like '%'+#{cardNo}+'%'
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status} 
+			</if>
+			<if test="startTime != null and startTime != ''">
+				and convert(char(10), a.insert_time,120) &gt;= convert(char(10), #{startTime},120)
+			</if>
+			<if test="endTime != null and endTime != ''">
+				and convert(char(10), a.insert_time,120) &lt;= convert(char(10), #{endTime},120)
+			</if>
+			<if test="receiveUserName != null and receiveUserName != ''">
+			    and b.name like '%'+#{receiveUserName}+'%'
+			</if>
+			<if test="receiveStartTime != null and receiveStartTime != ''">
+				and convert(char(10), a.receive_time,120) &gt;= convert(char(10), #{receiveStartTime},120)
+			</if>
+			<if test="receiveEndTime != null and receiveEndTime != ''">
+				and convert(char(10), a.receive_time,120) &lt;= convert(char(10), #{receiveEndTime},120)
+			</if>
+		</where>
+	</select>
+	
+  <insert id="insert" parameterType="com.jshpsoft.domain.OilCardStock" >
+    insert into oilCardStock 
+    ( type, source, card_type, card_no, money, status, receive_time, receive_user, 
+      insert_time, insert_user, update_time, update_user, del_flag)
+    values 
+    ( #{type}, #{source}, #{cardType}, #{cardNo}, #{money}, #{status}, #{receiveTime}, #{receiveUser}, 
+      #{insertTime}, #{insertUser}, #{updateTime}, #{updateUser}, #{delFlag})
+  </insert>
+  
+  <update id="update" parameterType="com.jshpsoft.domain.OilCardStock" >
+    update oilCardStock
+    <set >
+      <if test="type != null" >
+        type = #{type},
+      </if>
+      <if test="source != null" >
+        source = #{source},
+      </if>
+      <if test="cardType != null" >
+        card_type = #{cardType},
+      </if>
+      <if test="cardNo != null" >
+        card_no = #{cardNo},
+      </if>
+      <if test="money != null" >
+        money = #{money},
+      </if>
+      <if test="status != null" >
+        status = #{status},
+      </if>
+      <if test="receiveTime != null" >
+        receive_time = #{receiveTime},
+      </if>
+      <if test="receiveUser != null" >
+        receive_user = #{receiveUser},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag},
+      </if>
+    </set>
+    where id = #{id}
+  </update>
+  
+    <update id="updateById"  parameterType="java.util.HashMap">
+		Update oilCardStock 
+		<set>
+		  <if test="updateTime != null" >
+	        update_time = #{updateTime},
+	      </if>
+	      <if test="updateUser != null and updateUser !=''" >
+	        update_user = #{updateUser},
+	      </if>
+	      <if test="delFlag != null and delFlag !=''" >
+	        del_flag = #{delFlag},
+	      </if>
+	      <if test="status != null and status !=''" >
+            status = #{status},
+          </if>
+      	  <if test="money != null and money !=''" >
+        	money = #{money},
+      	  </if>
+          <if test="receiveUser != null" >
+            receive_user = #{receiveUser},
+          </if>
+          <if test="receiveTime != null" >
+            receive_time = #{receiveTime},
+          </if>
+		</set>
+		where id = #{id}
+	</update>
+	
+</mapper>

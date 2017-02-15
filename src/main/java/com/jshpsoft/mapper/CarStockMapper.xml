@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.CarStockMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.CarStock" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="stock_id" property="stockId" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="waybill_id" property="waybillId" jdbcType="VARCHAR" />
+    <result column="brand" property="brand" jdbcType="VARCHAR" />
+    <result column="vin" property="vin" jdbcType="VARCHAR" />
+    <result column="model" property="model" jdbcType="VARCHAR" />
+    <result column="color" property="color" jdbcType="VARCHAR" />
+    <result column="engine_no" property="engineNo" jdbcType="VARCHAR" />
+    <result column="position" property="position" jdbcType="VARCHAR" />
+    <result column="key_position" property="keyPosition" jdbcType="VARCHAR" />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+    
+    <result column="waybillNo" property="waybillNo" />
+    <result column="supplierName" property="supplierName" />
+    
+    <result column="storage_time" property="storageTime" />
+    <result column="after_flag" property="afterFlag" />
+    
+    <result column="transport_price" property="transportPrice" jdbcType="DECIMAL"/>
+  </resultMap>
+  
+ 
+ <select id="queryCarStock" parameterType="Integer" resultMap="BaseResultMap">
+ 	select * from carStock where waybill_id = #{waybillId}
+ 
+ </select>
+ 
+ 
+ <select id="queryCarStockByStatus" parameterType="HashMap" resultMap="BaseResultMap">
+
+	select top ${pageSize} * from carStock
+	where id
+	not in
+	(
+
+	select top
+	(${pageSize}*(${pageNo}-1)) id from carStock order by
+	id
+	
+	)
+
+	<if test="vin !=null and vin !=''">
+	and vin like '%'+#{vin}+'%'
+	</if>
+	 and
+	del_flag=#{delFlag} 
+	order by insert_time
+ 
+ </select>
+ 
+ 
+ <update id="bindCarStock" parameterType="HashMap">
+  update  carStock set waybill_id =#{waybillId} where id in( #{ids} )
+ </update>
+ 
+ 
+
+ 
+ <update id="submitCarStock" parameterType="HashMap">
+	update carStock
+	set status =#{status}
+
+	where waybill_id = #{id}
+</update>
+
+  	<insert id="insert" parameterType="com.jshpsoft.domain.CarStock" useGeneratedKeys="true" keyProperty= "id">
+	    insert into carStock 
+	    ( stock_id, type, waybill_id, brand, vin, model, color, engine_no, position, key_position, mark, status,
+	      storage_time,after_flag, insert_time,insert_user, update_time, update_user, del_flag,transport_price)
+	    values 
+	    ( #{stockId}, #{type}, #{waybillId}, #{brand}, #{vin}, #{model}, #{color}, #{engineNo}, #{position}, #{keyPosition}, #{mark}, #{status},
+	      #{storageTime}, #{afterFlag}, #{insertTime}, #{insertUser}, #{updateTime}, #{updateUser}, #{delFlag} ,#{transportPrice})
+ 	</insert>
+ 
+ 	<select id="getByConditions" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+		Select a.*,b.waybill_no waybillNo,c.name supplierName
+		From carStock a 
+		left join waybill b on a.waybill_id=b.id 
+		left join basic_supplier c on b.supplier_id=c.id 
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="stockId != null and stockId != ''">
+				and a.stock_id = #{stockId} 
+			</if>
+			<if test="type != null and type != ''">
+				and a.type = #{type} 
+			</if>
+			<if test="brand != null and brand != ''">
+				and a.brand like '%'+#{brand}+'%'
+			</if>
+			<if test="carStockIds != null and carStockIds != ''">
+				and a.id in (${carStockIds})
+			</if>
+			<if test="waybillId != null and waybillId != ''">
+				and a.waybill_id = #{waybillId} 
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status} 
+			</if>
+			<if test="vin != null and vin != ''">
+				and a.vin = #{vin} 
+			</if>
+		</where>
+		<if test="descFlag != null">
+			order by a.id asc
+		</if>
+		<if test="descFlag == null">
+			order by a.id desc
+		</if>
+	</select>
+ 
+ 	<select id="getPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	  	SELECT * from (
+			SELECT row_number() over(order by a.id desc) as rownumber,a.*,b.waybill_no waybillNo,c.name supplierName
+			From carStock a 
+			left join waybill b on a.waybill_id=b.id  and b.del_flag = 'N'
+			left join basic_supplier c on b.supplier_id=c.id
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag}
+			</if>
+			<if test="stockId != null and stockId != ''">
+				and a.stock_id = #{stockId} 
+			</if>
+			<if test="type != null and type != ''">
+				and a.type = #{type} 
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status} 
+			</if>
+			<if test="brand != null and brand != ''">
+				and a.brand like '%'+#{brand}+'%'
+			</if>
+			<if test="vin != null and vin != ''">
+				and a.vin like '%'+#{vin}+'%'
+			</if>
+			<if test="flag != null">
+				and (
+				a.waybill_id is  null or a.waybill_id = ''
+				<if test="waybillId !=null and waybillId != '' ">  
+					or waybill_id =#{waybillId}
+				</if>
+				
+				)
+			</if>
+			<if test="carShopId != null and carShopId != ''">
+				and b.car_shop_id = #{carShopId} 
+			</if>
+			<if test="carIdNot != null and carIdNot != ''">
+				and a.id not in (${carIdNot})
+			</if>
+			<if test="startTime != null and startTime != ''">
+  				and convert(char(16), a.insert_time,120) &gt;= convert(char(16), #{startTime},120)
+  			</if>
+  			<if test="endTime != null and endTime != ''">
+  				and convert(char(16), a.insert_time,120) &lt;= convert(char(16), #{endTime},120)
+  			</if>
+		</where>
+		) as t 
+		WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+		
+		<if test="waybillId !=null and waybillId != '' ">  
+				ORDER BY waybill_id desc
+		</if>
+		<if test="waybillId ==null or waybillId == '' ">  
+				ORDER BY t.id desc
+		</if>
+	</select>
+	  
+	<select id="getPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+		SELECT count(*)
+		FROM carStock a
+		left join waybill b on a.waybill_id=b.id  and b.del_flag = 'N'
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag}
+			</if>
+			<if test="stockId != null and stockId != ''">
+				and a.stock_id = #{stockId} 
+			</if>
+			<if test="type != null and type != ''">
+				and a.type = #{type} 
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status} 
+			</if>
+			<if test="brand != null and brand != ''">
+				and a.brand like '%'+#{brand}+'%'
+			</if>
+			<if test="vin != null and vin != ''">
+				and a.vin like '%'+#{vin}+'%'
+			</if>
+			<if test="flag != null">
+				and (
+				a.waybill_id is  null or a.waybill_id = ''
+				<if test="waybillId !=null and waybillId != '' ">  
+					or waybill_id =#{waybillId}
+				</if>
+				
+				)
+			</if>
+			<if test="carShopId != null and carShopId != ''">
+				and b.car_shop_id = #{carShopId} 
+			</if>
+			<if test="carIdNot != null and carIdNot != ''">
+				and a.id not in (${carIdNot})
+			</if>
+			<if test="startTime != null and startTime != ''">
+  				and convert(char(16), a.insert_time,120) &gt;= convert(char(16), #{startTime},120)
+  			</if>
+  			<if test="endTime != null and endTime != ''">
+  				and convert(char(16), a.insert_time,120) &lt;= convert(char(16), #{endTime},120)
+  			</if>
+		</where>
+	</select>
+	
+ 	<select id="getById" resultMap="BaseResultMap" parameterType="int">
+		select a.*,b.waybill_no waybillNo
+		from carStock a
+		left join waybill b on a.waybill_id=b.id 
+		where a.id = #{id}
+	</select>
+  
+  	<update id="update" parameterType="com.jshpsoft.domain.CarStock" >
+	    update carStock
+	    <set >
+	      <if test="stockId != null" >
+	        stock_id = #{stockId},
+	      </if>
+	      <if test="type != null" >
+	        type = #{type},
+	      </if>
+	      <if test="waybillId != null" >
+	        waybill_id = #{waybillId},
+	      </if>
+	      <if test="brand != null" >
+	        brand = #{brand},
+	      </if>
+	      <if test="vin != null" >
+	        vin = #{vin},
+	      </if>
+	      <if test="model != null" >
+	        model = #{model},
+	      </if>
+	      <if test="color != null" >
+	        color = #{color},
+	      </if>
+	      <if test="engineNo != null" >
+	        engine_no = #{engineNo},
+	      </if>
+	      <if test="position != null" >
+	        position = #{position},
+	      </if>
+	      <if test="keyPosition != null" >
+	        key_position = #{keyPosition},
+	      </if>
+	      <if test="mark != null" >
+	        mark = #{mark},
+	      </if>
+	      <if test="status != null" >
+	        status = #{status},
+	      </if>
+	      <if test="storageTime != null" >
+	        storage_time = #{storageTime},
+	      </if>
+	      <if test="afterFlag != null" >
+	        after_flag = #{afterFlag},
+	      </if>
+	      <if test="updateTime != null" >
+	        update_time = #{updateTime},
+	      </if>
+	      <if test="updateUser != null" >
+	        update_user = #{updateUser},
+	      </if>
+	      <if test="delFlag != null" >
+	        del_flag = #{delFlag},
+	      </if>
+	      <if test="transportPrice != null">
+	          transport_price = #{transportPrice}
+	      </if>
+	    </set>
+	    where id = #{id}
+  	</update>
+  	
+  	<update id="updateById"  parameterType="java.util.HashMap">
+		Update carStock 
+		<set>
+	      	<if test="updateTime != null" >
+	        	update_time = #{updateTime},
+	      	</if>
+	      	<if test="updateUser != null and updateUser != ''" >
+	        	update_user = #{updateUser},
+	      	</if>
+	      	<if test="delFlag != null and delFlag != ''" >
+	        	del_flag = #{delFlag},
+	      	</if>
+	      	<if test="status != null and status != ''" >
+	        	status = #{status},
+	      	</if>
+      	</set>
+      	where id in (${id})
+	</update>
+  	
+  	
+  	<update id="batchCancelBindCarStock" parameterType="Integer">
+  	
+  		update carStock set waybill_id=null where waybill_id = #{id}
+  	
+  	</update>
+  	
+  	
+  	
+  	<update id="cancelBindCarStock" parameterType="Integer">
+  		update carStock set waybill_id=null where id = #{id}
+  	
+  	</update>
+
+  	<update id="updateByWaybillId" parameterType="java.util.HashMap">
+  		update carStock
+  		<set>
+  			<if test="status != null and status != ''" >
+	        	 status = #{status},
+	      	</if>
+	      	<if test="updateUser != null and updateUser != ''" >
+	        	update_user = #{updateUser},
+	      	</if>
+	      	<if test="updateTime != null" >
+	        	update_time = #{updateTime},
+	      	</if>
+	    </set>
+  		where waybill_id = #{waybillId}
+  	</update>
+  	
+  	<select id="selectCountById" parameterType="HashMap" resultType="Integer">
+  		select count(1) from carStock where waybill_id = #{id} and status = #{status} 
+  	
+  	</select>
+</mapper>

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.StockPositionMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.StockPosition" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="stock_id" property="stockId" jdbcType="INTEGER" />
+    <result column="province" property="province" jdbcType="VARCHAR" />
+    <result column="car_shop_id" property="carShopId" jdbcType="INTEGER" />
+    <result column="position" property="position" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+    
+    <result column="stockName" property="stockName" />
+    <result column="carShopName" property="carShopName" />
+  </resultMap>
+  
+  <select id="getById" resultMap="BaseResultMap" parameterType="int">
+		select *
+		from basic_stockPosition
+		where id = #{id}
+	</select>
+	
+	<select id="getByConditions" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+		Select a.*,b.name stockName, c.name carShopName
+		From basic_stockPosition a 
+		left join basic_stock b on a.stock_id=b.id
+		left join basic_carShop c on a.car_shop_id=c.id
+		<where>
+				<if test="delFlag != null and delFlag != ''">
+					and a.del_flag = #{delFlag} 
+				</if>
+				<if test="stockId != null and stockId != ''">
+					and a.stock_id = #{stockId} 
+				</if>
+				<if test="province != null and province != ''">
+					and a.province = #{province} 
+				</if>
+				<if test="carShopId != null and carShopId != ''">
+					and a.car_shop_id = #{carShopId} 
+				</if>
+				<if test="status != null and status != ''">
+					and a.status = #{status} 
+				</if>
+		</where>
+		order by a.id asc
+	</select>
+	
+	<select id="getPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	  	SELECT * from (
+			SELECT row_number() over(order by a.id asc) as rownumber,
+			a.id,a.stock_id,a.province,a.car_shop_id,a.position,a.status,a.insert_time,
+			(select name from sys_user d where a.insert_user=d.id) insert_user,
+			b.name stockName, c.name carShopName
+			From basic_stockPosition a 
+			left join basic_stock b on a.stock_id=b.id
+			left join basic_carShop c on a.car_shop_id=c.id
+			<where>
+				<if test="delFlag != null and delFlag != ''">
+					and a.del_flag = #{delFlag} 
+				</if>
+				<if test="stockId != null and stockId != ''">
+					and a.stock_id = #{stockId} 
+				</if>
+				<if test="province != null and province != ''">
+					and a.province = #{province} 
+				</if>
+				<if test="carShopId != null and carShopId != ''">
+					and a.car_shop_id = #{carShopId} 
+				</if>
+				<if test="status != null and status != ''">
+					and a.status = #{status} 
+				</if>
+			</where>
+		) as t 
+		WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+		ORDER BY t.id ASC
+	</select>
+	  
+	<select id="getPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+		SELECT count(*)
+		FROM basic_stockPosition a
+		<where>
+				<if test="delFlag != null and delFlag != ''">
+					and a.del_flag = #{delFlag} 
+				</if>
+				<if test="stockId != null and stockId != ''">
+					and a.stock_id = #{stockId} 
+				</if>
+				<if test="province != null and province != ''">
+					and a.province = #{province} 
+				</if>
+				<if test="carShopId != null and carShopId != ''">
+					and a.car_shop_id = #{carShopId} 
+				</if>
+				<if test="status != null and status != ''">
+					and a.status = #{status} 
+				</if>
+		</where>
+	</select>
+	
+  	<insert id="insert" parameterType="com.jshpsoft.domain.StockPosition" >
+	    insert into basic_stockPosition 
+	    ( stock_id, province, car_shop_id, position, status, insert_time, insert_user, update_time, update_user, del_flag)
+	    values 
+	    ( #{stockId}, #{province}, #{carShopId}, #{position}, #{status}, #{insertTime}, #{insertUser}, #{updateTime}, #{updateUser}, #{delFlag})
+	</insert>
+  
+  	<update id="update" parameterType="com.jshpsoft.domain.StockPosition" >
+	    update basic_stockPosition
+	    <set >
+	      <if test="stockId != null" >
+	        stock_id = #{stockId},
+	      </if>
+	      <if test="province != null and province != ''" >
+	        province = #{province},
+	      </if>
+	      <if test="carShopId != null" >
+	        car_shop_id = #{carShopId},
+	      </if>
+	      <if test="position != null and position != ''" >
+	        position = #{position},
+	      </if>
+	      <if test="status != null and status != ''" >
+	        status = #{status},
+	      </if>
+	      <if test="updateTime != null" >
+	        update_time = #{updateTime},
+	      </if>
+	      <if test="updateUser != null and updateUser != ''" >
+	        update_user = #{updateUser},
+	      </if>
+	      <if test="delFlag != null and delFlag != ''" >
+	        del_flag = #{delFlag},
+	      </if>
+	    </set>
+	    where id = #{id}
+  	</update>
+  
+  	<update id="updateById"  parameterType="java.util.HashMap">
+		Update basic_stockPosition set update_time = #{updateTime}, update_user = #{updateUser}, del_flag = #{delFlag}
+		where id = #{id}
+	</update>
+	
+</mapper>

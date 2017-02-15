@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.CarAttachmentStockInOutMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.CarAttachmentStockInOut" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="stock_id" property="stockId" jdbcType="INTEGER" />
+    <result column="business_id" property="businessId" jdbcType="INTEGER" />
+    <result column="count" property="count" jdbcType="VARCHAR" />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+  </resultMap>
+ 	
+
+ 	<insert id="save" parameterType="com.jshpsoft.domain.CarAttachmentStockInOut" useGeneratedKeys="true" keyProperty= "id">
+		insert into carAttachmentStockInOut
+		( type, stock_id, business_id, count, mark, status, insert_time, insert_user, update_time, update_user, del_flag )
+		values
+		( #{type}, #{stockId}, #{businessId}, #{count},  #{mark}, #{status}, #{insertTime}, #{insertUser}, #{updateTime}, #{updateUser}, #{delFlag})
+	</insert>
+ 
+ 	<update id="update" parameterType="com.jshpsoft.domain.CarAttachmentStockInOut">
+ 		update carAttachmentStockInOut
+	 	<set >
+	 		<if test="type != null and type != ''" >
+	        type = #{type,jdbcType=VARCHAR},
+	      </if>
+	      <if test="stockId != null" >
+	        stock_id = #{stockId},
+	      </if>
+	      <if test="businessId != null" >
+	        business_id = #{businessId},
+	      </if>
+	      <if test="count != null" >
+	        count = #{count,jdbcType=INTEGER},
+	      </if>
+	      <if test="mark != null and mark != ''" >
+	        mark = #{mark,jdbcType=VARCHAR},
+	      </if>
+	      <if test="updateTime != null" >
+	        update_time = #{updateTime,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="updateUser != null and updateUser != ''" >
+	        update_user = #{updateUser,jdbcType=VARCHAR}
+	      </if>
+	    </set>
+	    where id = #{id}
+ 	</update>
+ 	
+ 	<update id="updateByBusinessId" parameterType="java.util.HashMap"> 
+  	update carAttachmentStockInOut set status = #{status},update_time = #{updateTime},update_user = #{updateUser} 
+  	where type = #{type} and business_id = #{businessId}
+  </update>
+ 	
+ 	<update id="delete" parameterType="java.util.HashMap">
+ 		update carAttachmentStockInOut set update_time = #{updateTime},update_user = #{updateUser},del_flag = #{delFlag} where id = #{id}
+ 	</update>
+ 	
+ 	<update id="deleteByBusinessId" parameterType="java.util.HashMap">
+ 		update carAttachmentStockInOut set update_time = #{updateTime},update_user = #{updateUser},del_flag = #{delFlag} 
+ 		<if test="type != null and type != ''">
+				,type=#{type}
+		</if>
+ 		where business_id = #{businessId}
+ 	</update>
+  
+  	<select id="getByConditions" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+  	select * from carAttachmentStockInOut 
+  	   <where>
+  			del_flag='N'
+  			<if test="startTime != null and startTime != ''">
+  				and convert(char(10), insert_time,120) &gt;= convert(char(10), #{startTime},120)
+  			</if>
+  			<if test="endTime != null and endTime != ''">
+  				and convert(char(10), insert_time,120) &lt;= convert(char(10), #{endTime},120)
+  			</if>
+			<if test="businessId != null and businessId != ''">
+				and business_id=#{businessId}
+			</if>
+			<if test="insertUser != null and insertUser != ''">
+				and insert_user=#{insertUser}
+			</if>
+			<if test="type != null and type != ''">
+				and type=#{type}
+			</if>
+		</where>
+		order by insert_time
+  </select>
+  
+  
+   	<select id="getPageTotalCount" resultType="Integer" parameterType="java.util.HashMap" >
+  	select count(*) from carAttachmentStockInOut 
+  	   <where>
+  			del_flag='N'
+  			<if test="startTime != null and startTime != ''">
+  				and convert(char(16), insert_time,120) &gt;= convert(char(16), #{startTime},120)
+  			</if>
+  			<if test="endTime != null and endTime != ''">
+  				and convert(char(16), insert_time,120) &lt;= convert(char(16), #{endTime},120)
+  			</if>
+			<if test="businessId != null and businessId != '' ">
+				and business_id=#{businessId}
+			</if>
+			<if test="type != null and type != ''">
+			    and type = #{type}
+			</if>
+		</where>
+  </select>
+  
+  <resultMap id="BaseResultMap2" type="com.jshpsoft.domain.CarAttachmentStockInOutAndUser" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="business_id" property="businessId" jdbcType="INTEGER" />
+    <result column="count" property="count" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+    <result column="userName" property="userName" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <select id="getPageList" resultMap="BaseResultMap2" parameterType="java.util.HashMap">
+  select * from (
+  	select row_number() over(order by c.id desc) as rownumber,c.*,u.name as userName
+  	from carAttachmentStockInOut c
+  	left join sys_user u on  u.id = c.insert_user
+  	   <where>
+  			c.del_flag='N'
+  			<if test="startTime != null and startTime != ''">
+  				and convert(char(16), c.insert_time,120) &gt;= convert(char(16), #{startTime},120)
+  			</if>
+  			<if test="endTime != null and endTime != ''">
+  				and convert(char(16), c.insert_time,120) &lt;= convert(char(16), #{endTime},120)
+  			</if>
+			<if test="businessId != null and businessId != ''">
+				and c.business_id=#{businessId}
+			</if>
+			<if test="type != null and type != ''">
+			    and c.type = #{type}
+			</if>
+		</where>
+		) as t
+		WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+  </select>
+</mapper>

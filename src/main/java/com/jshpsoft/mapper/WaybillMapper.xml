@@ -1,0 +1,700 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.WaybillMapper">
+	<resultMap id="BaseResultMap" type="com.jshpsoft.domain.Waybill">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="stock_id" property="stockId" jdbcType="INTEGER" />
+		<result column="type" property="type" jdbcType="VARCHAR" />
+		<result column="waybill_no" property="waybillNo" jdbcType="VARCHAR" />
+		<result column="supplier_id" property="supplierId" jdbcType="INTEGER" />
+		<result column="brand" property="brand" jdbcType="VARCHAR" />
+		<result column="car_shop_id" property="carShopId" jdbcType="INTEGER" />
+		<result column="send_time" property="sendTime" jdbcType="TIMESTAMP" />
+		<result column="arrival_time" property="arrivalTime" jdbcType="TIMESTAMP" />
+		<result column="mark" property="mark" jdbcType="VARCHAR"/>
+		<result column="receive_user" property="receiveUser" jdbcType="VARCHAR" />
+		<result column="receive_user_telephone" property="receiveUserTelephone" jdbcType="VARCHAR" />
+		<result column="receive_user_mobile" property="receiveUserMobile" jdbcType="VARCHAR" />
+		<result column="start_province" property="startProvince" jdbcType="VARCHAR" />
+		<result column="start_address" property="startAddress" jdbcType="VARCHAR" />
+		<result column="target_province" property="targetProvince" jdbcType="VARCHAR" />
+		<result column="target_city" property="targetCity" jdbcType="VARCHAR" />
+		<result column="distance" property="distance" jdbcType="INTEGER" />
+		<result column="attach_file_path" property="attachFilePath" jdbcType="VARCHAR" />
+		<result column="attach_file_name" property="attachFileName" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="balance_type" property="balanceType" jdbcType="VARCHAR" />
+		<result column="balance_amount" property="amount" jdbcType="DECIMAL" />
+		<result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+		<result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+		<result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+		<result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+		<result column="schedule_bill_no" property="scheduleBillNo" jdbcType="VARCHAR" />
+		
+		<result column="supplierName" property="supplierName" jdbcType="VARCHAR" />
+		<result column="carShopName" property="carShopName" jdbcType="VARCHAR" />
+	</resultMap>
+
+
+	<select id="getById" parameterType="int" resultMap="BaseResultMap">
+		select * 
+		from waybill
+		where id = #{id}
+	</select>
+	
+	<select id="getWaybillList" parameterType="HashMap" resultType="com.jshpsoft.domain.Waybill">
+		SELECT id, waybill_no as waybillNo ,(SELECT name from
+		basic_supplier where basic_supplier.id= t.supplier_id) as
+		supplierName,brand,		receive_user as receiveUser ,receive_user_telephone as receiveUserTelephone,
+		receive_user_mobile as receiveUserMobile ,
+		(SELECT name from basic_carShop where
+		t.car_shop_id =basic_carShop.id ) as carShopName ,balance_amount as amount,CONVERT(varchar,insert_time,20) as insertTime,
+		CONVERT(varchar,send_time,20) as sendTime,status,type,
+		start_province as startProvince,start_address as startAddress , target_province as targetProvince,target_city as targetCity
+		from (
+		SELECT row_number() over(order by id desc) as rownumber,* 
+		FROM waybill 
+		WHERE del_flag = 'N'
+		<if test="insertUser != null and insertUser != ''">
+		    and insert_user = #{insertUser}
+		</if>
+		<if test="stockId != null and stockId !=''">
+			AND stock_id = #{stockId} 
+		</if>
+		<if test="status != null and status !=''" >
+			AND status = #{status}
+		</if>
+		<if test="waybillNo != null and waybillNo != ''" >
+			AND ( waybill_no LIKE concat('%', #{waybillNo}, '%') OR waybill_no LIKE concat('%', #{waybillNo}, '%') )
+		</if>  
+		<if test="statusIn != null and statusIn !=''" >
+			AND status in (${statusIn}) 
+		</if>
+		<if test="startTime != null and startTime != ''">
+			and convert(char(10), insert_time,120) &gt;= #{startTime}
+		</if>
+		<if test="endTime != null and endTime != ''">
+			and convert(char(10), insert_time,120) &lt;= #{endTime}
+		</if>
+		<if test="type != null and type != ''">
+		    and type = #{type}
+		</if>
+		and type != 2
+	) as t 
+	WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+	order by id desc
+
+	</select>
+	
+	
+	
+	<select id="getWaybillCount" parameterType="HashMap" resultType="Integer">
+		select count(*) from waybill WHERE 
+		del_flag = 'N'
+		<if test="insertUser != null and insertUser != ''">
+		    and insert_user = #{insertUser}
+		</if>
+		<if test="stockId != null and stockId !=''">
+				and stock_id = #{stockId} 
+		</if>
+		<if test="status != null and status !=''" >
+			AND status = #{status}
+		</if>
+		<if test="waybillNo != null and waybillNo != ''" >
+			AND ( waybill_no LIKE concat('%', #{waybillNo}, '%')  )
+		</if> 
+		<if test="statusIn != null and statusIn !=''" >
+			AND status in (${statusIn}) 
+		</if>
+		<if test="startTime != null and startTime != ''">
+			and convert(char(10), insert_time,120) &gt;= #{startTime}
+		</if>
+		<if test="endTime != null and endTime != ''">
+			and convert(char(10), insert_time,120) &lt;= #{endTime}
+		</if> 
+		<if test="type != null and type != ''">
+		    and type = #{type}
+		</if>
+		and type != 2
+	</select>
+	
+	
+	<select id="getAllList" resultMap="BaseResultMap" parameterType="HashMap">
+		select * from waybill where del_flag = 'N'
+		and type in 
+			<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+			<if test="stockId != null and stockId !=''">
+				and stock_id = #{stockId} 
+		</if>
+		<if test="status != null and status !=''" >
+			and status = #{status}
+		</if>
+	</select>
+
+	
+	<select id="queryWaybillByWaybillNo" parameterType="String" resultMap="BaseResultMap">
+		select * from waybill where waybill_no =#{waybillNo} and del_flag='N'
+	</select>
+
+	<select id="getWaybillNo" parameterType="HashMap" resultMap="BaseResultMap">
+		select id, waybill_no as waybillNo ,(SELECT name from
+		basic_supplier where basic_supplier.id= waybill.supplier_id) as
+		supplierName
+		,brand,(SELECT name from basic_carShop where
+		waybill.car_shop_id =basic_carShop.id ) as carShopName ,
+		CONVERT(varchar,send_time,20) as sendTime,status ,type,start_province as startProvince ,start_address as startAddress ,
+		 target_province as targetProvince,target_city as targetCity,receive_user as receiveUser ,receive_user_telephone as receiveUserTelephone
+		 ,receive_user_mobile as receiveUserMobile ,distance ,balance_amount,supplier_id as supplierId ,car_shop_id as carShopId 
+		 from waybill
+		where status = #{status} and del_flag = #{delFlag}
+			<if test="type != null and type != ''">
+  				and  type = #{type}
+  			</if>
+		<if test="waybillNo != null and waybillNo != ''">
+  				and  ( waybill_no LIKE concat('%', #{waybillNo}, '%')  )
+  			</if>
+  			<if test="stockId != null and stockId != ''">
+  				and  stock_id = #{stockId}
+  			</if>
+  			<if test="insertUser != null and insertUser != ''">
+		    and insert_user = #{insertUser}
+		</if>
+		order by id desc
+	</select>
+
+
+	<select id="queryWaybill" parameterType="java.lang.Integer" resultType="com.jshpsoft.domain.Waybill">
+		select id, waybill_no as waybillNo ,(SELECT name from
+		basic_supplier where basic_supplier.id= waybill.supplier_id) as
+		supplierName,brand,	attach_file_path as  attachFilePath , attach_file_name as attachFileName ,
+		(SELECT name from basic_carShop where
+		waybill.car_shop_id =basic_carShop.id ) as carShopName ,
+		CONVERT(varchar,send_time,20) as sendTime,status ,type,start_province as startProvince ,start_address as startAddress ,
+		 target_province as targetProvince,target_city as targetCity,receive_user as receiveUser ,receive_user_telephone as receiveUserTelephone ,attach_file_path as attachFilePath, 
+		attach_file_name  as attachFileName
+		 ,receive_user_mobile as receiveUserMobile ,distance ,balance_amount as amount ,supplier_id as supplierId ,car_shop_id as carShopId,mark
+		 from waybill where id=#{id}
+
+	</select>
+
+
+	<update id="deleteWaybill" parameterType="java.lang.Integer">
+		update waybill set
+		del_flag ='Y'
+		where id = #{id}
+	</update>
+
+	<insert id="insertWaybill" parameterType="com.jshpsoft.domain.Waybill" useGeneratedKeys="true" keyProperty="id">
+		insert into waybill (
+		stock_id, type,
+		waybill_no, supplier_id, brand,
+		car_shop_id, send_time,mark,
+		receive_user,
+		receive_user_telephone, receive_user_mobile,
+		start_province,start_address, target_province,target_city, distance,
+		attach_file_path, 
+		attach_file_name, 
+		status,
+		balance_type,
+		balance_amount, insert_time, insert_user,
+		update_time,
+		update_user, del_flag,
+		arrival_time,
+		schedule_bill_no)
+		values (
+		#{stockId,jdbcType=INTEGER}, #{type,jdbcType=VARCHAR},
+		#{waybillNo,jdbcType=VARCHAR}, #{supplierId,jdbcType=INTEGER},
+		#{brand,jdbcType=VARCHAR},
+		#{carShopId,jdbcType=INTEGER},
+		#{sendTime,jdbcType=TIMESTAMP}, #{mark},#{receiveUser,jdbcType=VARCHAR},
+		#{receiveUserTelephone,jdbcType=VARCHAR},
+		#{receiveUserMobile,jdbcType=VARCHAR},
+		#{startProvince,jdbcType=VARCHAR}, 
+		#{startAddress,jdbcType=VARCHAR}, #{targetProvince}, #{targetCity},
+		#{distance,jdbcType=INTEGER},
+		#{attachFilePath,jdbcType=VARCHAR},
+		#{attachFileName,jdbcType=VARCHAR},
+		#{status,jdbcType=VARCHAR}, #{balanceType,jdbcType=VARCHAR},
+		#{amount,jdbcType=DECIMAL}, #{insertTime,jdbcType=TIMESTAMP},
+		#{insertUser,jdbcType=VARCHAR},
+		#{updateTime,jdbcType=TIMESTAMP},
+		#{updateUser,jdbcType=VARCHAR}, #{delFlag,jdbcType=VARCHAR},
+		#{arrivalTime},
+		#{scheduleBillNo}
+		)
+	</insert>
+
+
+
+
+
+	<update id="updateWaybill" parameterType="com.jshpsoft.domain.Waybill">
+		update waybill
+		set		
+		<if test="waybillNo != null and waybillNo !=''">
+				waybill_no = #{waybillNo,jdbcType=VARCHAR},
+			</if>
+		supplier_id =
+		#{supplierId,jdbcType=INTEGER},
+		brand =
+		#{brand,jdbcType=VARCHAR},
+		car_shop_id = #{carShopId,jdbcType=INTEGER},
+		send_time =
+		#{sendTime,jdbcType=TIMESTAMP},
+		receive_user =
+		#{receiveUser,jdbcType=VARCHAR},
+		receive_user_mobile =
+		#{receiveUserMobile,jdbcType=VARCHAR},
+		receive_user_telephone =
+		#{receiveUserTelephone,jdbcType=VARCHAR},
+		start_province =
+		#{startProvince,jdbcType=VARCHAR},
+		start_address =
+		#{startAddress,jdbcType=VARCHAR},
+		target_province =
+		#{targetProvince},
+		target_city =
+		#{targetCity},
+		distance =#{distance,jdbcType=INTEGER},
+		balance_amount = #{amount,jdbcType=DECIMAL},
+		update_time = #{updateTime,jdbcType=TIMESTAMP},
+		update_user = #{updateUser,jdbcType=VARCHAR},
+		arrival_time = #{arrivalTime},
+		mark = #{mark},
+		schedule_bill_no = #{scheduleBillNo}
+		<if test="attachFilePath != null">
+			,attach_file_path = #{attachFilePath,jdbcType=VARCHAR}
+		</if>
+		<if test="attachFileName != null">
+			,attach_file_name = #{attachFileName,jdbcType=VARCHAR}
+		</if>
+		<if test="status != null and status !='' ">
+			,status = #{status}
+		</if>		
+		<if test="delFlag != null and delFlag !='' ">
+			,del_flag = #{delFlag}
+		</if>		
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+
+
+
+
+	<update id="submitWaybill" parameterType="HashMap">
+		update waybill
+		set
+		status =#{status}
+
+		where id = #{id}
+	</update>
+
+
+
+
+
+	<update id="updateWaybill_bat" parameterType="com.jshpsoft.domain.Waybill">
+		update waybill
+		<set>
+			<if test="stockId != null">
+				stock_id = #{stockId,jdbcType=INTEGER},
+			</if>
+			<if test="type != null and type !=''">
+				type = #{type,jdbcType=VARCHAR},
+			</if>
+			<if test="waybillNo != null and waybillNo !=''">
+				waybill_no = #{waybillNo,jdbcType=VARCHAR},
+			</if>
+			<if test="supplierId != null and supplierId !=0 ">
+				supplier_id =
+				#{supplierId,jdbcType=INTEGER},
+			</if>
+			<if test="brand != null  and brand !='' ">
+				brand = #{brand,jdbcType=VARCHAR},
+			</if>
+			<if test="carShopId != null  and carShopId !=0">
+				car_shop_id = #{carShopId,jdbcType=INTEGER},
+			</if>
+			<if test="sendTime != null">
+				send_time = #{sendTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="receiveUser != null and receiveUser !=''">
+				receive_user = #{receiveUser,jdbcType=VARCHAR},
+			</if>
+			<if test="receiveUserTelephone != null and receiveUserTelephone !=''">
+				receive_user_telephone =
+				#{receiveUserTelephone,jdbcType=VARCHAR},
+			</if>
+			<if test="receiveUserMobile != null and receiveUserMobile !=''">
+				receive_user_mobile =
+				#{receiveUserMobile,jdbcType=VARCHAR},
+			</if>
+			<if test="startProvince != null and startProvince !='' ">
+				start_province = #{startProvince,jdbcType=VARCHAR},
+			</if>
+			<if test="startAddress != null and startAddress !='' ">
+				start_address = #{startAddress,jdbcType=VARCHAR},
+			</if>
+			<if test="targetProvince != null and targetProvince !='' ">
+				target_province = #{targetProvince,jdbcType=VARCHAR},
+			</if>
+			<if test="targetCity != null and targetCity !='' ">
+				target_city = #{targetCity,jdbcType=VARCHAR},
+			</if>
+			<if test="distance != null">
+				distance = #{distance,jdbcType=INTEGER},
+			</if>
+			<if test="attachFilePath != null">
+				attach_file_path = #{attachFilePath,jdbcType=VARCHAR},
+			</if>
+			<if test="attachFileName != null">
+				attach_file_name = #{attachFileName,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=VARCHAR},
+			</if>
+			<if test="balanceType != null">
+				balance_type = #{balanceType,jdbcType=VARCHAR},
+			</if>
+			<if test="amount != null">
+				balance_amount = #{amount,jdbcType=DECIMAL},
+			</if>
+			<if test="insertTime != null">
+				insert_time = #{insertTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="insertUser != null">
+				insert_user = #{insertUser,jdbcType=VARCHAR},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updateUser != null">
+				update_user = #{updateUser,jdbcType=VARCHAR},
+			</if>
+			<if test="delFlag != null">
+				del_flag = #{delFlag,jdbcType=VARCHAR},
+			</if>
+			<if test="verifyTime != null">
+				verify_time = #{verifyTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="verifyUser != null">
+				verify_user = #{verifyUser,jdbcType=VARCHAR},
+			</if>
+			<if test="arrivalTime != null">},
+				arrival_time = #{arrivalTime},
+			</if>
+			<if test="scheduleBillNo != null">},
+				schedule_bill_no = #{scheduleBillNo},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.jshpsoft.domain.Waybill">
+		update waybill
+		set
+		stock_id = #{stockId,jdbcType=INTEGER},
+		type =
+		#{type,jdbcType=VARCHAR},
+		waybill_no = #{waybillNo,jdbcType=VARCHAR},
+		supplier_id = #{supplierId,jdbcType=INTEGER},
+		brand =
+		#{brand,jdbcType=VARCHAR},
+		car_shop_id = #{carShopId,jdbcType=INTEGER},
+		send_time = #{sendTime,jdbcType=TIMESTAMP},
+		receive_user =
+		#{receiveUser,jdbcType=VARCHAR},
+		receive_user_telephone =
+		#{receiveUserTelephone,jdbcType=VARCHAR},
+		receive_user_mobile =
+		#{receiveUserMobile,jdbcType=VARCHAR},
+		start_province =
+		#{startProvince,jdbcType=VARCHAR},
+		start_address =
+		#{startAddress,jdbcType=VARCHAR},
+		target_province =
+		#{targetProvince,jdbcType=VARCHAR},
+		target_city =
+		#{targetCity,jdbcType=VARCHAR},
+		distance =
+		#{distance,jdbcType=INTEGER},
+		attach_file_path = #{attachFilePath,jdbcType=VARCHAR},
+		attach_file_name = #{attachFileName,jdbcType=VARCHAR},
+		status = #{status,jdbcType=VARCHAR},
+		balance_type =
+		#{balanceType,jdbcType=VARCHAR},
+		balance_amount = #{amount,jdbcType=DECIMAL},
+		insert_time = #{insertTime,jdbcType=TIMESTAMP},
+		insert_user =
+		#{insertUser,jdbcType=VARCHAR},
+		update_time =
+		#{updateTime,jdbcType=TIMESTAMP},
+		update_user =
+		#{updateUser,jdbcType=VARCHAR},
+		del_flag = #{delFlag,jdbcType=VARCHAR},
+		verify_time = #{verifyTime,jdbcType=TIMESTAMP},
+		verify_user =
+		#{verifyUser,jdbcType=VARCHAR},
+		arrival_time = #{arrivalTime},
+		schedule_bill_no = #{scheduleBillNo}
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+
+	  <select id="getPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	  	SELECT * from (
+			SELECT row_number() over(order by id asc) as rownumber,*
+			From waybill
+			where type = '2' and del_flag ='N'
+			<if test="brand != null and brand != ''">
+  				and ( brand LIKE concat('%', #{brand}, '%')  )
+  			</if>
+  			<if test="stockId != null and stockId != ''">
+  				and  stock_id = #{stockId}
+  			</if>
+  			<if test="insertUser != null and insertUser != ''">
+		    and insert_user = #{insertUser}
+		</if>
+		) as t 
+		WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+		ORDER BY t.id ASC
+	</select>
+	  
+	<select id="getPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+		SELECT count(*)
+		FROM waybill
+		where type = '2' and del_flag ='N'
+			<if test="brand != null and brand != ''">
+  				and ( brand LIKE concat('%', #{brand}, '%')  )
+  			</if>
+  			<if test="stockId != null and stockId != ''">
+  				and  stock_id = #{stockId}
+  			</if>
+  			<if test="insertUser != null and insertUser != ''">
+		    and insert_user = #{insertUser}
+		</if>
+	</select>
+	
+	<resultMap id="BalanceCarMap" type="com.jshpsoft.domain.BalanceCar">
+		<id column="id" property="id" />
+		<result column="type" property="type" />
+		<result column="supplier_id" property="supplierId" />
+		<result column="supplierName" property="supplierName" />
+		<result column="brand" property="brand" />
+		<result column="model" property="model" />
+		<result column="vin" property="vin" />
+		<result column="waybillDate" property="waybillDate" />
+		<result column="waybill_no" property="waybillNo" />
+		<result column="car_number" property="carNumber" />
+		<result column="scheduleDate" property="scheduleDate" />
+		<result column="schedule_bill_no" property="scheduleBillNo" />
+		<result column="start_province" property="startProvince" />
+		<result column="start_address" property="startAddress" />
+		<result column="target_province" property="targetProvince" />
+		<result column="target_city" property="targetCity" />
+		<result column="count" property="count" />
+		<result column="waybillStatus" property="waybillStatus" />
+		<result column="transport_price" property="transportPrice" />
+	</resultMap>
+	
+	<select id="getInComePageList" parameterType="java.util.HashMap" resultMap="BalanceCarMap">
+	  	SELECT * from (
+			SELECT row_number() over(order by a.send_time desc) as rownumber,
+				b.id,b.type,
+				a.supplier_id,(select name from basic_supplier e where e.id = a.supplier_id) supplierName,
+				b.brand,b.model,b.vin,
+				convert(char(10), a.send_time,120) waybillDate,a.waybill_no,a.status waybillStatus,
+				d.car_number,convert(char(10), d.send_time,120) scheduleDate,
+				c.schedule_bill_no,a.start_province,a.start_address,a.target_province,a.target_city,1 count,b.transport_price
+			From waybill a,carStock b
+			left join scheduleBillDetail c on charindex(','+ltrim(b.id)+',',','+  c.car_stock_ids+',' ) &gt; 0 
+			left join scheduleBill d on c.schedule_bill_no = d.schedule_bill_no
+			left join sys_user u on u.id = d.driver_id
+			where b.type in (${typeIn}) and a.status in (${statusIn}) and a.id = b.waybill_id
+				<if test="delFlag != null and delFlag != ''">
+					and b.del_flag = #{delFlag} 
+				</if>
+				<if test="supplierId != null and supplierId != ''">
+					and a.supplier_id = #{supplierId} 
+				</if>
+				<if test="brand != null and brand != ''">
+					and b.brand like '%'+#{brand}+'%'
+				</if>
+				<if test="waybillDate != null and waybillDate != ''">
+					and convert(char(10), a.send_time,120) = #{waybillDate}
+				</if>
+				<if test="scheduleDate != null and scheduleDate != ''">
+					and convert(char(10), d.send_time,120) = #{scheduleDate}
+				</if>
+				<if test="sendTimeYear != null and sendTimeYear != ''">
+					and convert(char(4), d.send_time,120) = #{sendTimeYear}
+				</if>
+				<if test="waybillStatus != null and waybillStatus != ''">
+  					and a.status = #{waybillStatus}
+  				</if>
+  				<!-- 调度单的过滤条件 -->
+				<if test="scheduleBillNo != null and scheduleBillNo != ''">
+					and c.schedule_bill_no like '%'+#{scheduleBillNo}+'%' 
+				</if>
+  				<if test="carNumber != null and carNumber != ''">
+					and d.car_number like '%'+#{carNumber}+'%'
+				</if>
+				<if test="sendTimeStart != null and sendTimeStart != ''">
+					and convert(char(10), d.send_time,120) &gt;= convert(char(10), #{sendTimeStart},120)
+				</if>
+				<if test="sendTimeEnd != null and sendTimeEnd != ''">
+					and convert(char(10), d.send_time,120) &lt;= convert(char(10), #{sendTimeEnd},120)
+				</if>
+				<if test="driverName != null and driverName != ''">
+					and u.name like '%'+#{driverName}+'%'
+				</if>
+		) as t 
+		<if test="notWhere == null or notWhere == ''">
+		    WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+		</if>
+		
+	</select>
+	  
+	<select id="getInComePageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+			SELECT count(*)
+			From waybill a,carStock b
+			left join scheduleBillDetail c on charindex(','+ltrim(b.id)+',',','+  c.car_stock_ids+',' ) &gt; 0 
+			left join scheduleBill d on c.schedule_bill_no = d.schedule_bill_no
+			left join sys_user u on u.id = d.driver_id
+			where b.type in (${typeIn}) and a.status in (${statusIn}) and a.id = b.waybill_id
+				<if test="delFlag != null and delFlag != ''">
+					and b.del_flag = #{delFlag} 
+				</if>
+				<if test="supplierId != null and supplierId != ''">
+					and a.supplier_id = #{supplierId} 
+				</if>
+				<if test="brand != null and brand != ''">
+					and b.brand like '%'+#{brand}+'%'
+				</if>
+				<if test="waybillDate != null and waybillDate != ''">
+					and convert(char(10), a.send_time,120) = #{waybillDate}
+				</if>
+				<if test="scheduleDate != null and scheduleDate != ''">
+					and convert(char(10), d.send_time,120) = #{scheduleDate}
+				</if>
+				<if test="sendTimeYear != null and sendTimeYear != ''">
+					and convert(char(4), d.send_time,120) = #{sendTimeYear}
+				</if>
+				<if test="waybillStatus != null and waybillStatus != ''">
+  					and a.status = #{waybillStatus}
+  				</if>
+  				<!-- 调度单的过滤条件 -->
+				<if test="scheduleBillNo != null and scheduleBillNo != ''">
+					and c.schedule_bill_no like '%'+#{scheduleBillNo}+'%' 
+				</if>
+  				<if test="carNumber != null and carNumber != ''">
+					and d.car_number like '%'+#{carNumber}+'%'
+				</if>
+				<if test="sendTimeStart != null and sendTimeStart != ''">
+					and convert(char(10), d.send_time,120) &gt;= convert(char(10), #{sendTimeStart},120)
+				</if>
+				<if test="sendTimeEnd != null and sendTimeEnd != ''">
+					and convert(char(10), d.send_time,120) &lt;= convert(char(10), #{sendTimeEnd},120)
+				</if>
+				<if test="driverName != null and driverName != ''">
+					and u.name like '%'+#{driverName}+'%'
+				</if>
+	</select>
+	
+	<select id="getInComeByConditions" parameterType="java.util.HashMap" resultMap="BalanceCarMap">
+	  	SELECT b.id,b.type,a.supplier_id,(select name from basic_supplier e where e.id = a.supplier_id) supplierName,
+				b.brand,b.model,b.vin,convert(char(10), a.send_time,120) waybillDate,a.waybill_no,d.car_number,
+				convert(char(10), d.insert_time,120) scheduleDate,c.schedule_bill_no,a.start_province,a.start_address,
+				a.target_province,a.target_city,1 count,a.status waybillStatus,b.transport_price
+			From waybill a,carStock b
+			left join scheduleBillDetail c on charindex(','+ltrim(b.id)+',',','+  c.car_stock_ids+',' ) &gt; 0 
+			left join scheduleBill d on c.schedule_bill_no = d.schedule_bill_no
+			left join sys_user u on u.id = d.driver_id
+			where b.type in (${typeIn}) and a.status in (${statusIn}) and a.id = b.waybill_id
+				<if test="delFlag != null and delFlag != ''">
+					and b.del_flag = #{delFlag} 
+				</if>
+				<if test="supplierId != null and supplierId != ''">
+					and a.supplier_id = #{supplierId} 
+				</if>
+				<if test="brand != null and brand != ''">
+					and b.brand like '%'+#{brand}+'%'
+				</if>
+				<if test="waybillDate != null and waybillDate != ''">
+					and convert(char(10), a.send_time,120) = #{waybillDate}
+				</if>
+				<if test="scheduleDate != null and scheduleDate != ''">
+					and convert(char(10), d.send_time,120) = #{scheduleDate}
+				</if>
+				<if test="sendTimeYear != null and sendTimeYear != ''">
+					and convert(char(4), d.send_time,120) = #{sendTimeYear}
+				</if>
+				<if test="waybillStatus != null and waybillStatus != ''">
+  					and a.status = #{waybillStatus}
+  				</if>
+  				<!-- 调度单的过滤条件 -->
+				<if test="scheduleBillNo != null and scheduleBillNo != ''">
+					and c.schedule_bill_no like '%'+#{scheduleBillNo}+'%' 
+				</if>
+  				<if test="carNumber != null and carNumber != ''">
+					and d.car_number like '%'+#{carNumber}+'%'
+				</if>
+				<if test="sendTimeStart != null and sendTimeStart != ''">
+					and convert(char(10), d.send_time,120) &gt;= convert(char(10), #{sendTimeStart},120)
+				</if>
+				<if test="sendTimeEnd != null and sendTimeEnd != ''">
+					and convert(char(10), d.send_time,120) &lt;= convert(char(10), #{sendTimeEnd},120)
+				</if>
+				<if test="driverName != null and driverName != ''">
+					and u.name like '%'+#{driverName}+'%'
+				</if>
+		ORDER BY a.send_time desc
+	</select>
+	
+	<select id="getByConditions" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	  	SELECT a.*,(select name from basic_supplier b where b.id = a.supplier_id) supplierName 
+		From waybill a
+			<where>
+				<if test="delFlag != null and delFlag != ''">
+					and a.del_flag = #{delFlag} 
+				</if>
+				<if test="currYearMonthDay != null and currYearMonthDay != ''">
+					and a.waybill_no like '%'+#{currYearMonthDay}+'%'    
+				</if>
+				<if test="waybillNo != null and waybillNo != ''">
+					and a.waybill_no like '%'+#{waybillNo}+'%'
+				</if>
+				<if test="brand != null and brand != ''">
+					and a.brand like '%'+#{brand}+'%'
+				</if>
+				<if test="startTime != null and startTime != ''">
+					and convert(char(10), a.insert_time,120) &gt;= convert(char(10), #{startTime},120)
+				</if>
+				<if test="endTime != null and endTime != ''">
+					and convert(char(10), a.insert_time,120) &lt;= convert(char(10), #{endTime},120)
+				</if>
+				<if test="statusIn != null and statusIn != ''">
+					and a.status in (${statusIn})
+				</if>
+				<if test="supplierId != null and supplierId != ''">
+					and a.supplier_id = #{supplierId} 
+				</if>
+				<if test="stockId != null and stockId != ''">
+	  				and a.stock_id = #{stockId}
+	  			</if>
+	  			<if test="insertUser != null and insertUser != ''">
+				    and a.insert_user = #{insertUser}
+				</if>
+	  			<if test="scheduleBillNo != null and scheduleBillNo != ''">
+				    and a.schedule_bill_no = #{scheduleBillNo}
+				</if>
+			</where>
+		<if test="orderBybillNo != null">
+			order by a.schedule_bill_no desc
+		</if>
+		<if test="orderBybillNo == null">
+			order by a.id desc
+		</if>
+	</select>
+
+</mapper>

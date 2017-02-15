@@ -1,0 +1,39 @@
+2016-09-20 09:19:21 [main]  INFO (cn.jpush.api.common.connection.NativeHttpClient.java:54) - Created instance with connectionTimeout 5,000, readTimeout 30,000, maxRetryTimes 3, SSL Version TLS
+2016-09-20 09:19:21 [main]  INFO (cn.jpush.api.common.connection.NativeHttpClient.java:54) - Created instance with connectionTimeout 5,000, readTimeout 30,000, maxRetryTimes 3, SSL Version TLS
+2016-09-20 09:19:21 [main]  INFO (cn.jpush.api.common.connection.NativeHttpClient.java:54) - Created instance with connectionTimeout 5,000, readTimeout 30,000, maxRetryTimes 3, SSL Version TLS
+2016-09-20 09:19:21 [main]  INFO (cn.jpush.api.common.connection.NativeHttpClient.java:54) - Created instance with connectionTimeout 5,000, readTimeout 30,000, maxRetryTimes 3, SSL Version TLS
+2016-09-20 09:19:21 [main]  WARN (cn.jpush.api.push.model.notification.PlatformNotification.java:142) - Null extras param. Throw away it.
+2016-09-20 09:19:21 [main] DEBUG (cn.jpush.api.common.connection.NativeHttpClient.java:120) - Send request - POST https://api.jpush.cn/v3/push
+2016-09-20 09:19:21 [main] DEBUG (cn.jpush.api.common.connection.NativeHttpClient.java:122) - Request Content - {"platform":"all","audience":{"alias":["999"]},"notification":{"android":{"alert":"14441","title":"1111"}},"options":{"sendno":1946731760,"apns_production":false}}
+2016-09-20 09:19:22 [main] DEBUG (cn.jpush.api.common.resp.ResponseWrapper.java:40) - JPush API Rate Limiting params - quota:600, remaining:599, reset:60
+2016-09-20 09:19:22 [main] DEBUG (cn.jpush.api.common.connection.NativeHttpClient.java:190) - Succeed to get response OK - responseCode:200
+2016-09-20 09:19:22 [main] DEBUG (cn.jpush.api.common.connection.NativeHttpClient.java:191) - Response Content - {"sendno":"1946731760","msg_id":"1319126323"}
+2016-09-20 09:20:03 [main]  INFO (cn.jpush.api.common.connection.NativeHttpClient.java:54) - Created instance with connectionTimeout 5,000, readTimeout 30,000, maxRetryTimes 3, SSL Version TLS
+2016-09-20 09:20:03 [main]  INFO (cn.jpush.api.common.connection.NativeHttpClient.java:54) - Created instance with connectionTimeout 5,000, readTimeout 30,000, maxRetryTimes 3, SSL Version TLS
+2016-09-20 09:20:03 [main]  INFO (cn.jpush.api.common.connection.NativeHttpClient.java:54) - Created instance with connectionTimeout 5,000, readTimeout 30,000, maxRetryTimes 3, SSL Version TLS
+2016-09-20 09:20:03 [main]  INFO (cn.jpush.api.common.connection.NativeHttpClient.java:54) - Created instance with connectionTimeout 5,000, readTimeout 30,000, maxRetryTimes 3, SSL Version TLS
+2016-09-20 09:20:03 [main]  WARN (cn.jpush.api.push.model.notification.PlatformNotification.java:142) - Null extras param. Throw away it.
+2016-09-20 09:20:03 [main] DEBUG (cn.jpush.api.common.connection.NativeHttpClient.java:120) - Send request - POST https://api.jpush.cn/v3/push
+2016-09-20 09:20:03 [main] DEBUG (cn.jpush.api.common.connection.NativeHttpClient.java:122) - Request Content - {"platform":"all","audience":{"alias":["999"]},"notification":{"android":{"alert":"14441","title":"1111"}},"options":{"sendno":1050866932,"apns_production":false}}
+2016-09-20 09:20:03 [main] DEBUG (cn.jpush.api.common.resp.ResponseWrapper.java:40) - JPush API Rate Limiting params - quota:600, remaining:598, reset:18
+2016-09-20 09:20:03 [main] DEBUG (cn.jpush.api.common.connection.NativeHttpClient.java:190) - Succeed to get response OK - responseCode:200
+2016-09-20 09:20:03 [main] DEBUG (cn.jpush.api.common.connection.NativeHttpClient.java:191) - Response Content - {"sendno":"1050866932","msg_id":"177573702"}
+2016-09-20 09:20:35 [main]  INFO (cn.jpush.api.common.connection.NativeHttpClient.java:54) - Created instance with connectionTimeout 5,000, readTimeout 30,000, maxRetryTimes 3, SSL Version TLS
+2016-09-20 09:20:36 [main]  INFO (cn.jpush.api.common.connection.NativeHttpClient.java:54) - Created instance with connectionTimeout 5,000, readTimeout 30,000, maxRetryTimes 3, SSL Version TLS
+2016-09-20 09:20:36 [main]  INFO (cn.jpush.api.common.connection.NativeHttpClient.java:54) - Created instance with connectionTimeout 5,000, readTimeout 30,000, maxRetryTimes 3, SSL Version TLS
+2016-09-20 09:20:36 [main]  INFO (cn.jpush.api.common.connection.NativeHttpClient.java:54) - Created instance with connectionTimeout 5,000, readTimeout 30,000, maxRetryTimes 3, SSL Version TLS
+2016-09-20 09:20:36 [main]  WARN (cn.jpush.api.push.model.notification.PlatformNotification.java:142) - Null extras param. Throw away it.
+2016-09-20 09:20:36 [main] DEBUG (cn.jpush.api.common.connection.NativeHttpClient.java:120) - Send request - POST https://api.jpush.cn/v3/push
+2016-09-20 09:20:36 [main] DEBUG (cn.jpush.api.common.connection.NativeHttpClient.java:122) - Request Content - {"platform":"all","audience":{"alias":["999"]},"notification":{"android":{"alert":"14441","title":"1111"}},"options":{"sendno":614685095,"apns_production":false}}
+2016-09-20 09:20:36 [main] DEBUG (cn.jpush.api.common.resp.ResponseWrapper.java:40) - JPush API Rate Limiting params - quota:600, remaining:599, reset:60
+2016-09-20 09:20:36 [main] DEBUG (cn.jpush.api.common.connection.NativeHttpClient.java:190) - Succeed to get response OK - responseCode:200
+2016-09-20 09:20:36 [main] DEBUG (cn.jpush.api.common.connection.NativeHttpClient.java:191) - Response Content - {"sendno":"614685095","msg_id":"4175958206"}
+2016-09-20 09:26:13 [main]  INFO (cn.jpush.api.common.connection.NativeHttpClient.java:54) - Created instance with connectionTimeout 5,000, readTimeout 30,000, maxRetryTimes 3, SSL Version TLS
+2016-09-20 09:26:14 [main]  INFO (cn.jpush.api.common.connection.NativeHttpClient.java:54) - Created instance with connectionTimeout 5,000, readTimeout 30,000, maxRetryTimes 3, SSL Version TLS
+2016-09-20 09:26:14 [main]  INFO (cn.jpush.api.common.connection.NativeHttpClient.java:54) - Created instance with connectionTimeout 5,000, readTimeout 30,000, maxRetryTimes 3, SSL Version TLS
+2016-09-20 09:26:14 [main]  INFO (cn.jpush.api.common.connection.NativeHttpClient.java:54) - Created instance with connectionTimeout 5,000, readTimeout 30,000, maxRetryTimes 3, SSL Version TLS
+2016-09-20 09:26:14 [main] DEBUG (cn.jpush.api.common.connection.NativeHttpClient.java:120) - Send request - POST https://api.jpush.cn/v3/push
+2016-09-20 09:26:14 [main] DEBUG (cn.jpush.api.common.connection.NativeHttpClient.java:122) - Request Content - {"platform":["ios","android"],"audience":{"alias":["998","999"],"tag":["tag2","tag1"]},"message":{"msg_content":"nihao","extras":{"json":"{age:11}","from":"JPush"}},"options":{"sendno":4132657,"apns_production":false}}
+2016-09-20 09:26:14 [main] DEBUG (cn.jpush.api.common.resp.ResponseWrapper.java:40) - JPush API Rate Limiting params - quota:600, remaining:599, reset:60
+2016-09-20 09:26:14 [main] DEBUG (cn.jpush.api.common.connection.NativeHttpClient.java:190) - Succeed to get response OK - responseCode:200
+2016-09-20 09:26:14 [main] DEBUG (cn.jpush.api.common.connection.NativeHttpClient.java:191) - Response Content - {"sendno":"4132657","msg_id":"2822742737"}

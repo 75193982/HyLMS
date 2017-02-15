@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.UserRolesMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.UserRoles" >
+    <result column="id" property="id" jdbcType="INTEGER" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="role_id" property="roleId" jdbcType="INTEGER" />
+  </resultMap>
+ 
+ 	<select id="getByUserId" resultMap="BaseResultMap" parameterType="int">
+		select *
+		from sys_userRoles
+		where user_id = #{userId}
+	</select>
+	
+ 	<insert id="insert" parameterType="com.jshpsoft.domain.UserRoles">
+		insert into sys_userRoles( user_id, role_id) values( #{userId}, #{roleId} )
+	</insert>
+	
+	<update id="update" parameterType="com.jshpsoft.domain.UserRoles">
+		update sys_userRoles
+		<set>
+			<if test="userId != null">
+				user_id = #{userId},
+			</if>
+			<if test="roleId != null">
+				role_id = #{roleId},
+			</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete" parameterType="int">
+	    delete from sys_userRoles where user_id = #{userId}
+	</delete>
+	
+	<select id="getByConditions" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+		Select *
+		From sys_userRoles
+		<where>
+			<if test="userId != null">
+				user_id = #{userId},
+			</if>
+			<if test="roleId != null">
+				role_id = #{roleId}
+			</if>
+		</where>
+	</select>
+	
+</mapper>

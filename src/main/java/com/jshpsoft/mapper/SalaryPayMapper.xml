@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.SalaryPayMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.SalaryPay" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="salary_time" property="salaryTime"  />
+    <result column="user_count" property="userCount"  />
+    <result column="amount" property="amount"  />
+    <result column="mark" property="mark"  />
+    <result column="status" property="status"  />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser"  />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser"  />
+    <result column="del_flag" property="delFlag"  />
+    <result column="insertUserName" property="insertUserName"  />
+    <result column="updateUserName" property="updateUserName"  />
+    <result column="driver_flag" property="driverFlag"  />
+  </resultMap>
+
+  <insert id="insert" parameterType="com.jshpsoft.domain.SalaryPay" useGeneratedKeys="true" keyProperty="id">
+    insert into salary_pay (
+      salary_time, status, user_count, amount,
+      mark, insert_time, insert_user, 
+      update_time, update_user, del_flag ,driver_flag
+      )
+    values ( 
+      #{salaryTime}, #{status}, #{userCount}, #{amount},
+      #{mark}, #{insertTime,jdbcType=TIMESTAMP}, #{insertUser}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{updateUser}, #{delFlag}, #{driverFlag}
+      )
+  </insert>
+
+  <update id="update" parameterType="com.jshpsoft.domain.SalaryPay" >
+    update salary_pay
+    <set >
+      <if test="salaryTime != null" >
+        salary_time = #{salaryTime},
+      </if>
+      <if test="status != null" >
+        status = #{status},
+      </if>
+      <if test="userCount != null" >
+        user_count = #{userCount},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount},
+      </if>
+      <if test="mark != null" >
+        mark = #{mark},
+      </if>
+      <if test="insertTime != null" >
+        insert_time = #{insertTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="insertUser != null" >
+        insert_user = #{insertUser},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag},
+      </if>
+      <if test="driverFlag != null" >
+        driver_flag = #{driverFlag},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="getPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+  	SELECT * from (
+		SELECT row_number() over(order by p.id asc) as rownumber,p.* 
+			FROM salary_pay p
+			<where>
+				<if test="status != null" >
+			        AND p.status = #{status}
+			    </if>
+				<if test="delFlag != null and delFlag != ''" >
+			        AND p.del_flag = #{delFlag}
+			    </if>
+				<if test="salaryTime != null and salaryTime != ''" >
+			        AND p.salary_time = #{salaryTime}
+			    </if>
+			    <if test="mark != null and mark != ''" >
+					AND ( p.mark LIKE concat('%', #{mark}, '%') )
+				</if>
+				<if test="driverFlag != null and driverFlag != ''" >
+		        	AND p.driver_flag = #{driverFlag}
+		      	</if>
+			</where> 
+	) as t 
+	WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+  </select>
+  
+  <select id="getPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+	SELECT count(*)
+		FROM salary_pay p
+		<where>
+			<if test="status != null" >
+		        AND p.status = #{status}
+		    </if>
+			<if test="delFlag != null and delFlag != ''" >
+		        AND p.del_flag = #{delFlag}
+		    </if>
+			<if test="salaryTime != null and salaryTime != ''" >
+		        AND p.salary_time = #{salaryTime}
+		    </if>
+		    <if test="mark != null and mark != ''" >
+				AND ( p.mark LIKE concat('%', #{mark}, '%') )
+			</if>
+			<if test="driverFlag != null and driverFlag != ''" >
+		        AND p.driver_flag = #{driverFlag}
+		    </if>
+		</where>   
+  </select>
+  
+  <select id="getByConditions" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	SELECT p.*,b.name as insertUserName,c.name as updateUserName
+		FROM salary_pay p
+		left join sys_user b on b.id = p.insert_user
+		left join sys_user c on c.id = p.update_user
+		<where>
+			<if test="status != null" >
+		        AND p.status = #{status}
+		    </if>
+			<if test="delFlag != null and delFlag != ''" >
+		        AND p.del_flag = #{delFlag}
+		    </if>
+			<if test="salaryTime != null and salaryTime != ''" >
+		        AND p.salary_time = #{salaryTime}
+		    </if>
+	    	<if test="mark != null and mark != ''" >
+				AND ( p.mark LIKE concat('%', #{mark}, '%') )
+			</if>
+			<if test="driverFlag != null and driverFlag != ''" >
+		       	AND p.driver_flag = #{driverFlag}
+		    </if>
+		</where> 
+		ORDER BY id DESC 
+  </select>
+	
+  <select id="getById" parameterType="int"  resultMap="BaseResultMap">
+	SELECT *
+		FROM salary_pay
+		WHERE id = #{id}
+  </select>
+  
+</mapper>

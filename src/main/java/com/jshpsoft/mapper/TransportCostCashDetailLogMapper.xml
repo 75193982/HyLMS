@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.TransportCostCashDetailLogMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.TransportCostCashDetailLog" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="transport_cost_cash_detail_id" property="transportCostCashDetailId" jdbcType="INTEGER" />
+    <result column="old_amount" property="oldAmount"  />
+    <result column="new_amount" property="newAmount"  />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <insert id="insert" parameterType="com.jshpsoft.domain.TransportCostCashDetailLog" >
+    insert into transportCostCashDetailLog (transport_cost_cash_detail_id, old_amount, 
+      new_amount, mark, insert_time, 
+      insert_user, update_time, update_user, 
+      del_flag)
+    values (#{transportCostCashDetailId}, #{oldAmount}, 
+      #{newAmount}, #{mark}, #{insertTime}, 
+      #{insertUser}, #{updateTime}, #{updateUser}, 
+      #{delFlag})
+  </insert>
+
+  <update id="update" parameterType="com.jshpsoft.domain.TransportCostCashDetailLog" >
+    update transportCostCashDetailLog
+    <set >
+      <if test="transportCostCashDetailId != null" >
+        transport_cost_cash_detail_id = #{transportCostCashDetailId},
+      </if>
+      <if test="oldAmount != null" >
+        old_amount = #{oldAmount},
+      </if>
+      <if test="newAmount != null" >
+        new_amount = #{newAmount},
+      </if>
+      <if test="mark != null" >
+        mark = #{mark},
+      </if>
+      <if test="insertTime != null" >
+        insert_time = #{insertTime},
+      </if>
+      <if test="insertUser != null" >
+        insert_user = #{insertUser},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag},
+      </if>
+    </set>
+    where id = #{id}
+  </update>
+  
+  <select id="getByTransportCostCashDetailId" parameterType="int" resultMap="BaseResultMap">
+  	select *
+  		from transportCostCashDetailLog
+  		where transport_cost_cash_detail_id = #{transportCostCashDetailId}
+  			and del_flag = 'N'
+  </select>
+  
+</mapper>

@@ -1,0 +1,188 @@
+/* * {
+	margin: 0;
+	padding: 0;
+} */
+/* body {
+	font-family: Verdana, Geneva, sans-serif;
+	font-size: 12px;
+	width:210mm;
+	text-align: center;
+} */
+
+a {
+	text-decoration: none;
+}
+
+.bold{
+	font-weight: bold;
+}
+
+/* ul,li {
+	list-style: none;
+}
+ */
+/* img {
+	border: none;
+}
+ */
+ #divprint {
+	font-family: Verdana, Geneva, sans-serif,Microsoft YaHei;
+	font-size: 13px;
+	width:230mm;
+	text-align: center;
+}
+#divprintheder {
+	font-family: Verdana, Geneva, sans-serif,Microsoft YaHei;
+	font-size: 15px;
+	width:230mm;
+	text-align: center;
+}
+
+#print-content {
+	width: 99%;
+	margin: 2px auto;
+	
+}
+
+#print-content h1 {
+	font-size: 20px;
+	text-align: center;
+	
+}
+
+.floatLeft {
+	float: left;
+}
+.floatLeft50 {
+	float: left;
+	margin-left: 200px;
+}
+.floatLeft100 {
+	float: left;
+	margin-left: 100px;
+}
+.floatLeft150 {
+	width:100%;
+	text-align:center;
+}
+.floatRight {
+	float: right;
+}
+
+.headInfo {
+	margin: 5px auto;
+	height: 55px;
+}
+
+#print-content table {
+	border-collapse: collapse;
+	width: 100%;
+	border: 1px solid #000;
+}
+.printcenter table#tableTopBorder_4 {
+	border-collapse: collapse;
+	width: 100%;
+	border:0px;
+}
+.printcenter table #mynewDataTable {
+	border-collapse: collapse;
+	width: 100%;
+	border:0px;
+}
+.printcenter table #tableTopBorder_4 td,.printcenter table #tableTopBorder_4 th{border:0;text-align:left;}
+.printcenter table #mynewDataTable td,.printcenter table #mynewDataTable th{border:0;text-align:left;}
+.tableTopBorder_3 {
+	border-top: 0px solid #000;
+}
+ .printcenter table td,.printcenter th {
+	border: 1px solid #000;
+	text-align: center;
+	padding: 4px 6px;
+} 
+
+.signatureArea {
+	height: 25px;
+	line-height: 35px;
+}
+.signatureArea .firstSpan{
+	margin-right:200px;
+}
+.boldcss{
+	font-weight:bold; font-family:Microsoft YaHei;
+}
+#print-content .header .titleArea{ height:35px; position:relative;}
+#print-content .header h1{ padding-top:1px;}
+.printTm{ position:absolute; left:0px;  top:0px;}
+.contractTable td
+{
+	text-align:left;
+}
+.contractTable th{
+	font-weight:bold;
+}
+.printInput{
+	width:99%;
+	border: none;
+	background: none;
+}
+.font24{
+	font-size: 24px;
+}
+.font20{
+	font-size: 20px;
+}
+.width200{
+	width: 200px;
+}
+.width180{
+	width: 180px;
+}
+.btn {
+cursor: pointer;
+padding: 2px 10px;
+margin: 0px 10px;
+}
+
+.pdprint.mt_pdprint p{width:35%;min-width:260px;height:42px;line-height:42px;margin:auto}
+.pdprint.mt_pdprint p .mt_title{width:145px;text-align:left;display:inline-block;float:left;font-size:22px;}
+.pdprint.mt_pdprint p .mt_content{text-align:left;float:left;font-size:22px;}
+#print-content h1.mt_h1{font-size:38px;font-weight:600;line-height:75px; }
+#print-content h1.mt_top{padding-top:230px;}
+@media print
+{
+	.pageBreak {page-break-after:always;}
+	.noPrint{
+		display:none;
+	}
+
+body{
+        background: transparent;
+        background-image: none;
+        color: #000;
+        text-align: left;
+        text-shadow: none;
+        filter: none;
+        float: none;
+    } 
+}
+.table.myDataTableCarDetail tbody>tr>td{
+	padding:0px;
+}
+ .printcenter #myDataTable, .printcenter #myDataTable-detail{margin:auto;}
+ .printcenter>#myDataTable tr td, #print-content>#myDataTable thead tr th, .printcenter>#myDataTable-detail tr td, #print-contentDetail>#myDataTable-detail thead tr th{border:1px solid #000;}
+ .table.myDataTableDetail tr td{height:38px;}
+ .table.myDataTableCarDetail tr td{height:25px;}
+ .table.myDataTableDetail tbody>tr>td,.table.myDataTableCarDetail tbody>tr>td {
+    border-top: 1px solid #000;
+}
+ .printcenter h2{height:55px;line-height:55px;width:95%;margin:0 auto 5px;text-align:center;}
+ .printTable{display:none;}
+ #myDataTable thead tr, #myDataTable-detail thead tr{background: transparent;}
+ #myDataTable thead tr>th, #myDataTable tbody tr>td, #myDataTable-detail thead tr>th, #myDataTable-detail tbody tr>td{font-weight: 500;font-size:12px;color:#000;}
+
+.table.myDataTable thead tr th:first-child {border-left-color: #000;}
+.table.myDataTable thead tr th {border-color: #000;font-weight: bold;}
+.table.myDataTable thead>tr>th {vertical-align: bottom; border-bottom: 1px solid #000;}
+.printcenter h3{width:100%;text-align:right;float:right;height:30px;line-height:30px;font-size:12px;}
+
+ .printcenter>#mynewDataTable tr td, #print-content>#mynewDataTable thead tr th, .printcenter>#mynewDataTable-detail tr td, #print-contentDetail>#mynewDataTable-detail thead tr th{border:0px;}

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+						http://www.springframework.org/schema/beans/spring-beans.xsd 
+						http://www.springframework.org/schema/aop 
+						http://www.springframework.org/schema/aop/spring-aop.xsd
+						http://www.springframework.org/schema/tx 
+						http://www.springframework.org/schema/tx/spring-tx.xsd
+						http://www.springframework.org/schema/context
+						http://www.springframework.org/schema/context/spring-context.xsd
+						http://www.springframework.org/schema/mvc 
+           				http://www.springframework.org/schema/mvc/spring-mvc.xsd
+           				http://www.springframework.org/schema/task
+     					http://www.springframework.org/schema/task/spring-task.xsd"
+
+	default-lazy-init="false" default-autowire="byName">
+
+	<!-- 扫描绑定所有注解 -->
+	<context:component-scan base-package="com.jshpsoft" />
+
+    <!-- 启动对@AspectJ注解的支持 -->  <!-- proxy-target-class="true"  -->
+    <aop:aspectj-autoproxy /> 
+    
+    <!-- 加载配置文件 -->
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:db.properties</value>
+			</list>
+		</property>
+	</bean>
+    
+	<!-- 配置数据源  -->
+	<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+        <property name="jndiName">
+            <value>java:comp/env/jdbc/dataSource</value>
+        </property>
+    </bean>
+
+	<!-- 配置mybatis -->
+	<bean id="mySqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="mapperLocations" value="classpath*:com/jshpsoft/mapper/*.xml"></property>
+	</bean>
+	
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!-- 扫描这个包以及它的子包下的所有映射接口类 -->
+		<property name="basePackage" value="com.jshpsoft.dao" />
+		<property name="sqlSessionFactoryBeanName" value="mySqlSessionFactory"/>
+	</bean>
+
+	<!-- 事务的配置 -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<!-- 采用注解形式的声明式事务管理 -->
+	<tx:annotation-driven transaction-manager="transactionManager" order="2"/>
+
+	<!-- 自定义系统异常处理类 -->
+	<bean id="exceptionHandler" class="com.jshpsoft.exception.MyExceptionHandler" />
+	
+	<!-- 自定义初始化类 -->
+	<bean class="com.jshpsoft.listener.InitListener" />
+
+	<!-- <mvc:annotation-driven /> -->
+ 	<mvc:annotation-driven>  
+		<mvc:message-converters register-defaults="true">  
+		<bean 
+		class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">  
+		         <property name="prefixJson" value="false"/>  
+		         <property name="supportedMediaTypes">  
+		             <list>  
+		               <value>application/json</value>  
+		               <value>text/json</value>  
+		             </list>  
+		          </property>  
+		       </bean>  
+		   </mvc:message-converters>  
+	</mvc:annotation-driven>
+	
+	<!-- 定时任务 -->
+	<task:executor id="executor" pool-size="5" />
+    <task:scheduler id="scheduler" pool-size="5" />
+    <task:annotation-driven executor="executor" scheduler="scheduler" />
+    
+    <!-- websocket -->
+    <bean class="com.jshpsoft.websocket.SystemWebSocketHandler" />
+    
+    <!-- redis -->
+	<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig" />
+	 
+	<bean id="jedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+	    <property name="hostName" value="${hostName}" />
+	    <property name="port" value="${port}" />
+	    <property name="password" value="${password}" />
+	    <property name="timeout" value="${timeout}" />
+	    <property name="poolConfig" ref="jedisPoolConfig" />
+	    <property name="usePool" value="${usePool}" />
+	</bean>
+	 
+	<bean id="redisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate">
+	    <property name="connectionFactory" ref="jedisConnectionFactory" />
+	</bean>
+	 
+	<!-- 将session放入redis -->
+	<bean id="redisHttpSessionConfiguration" class="org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration">
+	    <property name="maxInactiveIntervalInSeconds" value="1800" />
+	</bean>
+
+</beans>

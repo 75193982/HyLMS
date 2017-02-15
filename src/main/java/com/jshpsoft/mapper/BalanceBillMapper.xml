@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.BalanceBillMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.BalanceBill" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="type" property="type" />
+    <result column="business_id" property="businessId" jdbcType="INTEGER" />
+    <result column="car_count" property="carCount" jdbcType="INTEGER" />
+    <result column="distance" property="distance" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="balance_type" property="balanceType" jdbcType="VARCHAR" />
+    <result column="transport_amount" property="transportAmount" />
+    <result column="oil_amount" property="oilAmount" />
+    <result column="oil_balance_ratio" property="oilBalanceRatio" />
+    <result column="balance_amount" property="balanceAmount" jdbcType="DECIMAL" />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="verify_time" property="verifyTime" jdbcType="TIMESTAMP" />
+    <result column="verify_user" property="verifyUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+    
+    <result column="waybill_no" property="waybillNo" />
+    <result column="brand" property="brand" />
+    <result column="supplierName" property="supplierName" />
+    
+    <result column="carTrackName" property="carTrackName" />
+    <result column="schedule_bill_no" property="scheduleBillNo" />
+  </resultMap>
+
+    <select id="getById" resultMap="BaseResultMap" parameterType="int">
+		select *
+		from balanceBill
+		where id = #{id}
+	</select>
+	
+	<select id="getDetailByIdUp" resultMap="BaseResultMap" parameterType="int">
+		select a.id,b.waybill_no,b.brand,a.business_id,a.car_count,a.distance,a.balance_type,a.balance_amount,
+				(select name from basic_supplier c where b.supplier_id = c.id ) supplierName
+		From balanceBill a,waybill b
+		where a.business_id = b.id and a.id = #{id}
+	</select>
+	
+	<select id="getByConditionsUp" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+		SELECT * from (
+			SELECT a.id,b.waybill_no,b.brand,a.car_count,a.distance,a.balance_type,a.balance_amount,a.status,
+					b.insert_time,a.verify_time,
+					(select name from basic_supplier c where b.supplier_id = c.id ) supplierName
+			From balanceBill a,waybill b
+			where a.business_id = b.id 
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="type != null and type != ''" >
+        		and a.type = #{type}
+      		</if>
+			<if test="startTime != null and startTime != ''">
+				and convert(char(10), b.insert_time,120) &gt;= convert(char(10), #{startTime},120)
+			</if>
+			<if test="endTime != null and endTime != ''">
+				and convert(char(10), b.insert_time,120) &lt;= convert(char(10), #{endTime},120)
+			</if>
+			<if test="supplierId != null and supplierId != ''">
+				and b.supplier_id = #{supplierId} 
+			</if>
+			<if test="waybillNo != null and waybillNo != ''">
+				and b.waybill_no like '%'+#{waybillNo}+'%'
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status} 
+			</if>
+			<if test="businessId != null and businessId != ''">
+				and a.business_id = #{businessId} 
+			</if>
+		) as t 
+		order by t.insert_time asc
+	</select>
+
+	<select id="getPageListUp" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	  	SELECT * from (
+			SELECT row_number() over(order by a.id asc) as rownumber,
+					a.id,b.waybill_no,b.brand,a.car_count,a.distance,a.balance_type,a.balance_amount,a.status,
+					b.insert_time,a.verify_time,
+					(select name from basic_supplier c where b.supplier_id = c.id ) supplierName
+			From balanceBill a,waybill b
+			where a.business_id = b.id 
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="type != null and type != ''" >
+        		and a.type = #{type}
+      		</if>
+			<if test="startTime != null and startTime != ''">
+				and convert(char(10), b.insert_time,120) &gt;= convert(char(10), #{startTime},120)
+			</if>
+			<if test="endTime != null and endTime != ''">
+				and convert(char(10), b.insert_time,120) &lt;= convert(char(10), #{endTime},120)
+			</if>
+			<if test="supplierId != null and supplierId != ''">
+				and b.supplier_id = #{supplierId} 
+			</if>
+			<if test="waybillNo != null and waybillNo != ''">
+				and b.waybill_no like '%'+#{waybillNo}+'%'
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status} 
+			</if>
+		) as t 
+		WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+		ORDER BY t.insert_time ASC
+	</select>
+	  
+	<select id="getPageTotalCountUp" parameterType="java.util.HashMap" resultType="Integer">
+		SELECT count(*)
+		From balanceBill a,waybill b
+		where a.business_id = b.id 
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="type != null and type != ''" >
+        		and a.type = #{type}
+      		</if>
+			<if test="startTime != null and startTime != ''">
+				and convert(char(10), b.insert_time,120) &gt;= convert(char(10), #{startTime},120)
+			</if>
+			<if test="endTime != null and endTime != ''">
+				and convert(char(10), b.insert_time,120) &lt;= convert(char(10), #{endTime},120)
+			</if>
+			<if test="supplierId != null and supplierId != ''">
+				and b.supplier_id = #{supplierId} 
+			</if>
+			<if test="waybillNo != null and waybillNo != ''">
+				and b.waybill_no like '%'+#{waybillNo}+'%'
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status} 
+			</if>
+	</select>
+	
+	<select id="getDetailByIdDown" resultMap="BaseResultMap" parameterType="int">
+		SELECT a.id,b.schedule_bill_no,a.car_count,a.transport_amount,a.oil_amount,a.balance_amount,
+				(select name from basic_outSourcing d where d.id = c.out_sourcing_id ) carTrackName
+		From balanceBill a,scheduleBill b,basic_track c
+		where a.business_id = b.id and b.car_number = c.no and a.id = #{id}
+	</select>
+
+	<select id="getByConditionsDown" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+		SELECT * from (
+			SELECT a.id,b.schedule_bill_no,a.car_count,a.balance_amount,a.status,
+					b.insert_time,a.verify_time,
+					(select name from basic_outSourcing d where d.id = c.out_sourcing_id ) carTrackName
+			From balanceBill a,scheduleBill b,basic_track c
+			where a.business_id = b.id and b.car_number = c.no
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="type != null and type != ''" >
+        		and a.type = #{type}
+      		</if>
+			<if test="startTime != null and startTime != ''">
+				and convert(char(10), b.insert_time,120) &gt;= convert(char(10), #{startTime},120)
+			</if>
+			<if test="endTime != null and endTime != ''">
+				and convert(char(10), b.insert_time,120) &lt;= convert(char(10), #{endTime},120)
+			</if>
+			<if test="outSourcingId != null and outSourcingId != ''">
+				and c.out_sourcing_id = #{outSourcingId} 
+			</if>
+			<if test="scheduleBillNo != null and scheduleBillNo != ''">
+				and b.schedule_bill_no like '%'+#{scheduleBillNo}+'%'
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status} 
+			</if>
+			<if test="businessId != null and businessId != ''">
+				and a.business_id = #{businessId} 
+			</if>
+		) as t 
+		order by t.insert_time asc
+	</select>
+
+	<select id="getPageListDown" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	  	SELECT * from (
+			SELECT row_number() over(order by a.id asc) as rownumber,
+					a.id,b.schedule_bill_no,a.car_count,a.balance_amount,a.status,
+					b.insert_time,a.verify_time,
+					(select name from basic_outSourcing d where d.id = c.out_sourcing_id ) carTrackName
+			From balanceBill a,scheduleBill b,basic_track c
+			where a.business_id = b.id and b.car_number = c.no
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="type != null and type != ''" >
+        		and a.type = #{type}
+      		</if>
+			<if test="startTime != null and startTime != ''">
+				and convert(char(10), b.insert_time,120) &gt;= convert(char(10), #{startTime},120)
+			</if>
+			<if test="endTime != null and endTime != ''">
+				and convert(char(10), b.insert_time,120) &lt;= convert(char(10), #{endTime},120)
+			</if>
+			<if test="outSourcingId != null and outSourcingId != ''">
+				and c.out_sourcing_id = #{outSourcingId} 
+			</if>
+			<if test="scheduleBillNo != null and scheduleBillNo != ''">
+				and b.schedule_bill_no like '%'+#{scheduleBillNo}+'%'
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status} 
+			</if>
+		) as t 
+		WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+		ORDER BY t.insert_time ASC
+	</select>
+	  
+	<select id="getPageTotalCountDown" parameterType="java.util.HashMap" resultType="Integer">
+		SELECT count(*)
+		From balanceBill a,scheduleBill b,basic_track c
+		where a.business_id = b.id and b.car_number = c.no
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="type != null and type != ''" >
+        		and a.type = #{type}
+      		</if>
+			<if test="startTime != null and startTime != ''">
+				and convert(char(10), b.insert_time,120) &gt;= convert(char(10), #{startTime},120)
+			</if>
+			<if test="endTime != null and endTime != ''">
+				and convert(char(10), b.insert_time,120) &lt;= convert(char(10), #{endTime},120)
+			</if>
+			<if test="outSourcingId != null and outSourcingId != ''">
+				and c.out_sourcing_id = #{outSourcingId} 
+			</if>
+			<if test="scheduleBillNo != null and scheduleBillNo != ''">
+				and b.schedule_bill_no like '%'+#{scheduleBillNo}+'%'
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status} 
+			</if>
+	</select>
+	
+  <insert id="insert" parameterType="com.jshpsoft.domain.BalanceBill" >
+    insert into balanceBill 
+    (type, business_id, car_count, distance, status, balance_type, transport_amount, oil_amount, oil_balance_ratio,
+      balance_amount, mark, insert_time, 
+      insert_user, update_time, update_user, verify_time, verify_user, del_flag )
+    values 
+    (#{type}, #{businessId}, #{carCount}, #{distance}, #{status}, #{balanceType}, #{transportAmount},#{oilAmount},#{oilBalanceRatio},
+      #{balanceAmount}, #{mark}, #{insertTime}, 
+      #{insertUser}, #{updateTime}, #{updateUser}, #{verifyTime}, #{verifyUser}, #{delFlag} )
+  </insert>
+  
+  <update id="update" parameterType="com.jshpsoft.domain.BalanceBill" >
+    update balanceBill
+    <set >
+      <if test="type != null" >
+        type = #{type},
+      </if>
+      <if test="businessId != null" >
+        business_id = #{businessId},
+      </if>
+      <if test="carCount != null" >
+        car_count = #{carCount},
+      </if>
+      <if test="distance != null" >
+        distance = #{distance},
+      </if>
+      <if test="status != null" >
+        status = #{status},
+      </if>
+      <if test="balanceType != null" >
+        balance_type = #{balanceType},
+      </if>
+      <if test="transportAmount != null" >
+        transport_amount = #{transportAmount},
+      </if>
+      <if test="oilAmount != null" >
+        oil_amount = #{oilAmount},
+      </if>
+      <if test="oilBalanceRatio != null" >
+        oil_balance_ratio = #{oilBalanceRatio},
+      </if>
+      <if test="balanceAmount != null" >
+        balance_amount = #{balanceAmount},
+      </if>
+      <if test="mark != null" >
+        mark = #{mark},
+      </if>
+      <if test="insertTime != null" >
+        insert_time = #{insertTime},
+      </if>
+      <if test="insertUser != null" >
+        insert_user = #{insertUser},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser},
+      </if>
+      <if test="verifyTime != null" >
+        verify_time = #{verifyTime},
+      </if>
+      <if test="verifyUser != null" >
+        verify_user = #{verifyUser},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag},
+      </if>
+    </set>
+    where id = #{id}
+  </update>
+ 
+     <update id="updateById"  parameterType="java.util.HashMap">
+		Update balanceBill 
+		<set>
+			<if test="verifyTime != null" >
+	        	verify_time = #{verifyTime},
+	      	</if>
+	      	<if test="verifyUser != null and verifyUser != ''" >
+	        	verify_user = #{verifyUser},
+	      	</if>
+	      	<if test="status != null and status != ''" >
+        		status = #{status},
+      		</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+</mapper>

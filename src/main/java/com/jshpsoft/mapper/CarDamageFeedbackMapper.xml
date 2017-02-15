@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.CarDamageFeedbackMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.CarDamageFeedback" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="transport_time" property="transportTime" jdbcType="TIMESTAMP" />
+    <result column="car_type" property="carType" jdbcType="VARCHAR" />
+    <result column="car_shop_id" property="carShopId" jdbcType="INTEGER" />
+    <result column="link_mobile" property="linkMobile" jdbcType="VARCHAR" />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+  </resultMap>
+ 
+  <insert id="insert" parameterType="com.jshpsoft.domain.CarDamageFeedback" >
+    insert into carDamageFeedback (transport_time, car_type, 
+      car_shop_id, link_mobile, mark, 
+      status, insert_time, insert_user, 
+      update_time, update_user, del_flag
+      )
+    values (#{transportTime}, #{carType}, 
+      #{carShopId}, #{linkMobile}, #{mark}, 
+      #{status}, #{insertTime}, #{insertUser}, 
+      #{updateTime}, #{updateUser}, #{delFlag}
+      )
+  </insert>
+  
+  <select id="getById" parameterType="int" resultMap="BaseResultMap">
+  	select * from carDamageFeedback
+  		where id = #{id}
+  </select>
+  
+  <update id="update" parameterType="com.jshpsoft.domain.CarDamageFeedback" >
+    update carDamageFeedback
+    <set >
+      <if test="transportTime != null" >
+        transport_time = #{transportTime},
+      </if>
+      <if test="carType != null" >
+        car_type = #{carType},
+      </if>
+      <if test="carShopId != null" >
+        car_shop_id = #{carShopId},
+      </if>
+      <if test="linkMobile != null" >
+        link_mobile = #{linkMobile},
+      </if>
+      <if test="mark != null" >
+        mark = #{mark},
+      </if>
+      <if test="status != null" >
+        status = #{status},
+      </if>
+      <if test="insertTime != null" >
+        insert_time = #{insertTime},
+      </if>
+      <if test="insertUser != null" >
+        insert_user = #{insertUser},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag},
+      </if>
+    </set>
+    where id = #{id}
+  </update>
+  
+  <select id="getByConditions" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+		Select a.*
+		From carDamageFeedback a 
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="carShopId != null">
+				and a.car_shop_id = #{carShopId} 
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status} 
+			</if>
+			<if test="stockId != null and stockId != ''">
+			    and a.stockId = #{stockId}
+			</if>
+		</where>
+			order by a.insert_time asc
+	</select>
+	
+  	<select id="getPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	  	SELECT * from (
+			SELECT row_number() over(order by a.id desc) as rownumber,a.*
+			From carDamageFeedback a
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="carShopId != null">
+				and a.car_shop_id = #{carShopId} 
+			</if>
+			<if test="stockId != null and stockId != ''">
+				and a.stock_id = #{stockId}
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status} 
+			</if>
+			<if test="insertUser != null and insertUser != ''">
+				and a.insert_user = #{insertUser} 
+			</if>
+		</where>
+		) as t 
+		WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+	</select>
+	  
+	<select id="getPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+		SELECT count(*)
+		FROM carDamageFeedback a
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="carShopId != null">
+				and a.car_shop_id = #{carShopId} 
+			</if>
+			<if test="stockId != null and stockId != ''">
+				and a.stock_id = #{stockId}
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status} 
+			</if>
+			<if test="insertUser != null and insertUser != ''">
+				and a.insert_user = #{insertUser} 
+			</if>
+		</where>
+	</select>
+	
+</mapper>

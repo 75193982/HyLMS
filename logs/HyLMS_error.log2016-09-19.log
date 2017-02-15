@@ -1,0 +1,5 @@
+2016-09-19 11:30:52 [main] ERROR (cn.jpush.api.common.connection.NativeHttpClient.java:201) - Your request params is invalid. Please check them according to error message.
+2016-09-19 12:06:52 [main] ERROR (cn.jpush.api.common.connection.NativeHttpClient.java:201) - Your request params is invalid. Please check them according to error message.
+2016-09-19 12:14:03 [main] ERROR (cn.jpush.api.common.connection.NativeHttpClient.java:201) - Your request params is invalid. Please check them according to error message.
+2016-09-19 12:15:18 [main] ERROR (cn.jpush.api.common.connection.NativeHttpClient.java:201) - Your request params is invalid. Please check them according to error message.
+2016-09-19 12:16:17 [main] ERROR (cn.jpush.api.common.connection.NativeHttpClient.java:201) - Your request params is invalid. Please check them according to error message.

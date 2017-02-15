@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.FeedbackMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.Feedback" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="suggest" property="suggest" jdbcType="VARCHAR" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  	<insert id="insert" parameterType="com.jshpsoft.domain.Feedback" >
+    	insert into sys_feedback 
+    	( suggest, insert_time, insert_user, update_time, update_user, del_flag )
+    	values 
+    	( #{suggest}, #{insertTime}, #{insertUser}, #{updateTime}, #{updateUser}, #{delFlag} )
+  	</insert>
+  
+  	<select id="getById" resultMap="BaseResultMap" parameterType="int">
+		select *
+		from sys_feedback
+		where id = #{id}
+	</select>
+	
+	<select id="getPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	  	select t.* 
+	  	from (
+			select row_number() over(order by id asc) as rownumber,*
+			from sys_feedback
+			<where>
+				<if test="delFlag != null and delFlag != ''">
+					and del_flag = #{delFlag} 
+				</if>
+				<if test="insertUser != null and insertUser != ''">
+					and insertUser = #{insertUser} 
+				</if>
+				<if test="suggest != null and suggest != ''">
+					and suggest like '%'+#{suggest}+'%'
+				</if>
+			</where>
+		) as t 
+		WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+	</select>
+	  
+	<select id="getPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+		SELECT count(*)
+		FROM sys_feedback
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and del_flag = #{delFlag} 
+			</if>
+			<if test="insertUser != null and insertUser != ''">
+				and insertUser = #{insertUser} 
+			</if>
+			<if test="suggest != null and suggest != ''">
+				and suggest like '%'+#{suggest}+'%'
+			</if>
+		</where>
+	</select>
+	
+  
+</mapper>

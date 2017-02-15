@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.TrackMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.Track" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="out_sourcing_id" property="outSourcingId" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="no" property="no" jdbcType="VARCHAR" />
+    <result column="xno" property="xno" jdbcType="VARCHAR" />
+    <result column="driver_id" property="driverId" />
+    <result column="codriver_id" property="codriverId" />
+    <result column="ower" property="ower" jdbcType="VARCHAR" />
+    <result column="ower_address" property="owerAddress" jdbcType="VARCHAR" />
+    <result column="vin" property="vin" jdbcType="VARCHAR" />
+    <result column="engine_no" property="engineNo" jdbcType="VARCHAR" />
+    <result column="register_time" property="registerTime" jdbcType="TIMESTAMP" />
+    <result column="size" property="size" jdbcType="VARCHAR" />
+    <result column="insurance_start_time" property="insuranceStartTime" jdbcType="TIMESTAMP" />
+    <result column="insurance_end_time" property="insuranceEndTime" jdbcType="TIMESTAMP" />
+    <result column="insurance_company" property="insuranceCompany" jdbcType="VARCHAR" />
+    <result column="annual_review_time" property="annualReviewTime" jdbcType="TIMESTAMP" />
+    <result column="standard_oil_wear" property="standardOilWear" jdbcType="DECIMAL" />
+    <result column="oil_discount_limit" property="oilDiscountLimit" jdbcType="DECIMAL" />
+    <result column="oil_discount_point" property="oilDiscountPoint" jdbcType="DECIMAL" />
+    <result column="last_distance" property="lastDistance" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+    <result column="driving_file_path" property="drivingFilePath" jdbcType="VARCHAR" />
+    <result column="toperating_file_path" property="toperatingFilePath" jdbcType="VARCHAR" />
+    <result column="xoperating_file_path" property="xoperatingFilePath" jdbcType="VARCHAR" />
+    <result column="driverName" property="driverName" jdbcType="VARCHAR" />
+    <result column="codriverName" property="codriverName" jdbcType="VARCHAR" />
+    <result column="outSourcingName" property="outSourcingName" />
+  </resultMap>
+  
+  	<select id="getById" resultMap="BaseResultMap" parameterType="int">
+		select  a.*,u.name as driverName,m.name as outSourcingName
+		from basic_track a 
+  	left join sys_user u on u.id = a.driver_id
+  	left join basic_outSourcing m on m.id = a.out_sourcing_id
+		where a.id = #{id}
+	</select>
+	
+	<select id="getByConditions" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+		Select a.*,b.name outSourcingName,u.name as driverName
+		From basic_track a 
+		left join basic_outSourcing b on a.out_sourcing_id = b.id
+		left join sys_user u on u.id = a.driver_id
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="outSourcingId != null and outSourcingId != ''">
+				and a.out_sourcing_id = #{outSourcingId} 
+			</if>
+			<if test="ower != null and ower != ''">
+				and a.ower like '%'+#{ower}+'%'
+			</if>
+			<if test="insuranceStartTime != null and insuranceStartTime != ''">
+				and convert(char(10), a.insurance_start_time,120) &gt;= convert(char(10), #{insuranceStartTime},120)
+			</if>
+			<if test="insuranceEndTime != null and insuranceEndTime != ''">
+				and convert(char(10), a.insurance_end_time,120) &lt;= convert(char(10), #{insuranceEndTime},120)
+			</if>
+			<if test="annualStartTime != null and annualStartTime != ''">
+				and convert(char(10), a.annual_review_time,120) &gt;= convert(char(10), #{annualStartTime},120)
+			</if>
+			<if test="annualEndTime != null and annualEndTime != ''">
+				and convert(char(10), a.annual_review_time,120) &lt;= convert(char(10), #{annualEndTime},120)
+			</if>
+			<if test="vin != null and vin != ''">
+				and a.vin = #{vin} 
+			</if>
+			<if test="no != null and no != ''">
+				and a.no = #{no} 
+			</if>
+			<if test="xno != null and xno != ''">
+				and a.xno = #{xno} 
+			</if>
+			<if test="driverId != null and driverId != ''">
+			    and a.driver_id = #{driverId}
+			</if>
+		</where>
+		order by a.insert_time asc
+	</select>
+	
+	<select id="getPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	  	SELECT * from (
+			SELECT row_number() over(order by a.id asc) as rownumber,a.*,b.name outSourcingName,
+			u.name as driverName,d.name as codriverName
+			From basic_track a 
+			left join basic_outSourcing b on a.out_sourcing_id = b.id
+			left join sys_user u on u.id = a.driver_id
+			left join sys_user d on d.id = a.codriver_id
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="outSourcingId != null and outSourcingId != ''">
+				and a.out_sourcing_id = #{outSourcingId} 
+			</if>
+			<if test="ower != null and ower != ''">
+				and a.ower like '%'+#{ower}+'%'
+			</if>
+			<if test="insuranceStartTime != null and insuranceStartTime != ''">
+				and convert(char(10), a.insurance_start_time,120) &gt;= convert(char(10), #{insuranceStartTime},120)
+			</if>
+			<if test="insuranceEndTime != null and insuranceEndTime != ''">
+				and convert(char(10), a.insurance_end_time,120) &lt;= convert(char(10), #{insuranceEndTime},120)
+			</if>
+			<if test="annualStartTime != null and annualStartTime != ''">
+				and convert(char(10), a.annual_review_time,120) &gt;= convert(char(10), #{annualStartTime},120)
+			</if>
+			<if test="annualEndTime != null and annualEndTime != ''">
+				and convert(char(10), a.annual_review_time,120) &lt;= convert(char(10), #{annualEndTime},120)
+			</if>
+			<if test="vin != null and vin != ''">
+				and a.vin = #{vin} 
+			</if>
+			<if test="no != null and no != ''">
+				and a.no = #{no} 
+			</if>
+			<if test="xno != null and xno != ''">
+				and a.xno = #{xno} 
+			</if>
+			<if test="driverId != null and driverId != ''">
+				and a.driver_id = #{driverId} 
+			</if>
+			<if test="engineNo != null and engineNo != ''">
+				and a.engine_no = #{engineNo} 
+			</if>
+			<if test="driverName != null and driverName != ''">
+			    and (u.name like '%'+#{driverName}+'%' or d.name like '%'+#{driverName}+'%')
+			</if>
+		</where>
+		) as t 
+		WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+		ORDER BY t.insert_time ASC
+	</select>
+	  
+	<select id="getPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+		SELECT count(*)
+		FROM basic_track a
+		left join sys_user u on u.id = a.driver_id
+		left join sys_user d on d.id = a.codriver_id
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="outSourcingId != null and outSourcingId != ''">
+				and a.out_sourcing_id = #{outSourcingId} 
+			</if>
+			<if test="ower != null and ower != ''">
+				and a.ower like '%'+#{ower}+'%'
+			</if>
+			<if test="insuranceStartTime != null and insuranceStartTime != ''">
+				and convert(char(10), a.insurance_start_time,120) &gt;= convert(char(10), #{insuranceStartTime},120)
+			</if>
+			<if test="insuranceEndTime != null and insuranceEndTime != ''">
+				and convert(char(10), a.insurance_end_time,120) &lt;= convert(char(10), #{insuranceEndTime},120)
+			</if>
+			<if test="annualStartTime != null and annualStartTime != ''">
+				and convert(char(10), a.annual_review_time,120) &gt;= convert(char(10), #{annualStartTime},120)
+			</if>
+			<if test="annualEndTime != null and annualEndTime != ''">
+				and convert(char(10), a.annual_review_time,120) &lt;= convert(char(10), #{annualEndTime},120)
+			</if>
+			<if test="vin != null and vin != ''">
+				and a.vin = #{vin} 
+			</if>
+			<if test="no != null and no != ''">
+				and a.no = #{no} 
+			</if>
+			<if test="xno != null and xno != ''">
+				and a.xno = #{xno} 
+			</if>
+			<if test="driverId != null and driverId != ''">
+				and a.driver_id = #{driverId} 
+			</if>
+			<if test="engineNo != null and engineNo != ''">
+				and a.engine_no = #{engineNo} 
+			</if>
+			<if test="driverName != null and driverName != ''">
+			    and (u.name like '%'+#{driverName}+'%' or d.name like '%'+#{driverName}+'%')
+			</if>
+		</where>
+	</select>
+	
+  	<insert id="insert" parameterType="com.jshpsoft.domain.Track" >
+	    insert into basic_track 
+	    ( type, out_sourcing_id, no, xno, driver_id, codriver_id,ower, ower_address, vin, engine_no, register_time, size, insurance_start_time, 
+	      insurance_end_time, insurance_company, annual_review_time, standard_oil_wear, oil_discount_limit, oil_discount_point, 
+	      last_distance, insert_time, insert_user, update_time, update_user, del_flag )
+	    values 
+	    ( #{type}, #{outSourcingId}, #{no}, #{xno}, #{driverId}, #{codriverId},#{ower}, #{owerAddress}, #{vin}, #{engineNo}, #{registerTime}, #{size}, #{insuranceStartTime}, 
+	      #{insuranceEndTime}, #{insuranceCompany}, #{annualReviewTime}, #{standardOilWear}, #{oilDiscountLimit}, #{oilDiscountPoint}, 
+	      #{lastDistance}, #{insertTime}, #{insertUser}, #{updateTime}, #{updateUser}, #{delFlag} )
+  	</insert>
+  
+  	<update id="update" parameterType="com.jshpsoft.domain.Track" >
+	    update basic_track
+	    <set >
+	      <if test="outSourcingId != null" >
+	        out_sourcing_id = #{outSourcingId},
+	      </if>
+	      <if test="type != null and type != ''" >
+	        type = #{type},
+	      </if>
+	      <if test="no != null and no != ''" >
+	        no = #{no},
+	      </if>
+	      <if test="xno != null and xno != ''" >
+	        xno = #{xno},
+	      </if>
+	      <if test="driverId != null" >
+	        driver_id = #{driverId},
+	      </if>
+	      <if test="codriverId != null" >
+	        codriver_id = #{codriverId},
+	      </if>
+	      <if test="ower != null and ower != ''" >
+	        ower = #{ower},
+	      </if>
+	      <if test="owerAddress != null and owerAddress != ''" >
+	        ower_address = #{owerAddress},
+	      </if>
+	      <if test="vin != null and vin != ''" >
+	        vin = #{vin},
+	      </if>
+	      <if test="engineNo != null and engineNo != ''" >
+	        engine_no = #{engineNo},
+	      </if>
+	      <if test="registerTime != null" >
+	        register_time = #{registerTime},
+	      </if>
+	      <if test="size != null and size != ''" >
+	        size = #{size},
+	      </if>
+	      <if test="insuranceStartTime != null" >
+	        insurance_start_time = #{insuranceStartTime},
+	      </if>
+	      <if test="insuranceEndTime != null" >
+	        insurance_end_time = #{insuranceEndTime},
+	      </if>
+	      <if test="insuranceCompany != null and insuranceCompany != ''" >
+	        insurance_company = #{insuranceCompany},
+	      </if>
+	      <if test="annualReviewTime != null" >
+	        annual_review_time = #{annualReviewTime},
+	      </if>
+	      <if test="standardOilWear != null and standardOilWear != ''" >
+	        standard_oil_wear = #{standardOilWear},
+	      </if>
+	      <if test="oilDiscountLimit != null and oilDiscountLimit != ''" >
+	        oil_discount_limit = #{oilDiscountLimit},
+	      </if>
+	      <if test="oilDiscountPoint != null and oilDiscountPoint != ''" >
+	        oil_discount_point = #{oilDiscountPoint},
+	      </if>
+	      <if test="lastDistance != null" >
+	        last_distance = #{lastDistance},
+	      </if>
+	      <if test="updateTime != null" >
+	        update_time = #{updateTime},
+	      </if>
+	      <if test="updateUser != null and updateUser != ''" >
+	        update_user = #{updateUser},
+	      </if>
+	      <if test="delFlag != null and delFlag != ''" >
+	        del_flag = #{delFlag},
+	      </if>
+	    </set>
+	    where id = #{id}
+  	</update>
+  
+  	<update id="updateById"  parameterType="java.util.HashMap">
+		Update basic_track 
+		<set>
+			<if test="updateTime != null" >
+	        	update_time = #{updateTime},
+	      	</if>
+	      	<if test="updateUser != null and updateUser != ''" >
+	        	update_user = #{updateUser},
+	      	</if>
+	      	<if test="delFlag != null and delFlag != ''" >
+	        	del_flag = #{delFlag},
+	      	</if>
+	      	<if test="drivingFilePath != null and drivingFilePath != ''" >
+	        	driving_file_path = #{drivingFilePath},
+	      	</if>
+	      	<if test="toperatingFilePath != null and toperatingFilePath != ''" >
+		        toperating_file_path = #{toperatingFilePath},
+		    </if>
+		    <if test="xoperatingFilePath != null and xoperatingFilePath != ''" >
+		        xoperating_file_path = #{xoperatingFilePath}
+		    </if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<update id="updateByNo"  parameterType="java.util.HashMap">
+		Update basic_track 
+		<set>
+	      	<if test="addFlag != null and addFlag != ''" >
+	        	last_distance += #{lastDistance},
+	      	</if>
+	      	<if test="clearFlag != null and clearFlag != ''" >
+	        	last_distance = 0,
+	      	</if>
+		</set>
+		where no = #{no}
+	</update>
+	
+	<select id="getByCarNumber" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select top 1  *
+		From basic_track
+		where del_flag = 'N'
+			and no = #{carNumber} 
+	</select>
+</mapper>

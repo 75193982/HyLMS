@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.ContractMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.Contract" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="main_id" property="mainId" jdbcType="INTEGER" />
+    <result column="start_time" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+    <result column="notice_time" property="noticeTime" jdbcType="TIMESTAMP" />
+    <result column="file_path" property="filePath" jdbcType="VARCHAR" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <select id="getById" resultMap="BaseResultMap" parameterType="int">
+		select *
+		from sys_contract
+		where id = #{id}
+	</select>
+	
+	<select id="getByConditions" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+		Select a.*
+		From sys_contract a 
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="code != null and code != ''">
+				and a.code = #{code}
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status}
+			</if>
+			<if test="deadline != null and deadline != ''">
+				and datediff(day, a.end_time, #{deadline}) = 0
+			</if> 
+		</where>
+		order by a.code asc
+	</select>
+	
+	<select id="getPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	  	SELECT * from (
+			SELECT row_number() over(order by a.id asc) as rownumber,a.*
+			From sys_contract a
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="type != null and type != ''">
+				and a.type = #{type} 
+			</if>
+			<if test="code != null and code != ''">
+				and a.code like '%'+#{code}+'%'
+			</if>
+			<if test="startTime != null and startTime != ''">
+				and convert(char(10), a.start_time,120) &gt;= convert(char(10), #{startTime},120)
+			</if>
+			<if test="endTime != null and endTime != ''">
+				and convert(char(10), a.end_time,120) &lt;= convert(char(10), #{endTime},120)
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status} 
+			</if>
+		</where>
+		) as t 
+		WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+		ORDER BY t.code ASC
+	</select>
+	  
+	<select id="getPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+		SELECT count(*)
+		FROM sys_contract a
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="type != null and type != ''">
+				and a.type = #{type} 
+			</if>
+			<if test="code != null and code != ''">
+				and a.code like '%'+#{code}+'%'
+			</if>
+			<if test="startTime != null and startTime != ''">
+				and convert(char(10), a.start_time,120) &gt;= convert(char(10), #{startTime},120)
+			</if>
+			<if test="endTime != null and endTime != ''">
+				and convert(char(10), a.end_time,120) &lt;= convert(char(10), #{endTime},120)
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status} 
+			</if>
+		</where>
+	</select>
+	
+  <insert id="insert" parameterType="com.jshpsoft.domain.Contract" >
+    insert into sys_contract 
+    ( type, code, main_id, start_time, end_time, status, mark, notice_time, file_path, 
+      insert_time, insert_user, update_time, update_user, del_flag)
+    values 
+    ( #{type}, #{code}, #{mainId}, #{startTime}, #{endTime}, #{status}, #{mark}, #{noticeTime}, #{filePath}, 
+      #{insertTime}, #{insertUser}, #{updateTime}, #{updateUser}, #{delFlag})
+  </insert>
+  
+  <update id="update" parameterType="com.jshpsoft.domain.Contract" >
+    update sys_contract
+    <set >
+      <if test="type != null and type != ''" >
+        type = #{type},
+      </if>
+      <if test="code != null and code != ''" >
+        code = #{code},
+      </if>
+      <if test="mainId != null" >
+        main_id = #{mainId},
+      </if>
+      <if test="startTime != null" >
+        start_time = #{startTime},
+      </if>
+      <if test="endTime != null" >
+        end_time = #{endTime},
+      </if>
+      <if test="status != null and status != ''" >
+        status = #{status},
+      </if>
+      <if test="mark != null and mark != ''" >
+        mark = #{mark},
+      </if>
+      <if test="noticeTime != null" >
+        notice_time = #{noticeTime},
+      </if>
+      <if test="filePath != null and filePath != ''" >
+        file_path = #{filePath},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime},
+      </if>
+      <if test="updateUser != null and updateUser != ''" >
+        update_user = #{updateUser},
+      </if>
+      <if test="delFlag != null and delFlag != ''" >
+        del_flag = #{delFlag},
+      </if>
+    </set>
+    where id = #{id}
+  </update>
+ 
+ 	<update id="updateById"  parameterType="java.util.HashMap">
+		Update sys_contract 
+		<set>
+			<if test="updateTime != null" >
+	        	update_time = #{updateTime},
+	      	</if>
+	      	<if test="updateUser != null and updateUser != ''" >
+	        	update_user = #{updateUser},
+	      	</if>
+	      	<if test="delFlag != null and delFlag != ''" >
+	        	del_flag = #{delFlag},
+	      	</if>
+	      	<if test="filePath != null and filePath != ''" >
+	        	file_path = #{filePath},
+	      	</if>
+	      	<if test="status != null and status != ''" >
+		        status = #{status},
+		    </if>
+		</set>
+		where id = #{id}
+	</update>
+	
+</mapper>

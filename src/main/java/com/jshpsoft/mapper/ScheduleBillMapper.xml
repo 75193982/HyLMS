@@ -1,0 +1,596 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.ScheduleBillMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.ScheduleBill" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="type" property="type" />
+    <result column="schedule_bill_no" property="scheduleBillNo" jdbcType="VARCHAR" />
+    <result column="send_time" property="sendTime" jdbcType="TIMESTAMP" />
+    <result column="receive_time" property="receiveTime" jdbcType="TIMESTAMP" />
+    <result column="plan_reach_time" property="planReachTime" jdbcType="TIMESTAMP" />
+    <result column="driver_id" property="driverId"/>
+    <result column="codriver_id" property="codriverId"/>
+    <result column="car_number" property="carNumber" jdbcType="VARCHAR" />
+    <result column="start_address" property="startAddress" jdbcType="VARCHAR" />
+    <result column="end_address" property="endAddress" jdbcType="VARCHAR" />
+    <result column="amount" property="amount" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+    <result column="modify_enabled_flag" property="modifyEnabledFlag" />
+    <result column="out_sourcing_id" property="outSourcingId" />
+    
+    <result column="transportCostApplyId" property="transportCostApplyId" />
+    <result column="transportCostApplyStatus" property="transportCostApplyStatus" />
+    <result column="stock_id" property="stockId" jdbcType="INTEGER" />
+    <result column="stockName" property="stockName" jdbcType="VARCHAR" />
+    <result column="driverName" property="driverName" jdbcType="VARCHAR" />
+    <result column="codriverName" property="codriverName" jdbcType="VARCHAR" />
+    <result column="insertUserName" property="insertUserName" jdbcType="VARCHAR" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="degree" property="degree"  />
+  </resultMap>
+ 
+  	<select id="getPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	  	SELECT * from (
+			SELECT row_number() over(order by a.id desc) as rownumber,a.*,s.name as stockName,b.name as insertUserName,
+			u.name as driverName,u.mobile as mobile
+			From scheduleBill a
+			left join basic_stock s on s.id = a.stock_id
+			left join sys_user u on u.id = a.driver_id
+			left join sys_user b on b.id = a.insert_user
+		<where>
+			<if test="type != null and type != ''">
+				and a.type = #{type} 
+			</if>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="sendTimeStart != null and sendTimeStart != ''">
+				and convert(char(10), a.send_time,120) &gt;= convert(char(10), #{sendTimeStart},120)
+			</if>
+			<if test="sendTimeEnd != null and sendTimeEnd != ''">
+				and convert(char(10), a.send_time,120) &lt;= convert(char(10), #{sendTimeEnd},120)
+			</if>
+			<if test="carNumber != null and carNumber != ''">
+				and a.car_number like '%'+#{carNumber}+'%'
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status} 
+			</if>
+			<if test="scheduleBillNo != null and scheduleBillNo != ''">
+				and a.schedule_bill_no like '%'+#{scheduleBillNo}+'%'
+			</if>
+			<if test="startTime != null and startTime != ''">
+				and convert(char(10), a.insert_time,120) &gt;= convert(char(10), #{startTime},120)
+			</if>
+			<if test="endTime != null and endTime != ''">
+				and convert(char(10), a.insert_time,120) &lt;= convert(char(10), #{endTime},120)
+			</if>
+			<if test="statusIn != null and statusIn != ''">
+				and a.status in (${statusIn})
+			</if>
+			<if test="stockId != null and stockId != ''">
+			    and a.stock_id = #{stockId}
+			</if>
+			<if test="insertUser != null and insertUser != ''">
+			    and a.insert_user = #{insertUser}
+			</if>
+			<if test="driverId != null">
+			    and a.driver_id = #{driverId}
+			</if>
+			<if test="outSourcingId != null">
+			    and a.out_sourcing_id = #{outSourcingId}
+			</if>
+		</where>
+		) as t 
+		WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+		ORDER BY t.id desc
+	</select>
+	  
+	<select id="getPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+		SELECT count(*)
+		FROM scheduleBill a
+		left join basic_stock s on s.id = a.stock_id
+		left join sys_user u on u.id = a.driver_id
+		left join sys_user b on b.id = a.insert_user
+		<where>
+			<if test="type != null and type != ''">
+				and a.type = #{type} 
+			</if>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="sendTimeStart != null and sendTimeStart != ''">
+				and convert(char(10), a.send_time,120) &gt;= convert(char(10), #{sendTimeStart},120)
+			</if>
+			<if test="sendTimeEnd != null and sendTimeEnd != ''">
+				and convert(char(10), a.send_time,120) &lt;= convert(char(10), #{sendTimeEnd},120)
+			</if>
+			<if test="carNumber != null and carNumber != ''">
+				and a.car_number like '%'+#{carNumber}+'%'
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status} 
+			</if>
+			<if test="scheduleBillNo != null and scheduleBillNo != ''">
+				and a.schedule_bill_no like '%'+#{scheduleBillNo}+'%'
+			</if>
+			<if test="startTime != null and startTime != ''">
+				and convert(char(10), a.insert_time,120) &gt;= convert(char(10), #{startTime},120)
+			</if>
+			<if test="endTime != null and endTime != ''">
+				and convert(char(10), a.insert_time,120) &lt;= convert(char(10), #{endTime},120)
+			</if>
+			<if test="statusIn != null and statusIn != ''">
+				and a.status in (${statusIn})
+			</if>
+			<if test="stockId != null and stockId != ''">
+			    and a.stock_id = #{stockId}
+			</if>
+			<if test="insertUser != null and insertUser != ''">
+			    and a.insert_user = #{insertUser}
+			</if>
+			<if test="driverId != null">
+			    and a.driver_id = #{driverId}
+			</if>
+			<if test="outSourcingId != null">
+			    and a.out_sourcing_id = #{outSourcingId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getByConditions" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+		Select a.*,s.name as stockName,u.name as driverName
+		From scheduleBill a 
+		left join basic_stock s on s.id = a.stock_id
+		left join sys_user u on u.id = a.driver_id
+		<where>
+			<if test="type != null and type != ''">
+				and a.type = #{type} 
+			</if>
+			<if test="currYearMonthDay != null and currYearMonthDay != ''">
+				and a.schedule_bill_no like '%'+#{currYearMonthDay}+'%'    
+			</if>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status} 
+			</if>
+			<if test="statusLest != null and statusLest != ''">
+				and a.status &gt;= #{statusLest} 
+			</if>
+			<if test="statusLess != null and statusLess != ''">
+				and a.status &lt;= #{statusLess} 
+			</if>
+			<if test="scheduleBillNo != null and scheduleBillNo != ''">
+				and a.schedule_bill_no like '%'+#{scheduleBillNo}+'%'
+			</if>
+			<if test="carNumber != null and carNumber != ''">
+				and a.car_number like '%'+#{carNumber}+'%'
+			</if>
+			<if test="startTime != null and startTime != ''">
+				and convert(char(10), a.insert_time,120) &gt;= convert(char(10), #{startTime},120)
+			</if>
+			<if test="endTime != null and endTime != ''">
+				and convert(char(10), a.insert_time,120) &lt;= convert(char(10), #{endTime},120)
+			</if>
+			<if test="statusIn != null and statusIn != ''">
+				and a.status in (${statusIn})
+			</if>
+			<if test="stockId != null and stockId != ''">
+			    and a.stock_id = #{stockId}
+			</if>
+			<if test="statusIn != null and statusIn != ''">
+				and a.status in (${statusIn})
+			</if>
+			<if test="insertUser != null and insertUser != ''">
+			    and a.insert_user = #{insertUser}
+			</if>
+			<if test="outSourcingId != null">
+			    and a.out_sourcing_id = #{outSourcingId}
+			</if>
+			<if test="sendTimeStart != null and sendTimeStart != ''">
+				and convert(char(10), a.send_time,120) &gt;= convert(char(10), #{sendTimeStart},120)
+			</if>
+			<if test="sendTimeEnd != null and sendTimeEnd != ''">
+				and convert(char(10), a.send_time,120) &lt;= convert(char(10), #{sendTimeEnd},120)
+			</if>
+			<if test="driverName != null and driverName != ''">
+				and u.name like '%'+#{driverName}+'%'
+			</if>
+		</where>
+		<if test="orderBybillNo != null">
+			order by a.schedule_bill_no desc
+		</if>
+		<if test="orderBybillNo == null">
+			order by a.id desc
+		</if>
+	</select>
+	
+  <insert id="insert" parameterType="com.jshpsoft.domain.ScheduleBill" keyProperty="id" useGeneratedKeys="true" >
+    insert into scheduleBill 
+    ( type,schedule_bill_no, send_time, receive_time, plan_reach_time, driver_id, codriver_id,car_number, start_address, end_address, 
+      amount, status, mark, insert_time, insert_user, update_time, update_user, del_flag,stock_id,
+      modify_enabled_flag,out_sourcing_id)
+    values 
+    ( #{type},#{scheduleBillNo}, #{sendTime}, #{receiveTime}, #{planReachTime}, #{driverId}, #{codriverId},#{carNumber}, #{startAddress}, #{endAddress}, 
+      #{amount}, #{status}, #{mark}, #{insertTime}, #{insertUser}, #{updateTime}, #{updateUser}, #{delFlag},#{stockId},
+      #{modifyEnabledFlag},#{outSourcingId})
+  </insert>
+  
+  <update id="update" parameterType="com.jshpsoft.domain.ScheduleBill" >
+    update scheduleBill
+    <set >
+      <if test="type != null" >
+        type = #{type},
+      </if>
+      <if test="sendTime != null" >
+        send_time = #{sendTime},
+      </if>
+      <if test="receiveTime != null" >
+        receive_time = #{receiveTime},
+      </if>
+      <if test="planReachTime != null" >
+        plan_reach_time = #{planReachTime},
+      </if>
+      <if test="driverId != null" >
+        driver_id = #{driverId},
+      </if>
+      <if test="codriverId != null" >
+        codriver_id = #{codriverId},
+      </if>
+      <if test="carNumber != null and carNumber != ''" >
+        car_number = #{carNumber},
+      </if>
+      <if test="startAddress != null and startAddress != ''" >
+        start_address = #{startAddress},
+      </if>
+      <if test="endAddress != null and endAddress != ''" >
+        end_address = #{endAddress},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount},
+      </if>
+      <if test="status != null and status != ''" >
+        status = #{status},
+      </if>
+      <if test="mark != null and mark != ''" >
+        mark = #{mark},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime},
+      </if>
+      <if test="updateUser != null and updateUser != ''" >
+        update_user = #{updateUser},
+      </if>
+      <if test="delFlag != null and delFlag != ''" >
+        del_flag = #{delFlag},
+      </if>
+      <if test="modifyEnabledFlag != null and modifyEnabledFlag != ''" >
+        modify_enabled_flag = #{modifyEnabledFlag},
+      </if>
+      <if test="outSourcingId != null">
+	    out_sourcing_id = #{outSourcingId},
+	  </if>
+    </set>
+    where schedule_bill_no = #{scheduleBillNo}
+  </update>
+  
+  	<update id="updateByBillNo"  parameterType="java.util.HashMap">
+		Update scheduleBill 
+		<set>
+			<if test="status != null and status != ''" >
+	        	status = #{status},
+	      	</if>
+	      	<if test="updateTime != null" >
+	        	update_time = #{updateTime},
+	      	</if>
+	      	<if test="updateUser != null and updateUser != ''" >
+	        	update_user = #{updateUser},
+	      	</if>
+	      	<if test="delFlag != null and delFlag != ''" >
+	        	del_flag = #{delFlag},
+	      	</if>
+	      	<if test="driverId != null" >
+	        	driver_id = #{driverId},
+	      	</if>
+	      	<if test="carNumber != null and carNumber != ''" >
+	        	car_number = #{carNumber},
+	      	</if>
+	      	<if test="modifyEnabledFlag != null and modifyEnabledFlag != ''" >
+		        modify_enabled_flag = #{modifyEnabledFlag},
+		    </if>
+		    <if test="outSourcingId != null">
+		    	out_sourcing_id = #{outSourcingId},
+		  	</if>
+      	</set>
+		where schedule_bill_no = #{scheduleBillNo}
+	</update>
+	
+	<select id="getById" resultMap="BaseResultMap" parameterType="int">
+		select a.*,u.name as driverName,d.name as codriverName
+		from scheduleBill a
+		left join sys_user u on u.id = a.driver_id
+		left join sys_user d on d.id = a.codriver_id
+		where a.id = #{id}
+	</select>
+  
+	<select id="getByBillNo" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select s.*,u.name as driverName,d.name as codriverName
+		from scheduleBill s
+		left join sys_user u on u.id = s.driver_id
+		left join sys_user d on d.id = s.codriver_id
+		where s.schedule_bill_no = #{scheduleBillNo} and s.del_flag='N'
+	</select>
+  
+  	<select id="getSchBillNo" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+		Select a.*,u.name as driverName
+		From scheduleBill a 
+		left join sys_user u on u.id = a.driver_id
+		where a.status = #{status} and a.del_flag = #{delFlag} 
+		<if test="stockId != null and stockId != ''">
+		    and a.stock_id = #{stockId}
+		</if>
+			and a.schedule_bill_no not in (select schedule_bill_no 
+									   from scheduleTrackChangeApply
+									   where del_flag = #{delFlag} )
+									   order by schedule_bill_no desc
+	</select>
+	
+	<select id="getOwnPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	  	SELECT * from (
+			SELECT row_number() over(order by a.id desc) as rownumber,a.*
+			From scheduleBill a 
+			where a.id in (	select distinct b.detail_id 
+							from office_item b,office_taskHistory c
+							where b.id = c.item_id and b.business_type = '02' and c.operate_user_id = #{userId}
+							)
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="sendTimeStart != null and sendTimeStart != ''">
+				and convert(char(10), a.send_time,120) &gt;= convert(char(10), #{sendTimeStart},120)
+			</if>
+			<if test="sendTimeEnd != null and sendTimeEnd != ''">
+				and convert(char(10), a.send_time,120) &lt;= convert(char(10), #{sendTimeEnd},120)
+			</if>
+			<if test="carNumber != null and carNumber != ''">
+				and a.car_number like '%'+#{carNumber}+'%'
+			</if>
+		) as t 
+		WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+		ORDER BY t.schedule_bill_no desc
+	</select>
+	  
+	<select id="getOwnPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+		SELECT count(*)
+		FROM scheduleBill a
+		where a.id in (	select distinct b.detail_id 
+						from office_item b,office_taskHistory c
+						where b.id = c.item_id and b.business_type = '02' and c.operate_user_id = #{userId}
+						)
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="sendTimeStart != null and sendTimeStart != ''">
+				and convert(char(10), a.send_time,120) &gt;= convert(char(10), #{sendTimeStart},120)
+			</if>
+			<if test="sendTimeEnd != null and sendTimeEnd != ''">
+				and convert(char(10), a.send_time,120) &lt;= convert(char(10), #{sendTimeEnd},120)
+			</if>
+			<if test="carNumber != null and carNumber != ''">
+				and a.car_number like '%'+#{carNumber}+'%'
+			</if>
+	</select>
+	
+	<select id="getEnabledScheduleBillInfo" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+		select sb.*,tca.id as transportCostApplyId,tca.status as transportCostApplyStatus,u.name as driverName,d.name as codriverName
+			from scheduleBill sb 
+			left join transportCostApply tca
+			on tca.schedule_bill_no = sb.schedule_bill_no 
+				and tca.del_flag = #{delFlag}
+			left join sys_user u on u.id = sb.driver_id
+			left join sys_user d on d.id = sb.codriver_id
+			where 
+				sb.driver_id = #{driverId} 
+				and sb.del_flag = #{delFlag} 
+				and sb.status = #{status} 
+			order by sb.id asc
+	</select>
+	
+		<resultMap id="BalanceCarMap" type="com.jshpsoft.domain.BalanceCar">
+		<id column="id" property="id" />
+		<result column="type" property="type" />
+		<result column="supplier_id" property="supplierId" />
+		<result column="out_sourcing_id" property="outSourcingId" />
+		<result column="outSourcingName" property="outSourcingName" />
+		<result column="brand" property="brand" />
+		<result column="model" property="model" />
+		<result column="vin" property="vin" />
+		<result column="waybillDate" property="waybillDate" />
+		<result column="waybill_no" property="waybillNo" />
+		<result column="car_number" property="carNumber" />
+		<result column="scheduleDate" property="scheduleDate" />
+		<result column="schedule_bill_no" property="scheduleBillNo" />
+		<result column="start_address" property="startAddress" />
+		<result column="target_province" property="targetProvince" />
+		<result column="target_city" property="targetCity" />
+		<result column="count" property="count" />
+		<result column="waybillStatus" property="waybillStatus" />
+		<result column="scheduleStatus" property="scheduleStatus" />
+		<result column="transport_price" property="transportPrice" />
+		
+	</resultMap>
+	
+	<select id="getCostPageList" parameterType="java.util.HashMap" resultMap="BalanceCarMap">
+	  	SELECT * from (
+			SELECT row_number() over(order by d.send_time desc) as rownumber,
+				b.id,b.type,a.supplier_id,d.out_sourcing_id,
+				(select name from basic_outSourcing e where e.id = d.out_sourcing_id) outSourcingName,
+				b.brand,b.model,b.vin,convert(char(10), a.send_time,120) waybillDate,a.waybill_no,a.status waybillStatus,
+				d.car_number,convert(char(10), d.send_time,120) scheduleDate,d.status scheduleStatus, 
+				c.schedule_bill_no,c.start_address,c.target_province,c.target_city,1 count,b.transport_price
+			From  waybill a,carStock b,scheduleBillDetail c,scheduleBill d
+			left join sys_user u on u.id = d.driver_id
+			where a.id = b.waybill_id and c.schedule_bill_no = d.schedule_bill_no
+					and charindex(','+ltrim(b.id)+',',','+  c.car_stock_ids+',' ) &gt; 0  
+					and c.type in (${typeIn}) and d.status in (${statusIn})
+				<if test="delFlag != null and delFlag != ''">
+					and b.del_flag = #{delFlag} 
+				</if>
+				<if test="outSourcingId != null and outSourcingId != ''">
+					and d.out_sourcing_id = #{outSourcingId} 
+				</if>
+				<if test="brand != null and brand != ''">
+					and b.brand like '%'+#{brand}+'%'
+				</if>
+				<if test="waybillDate != null and waybillDate != ''">
+					and convert(char(10), a.send_time,120) = #{waybillDate}
+				</if>
+				<if test="scheduleDate != null and scheduleDate != ''">
+					and convert(char(10), d.send_time,120) = #{scheduleDate}
+				</if>
+				<if test="scheduleBillNo != null and scheduleBillNo != ''">
+					and c.schedule_bill_no like '%'+#{scheduleBillNo}+'%' 
+				</if>
+				<if test="waybillStatus != null and waybillStatus != ''">
+  					and a.status = #{waybillStatus}
+  				</if>
+				<if test="scheduleStatus != null and scheduleStatus != ''">
+  					and d.status = #{scheduleStatus}
+  				</if>
+  				<if test="carNumber != null and carNumber != ''">
+					and d.car_number like '%'+#{carNumber}+'%'
+				</if>
+				<if test="sendTimeStart != null and sendTimeStart != ''">
+					and convert(char(10), d.send_time,120) &gt;= convert(char(10), #{sendTimeStart},120)
+				</if>
+				<if test="sendTimeEnd != null and sendTimeEnd != ''">
+					and convert(char(10), d.send_time,120) &lt;= convert(char(10), #{sendTimeEnd},120)
+				</if>
+				<if test="driverName != null and driverName != ''">
+					and u.name like '%'+#{driverName}+'%'
+				</if>
+		) as t 
+		<if test="notWhere == null or notWhere == ''">
+			WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+		</if>
+	</select>
+	  
+	<select id="getCostPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+			SELECT count(*)
+			From  waybill a,carStock b,scheduleBillDetail c,scheduleBill d
+			left join sys_user u on u.id = d.driver_id
+			where a.id = b.waybill_id and c.schedule_bill_no = d.schedule_bill_no
+					and charindex(','+ltrim(b.id)+',',','+  c.car_stock_ids+',' ) &gt; 0  
+					and c.type in (${typeIn}) and d.status in (${statusIn})
+				<if test="delFlag != null and delFlag != ''">
+					and b.del_flag = #{delFlag} 
+				</if>
+				<if test="outSourcingId != null and outSourcingId != ''">
+					and d.out_sourcing_id = #{outSourcingId} 
+				</if>
+				<if test="brand != null and brand != ''">
+					and b.brand like '%'+#{brand}+'%'
+				</if>
+				<if test="waybillDate != null and waybillDate != ''">
+					and convert(char(10), a.send_time,120) = #{waybillDate}
+				</if>
+				<if test="scheduleDate != null and scheduleDate != ''">
+					and convert(char(10), d.send_time,120) = #{scheduleDate}
+				</if>
+				<if test="scheduleBillNo != null and scheduleBillNo != ''">
+					and c.schedule_bill_no like '%'+#{scheduleBillNo}+'%' 
+				</if>
+				<if test="waybillStatus != null and waybillStatus != ''">
+  					and a.status = #{waybillStatus}
+  				</if>
+				<if test="scheduleStatus != null and scheduleStatus != ''">
+  					and d.status = #{scheduleStatus}
+  				</if>
+  				<if test="carNumber != null and carNumber != ''">
+					and d.car_number like '%'+#{carNumber}+'%'
+				</if>
+				<if test="sendTimeStart != null and sendTimeStart != ''">
+					and convert(char(10), d.send_time,120) &gt;= convert(char(10), #{sendTimeStart},120)
+				</if>
+				<if test="sendTimeEnd != null and sendTimeEnd != ''">
+					and convert(char(10), d.send_time,120) &lt;= convert(char(10), #{sendTimeEnd},120)
+				</if>
+				<if test="driverName != null and driverName != ''">
+					and u.name like '%'+#{driverName}+'%'
+				</if>
+	</select>
+	
+	<select id="getCostByConditions" parameterType="java.util.HashMap" resultMap="BalanceCarMap">
+	  	SELECT b.id,b.type,a.supplier_id,d.out_sourcing_id,
+				(select name from basic_outSourcing e where e.id = d.out_sourcing_id) outSourcingName,
+				b.brand,b.model,b.vin,convert(char(10), a.send_time,120) waybillDate,a.waybill_no,a.status waybillStatus,
+				d.car_number,convert(char(10), d.insert_time,120) scheduleDate,d.status scheduleStatus, 
+				c.schedule_bill_no,c.start_address,c.target_province,c.target_city,1 count,b.transport_price
+			From  waybill a,carStock b,scheduleBillDetail c,scheduleBill d
+			where a.id = b.waybill_id and c.schedule_bill_no = d.schedule_bill_no
+					and charindex(','+ltrim(b.id)+',',','+  c.car_stock_ids+',' ) &gt; 0  
+					and c.type in (${typeIn}) and d.status in (${statusIn})
+				<if test="delFlag != null and delFlag != ''">
+					and b.del_flag = #{delFlag} 
+				</if>
+				<if test="outSourcingId != null and outSourcingId != ''">
+					and d.out_sourcing_id = #{outSourcingId} 
+				</if>
+				<if test="brand != null and brand != ''">
+					and b.brand like '%'+#{brand}+'%'
+				</if>
+				<if test="waybillDate != null and waybillDate != ''">
+					and convert(char(10), a.send_time,120) = #{waybillDate}
+				</if>
+				<if test="scheduleDate != null and scheduleDate != ''">
+					and convert(char(10), d.send_time,120) = #{scheduleDate}
+				</if>
+				<if test="scheduleBillNo != null and scheduleBillNo != ''">
+					and c.schedule_bill_no like '%'+#{scheduleBillNo}+'%' 
+				</if>
+				<if test="waybillStatus != null and waybillStatus != ''">
+  					and a.status = #{waybillStatus}
+  				</if>
+				<if test="scheduleStatus != null and scheduleStatus != ''">
+  					and d.status = #{scheduleStatus}
+  				</if>
+		ORDER BY d.send_time desc
+	</select>
+	
+	<select id="getGroupByUser" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	    select a.insert_user,b.name as insertUserName,count(*) as degree,sum(amount) as amount
+		from scheduleBill a
+		left join sys_user b on b.id = a.insert_user 
+		where a.del_flag = 'N'
+		<if test="insertUser != null and insertUser != ''">
+		   	and a.insert_user = #{insertUser}
+		</if>
+		<if test="stockId != null and stockId != ''">
+		    and a.stock_id = #{stockId}
+		</if>
+		group by a.insert_user,b.name
+	</select>
+	
+	<select id="getGroupByUserCount" parameterType="java.util.HashMap" resultType="Integer">
+	    select count(*)from(
+			select a.insert_user,b.name as insertUserName,count(*) as degree,sum(amount) as amount
+			from scheduleBill a
+			left join sys_user b on b.id = a.insert_user 
+			where  a.del_flag = 'N'
+			<if test="insertUser != null and insertUser != ''">
+		   		and a.insert_user = #{insertUser}
+			</if>
+			<if test="stockId != null and stockId != ''">
+		  	  and a.stock_id = #{stockId}
+			</if>
+			group by a.insert_user,b.name)t
+	</select>
+</mapper>

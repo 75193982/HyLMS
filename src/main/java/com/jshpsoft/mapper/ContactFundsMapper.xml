@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.ContactFundsMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.ContactFunds" >
+    <result column="id" property="id" jdbcType="INTEGER" />
+    <result column="business_type" property="businessType" jdbcType="VARCHAR" />
+    <result column="business_id" property="businessId" jdbcType="INTEGER" />
+    <result column="fund_date" property="fundDate" jdbcType="VARCHAR" />
+    <result column="fund_type" property="fundType" jdbcType="VARCHAR" />
+    <result column="cash_amount" property="cashAmount" jdbcType="DECIMAL" />
+    <result column="oil_amount" property="oilAmount" jdbcType="DECIMAL" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+    
+    <result column="businessName" property="businessName" />
+    <result column="allAmount" property="allAmount" />
+    <result column="giveAmount" property="giveAmount" />
+  </resultMap>
+  
+	<select id="getPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	  	SELECT * from (
+			SELECT row_number() over(order by a.id asc) as rownumber,
+			a.*,case when a.business_type = 0 
+				then (select b.name from basic_supplier b where b.id = a.business_id) 
+				else (select c.name from basic_outSourcing c where c.id = a.business_id) end businessName
+			from contactFunds a
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="businessType != null">
+				and a.business_type = #{businessType} 
+			</if>
+			<if test="businessId != null and businessId != ''">
+				and a.business_id = #{businessId}
+			</if>
+			<if test="fundDateStart != null and fundDateStart != ''">
+				and a.fund_date &gt;= #{fundDateStart}
+			</if>
+			<if test="fundDateEnd != null and fundDateEnd != ''">
+				and a.fund_date &lt;= #{fundDateEnd}
+			</if>
+			<if test="fundType != null and fundType != ''">
+				and a.fund_type = #{fundType}
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status}
+			</if>
+		</where>
+		) as t 
+		WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+	</select>
+	  
+	<select id="getPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+		SELECT count(*)
+		from contactFunds a
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="businessType != null">
+				and a.business_type = #{businessType} 
+			</if>
+			<if test="businessId != null and businessId != ''">
+				and a.business_id = #{businessId}
+			</if>
+			<if test="fundDateStart != null and fundDateStart != ''">
+				and a.fund_date &gt;= #{fundDateStart}
+			</if>
+			<if test="fundDateEnd != null and fundDateEnd != ''">
+				and a.fund_date &lt;= #{fundDateEnd}
+			</if>
+			<if test="fundType != null and fundType != ''">
+				and a.fund_type = #{fundType}
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getByConditions" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	  	select a.*,case when a.business_type = 0 
+				then (select b.name from basic_supplier b where b.id = a.business_id) 
+				else (select c.name from basic_outSourcing c where c.id = a.business_id) end businessName
+			from contactFunds a
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="businessType != null">
+				and a.business_type = #{businessType} 
+			</if>
+			<if test="businessId != null and businessId != ''">
+				and a.business_id = #{businessId}
+			</if>
+			<if test="fundDateStart != null and fundDateStart != ''">
+				and a.fund_date &gt;= #{fundDateStart}
+			</if>
+			<if test="fundDateEnd != null and fundDateEnd != ''">
+				and a.fund_date &lt;= #{fundDateEnd}
+			</if>
+			<if test="fundType != null and fundType != ''">
+				and a.fund_type = #{fundType}
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status}
+			</if>
+		</where>
+		order by a.business_id,a.fund_date,a.fund_type,a.insert_time
+	</select>
+	
+  	<select id="getById" resultMap="BaseResultMap" parameterType="int">
+		select a.*,case when a.business_type = 0 
+				then (select b.name from basic_supplier b where b.id = a.business_id) 
+				else (select c.name from basic_outSourcing c where c.id = a.business_id) end businessName
+		from contactFunds a
+		where a.id = #{id}
+	</select>
+	
+  <insert id="insert" parameterType="com.jshpsoft.domain.ContactFunds" >
+    insert into contactFunds 
+    (business_type, business_id, fund_date, fund_type, cash_amount, oil_amount, amount, status, 
+      mark, insert_time, insert_user, update_time, update_user, del_flag )
+    values (#{businessType}, #{businessId}, #{fundDate}, #{fundType}, #{cashAmount}, #{oilAmount}, #{amount}, #{status}, 
+      #{mark}, #{insertTime}, #{insertUser}, #{updateTime}, #{updateUser}, #{delFlag} )
+  </insert>
+  
+  <update id="update" parameterType="com.jshpsoft.domain.CarBrand" >
+    update contactFunds
+    <set >
+      <if test="businessType != null" >
+        business_type = #{businessType},
+      </if>
+      <if test="businessId != null" >
+        business_id = #{businessId},
+      </if>
+      <if test="fundDate != null" >
+        fund_date = #{fundDate},
+      </if>
+      <if test="fundType != null" >
+        fund_type = #{fundType},
+      </if>
+      <if test="cashAmount != null" >
+        cash_amount = #{cashAmount},
+      </if>
+      <if test="oilAmount != null" >
+        oil_amount = #{oilAmount},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount},
+      </if>
+      <if test="status != null" >
+        status = #{status},
+      </if>
+      <if test="mark != null" >
+        mark = #{mark},
+      </if>
+      <if test="insertTime != null" >
+        insert_time = #{insertTime},
+      </if>
+      <if test="insertUser != null" >
+        insert_user = #{insertUser},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag},
+      </if>
+    </set>
+    where id = #{id}
+  </update>
+    	
+  	<update id="updateById"  parameterType="java.util.HashMap">
+		update contactFunds
+	    <set >
+	      <if test="status != null and status != ''" >
+	        status = #{status},
+	      </if>
+	      <if test="updateTime != null" >
+	        update_time = #{updateTime},
+	      </if>
+	      <if test="updateUser != null and updateUser != ''" >
+	        update_user = #{updateUser},
+	      </if>
+	      <if test="delFlag != null and delFlag != ''" >
+	        del_flag = #{delFlag},
+	      </if>
+	    </set>
+    	where id = #{id}
+	</update>
+ 
+	<select id="getReportData" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	  	select a.*,case when a.business_type = 0 
+				then (select b.name from basic_supplier b where b.id = a.business_id) 
+				else (select c.name from basic_outSourcing c where c.id = a.business_id) end businessName
+		from(
+			select business_type,business_id,
+					sum(case when fund_type = 0 then amount else 0 end ) allAmount,
+					sum(case when fund_type = 1 then amount else 0 end ) giveAmount
+			from contactFunds 
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and del_flag = #{delFlag} 
+			</if>
+			<if test="status != null">
+				and status = #{status} 
+			</if>
+			<if test="businessType != null">
+				and business_type = #{businessType} 
+			</if>
+			<if test="businessId != null and businessId != ''">
+				and business_id = #{businessId}
+			</if>
+			<if test="fundDate != null and fundDate != ''">
+				and fund_date = #{fundDate}
+			</if>
+		</where>
+		group by business_type, business_id) a
+		order by a.business_id
+	</select>
+	
+	
+</mapper>

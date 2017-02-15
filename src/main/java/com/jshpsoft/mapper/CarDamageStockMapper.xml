@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.CarDamageStockMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.CarDamageStock" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="stock_id" property="stockId" jdbcType="INTEGER" />
+    <result column="waybill_id" property="waybillId" jdbcType="INTEGER" />
+    <result column="brand" property="brand" jdbcType="VARCHAR" />
+    <result column="vin" property="vin" jdbcType="VARCHAR" />
+    <result column="model" property="model" jdbcType="VARCHAR" />
+    <result column="color" property="color" jdbcType="VARCHAR" />
+    <result column="engine_no" property="engineNo" jdbcType="VARCHAR" />
+    <result column="position" property="position" jdbcType="VARCHAR" />
+    <result column="key_position" property="keyPosition" jdbcType="VARCHAR" />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+     <result column="businessId" property="businessId" jdbcType="INTEGER" />
+      <result column="carDamInOutId" property="carDamInOutId" jdbcType="INTEGER" />
+      <result column="status" property="status" jdbcType="VARCHAR"/>
+     <result column="amount" property="amount"/>
+     <result column="in_amount" property="inAmount"/>
+     <result column="out_amount" property="outAmount"/>
+  </resultMap>
+  
+  	<select id="getByConditions" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+		Select a.*
+		From carDamageStock a 
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="vin != null and vin != ''">
+				and a.vin = #{vin} 
+			</if>
+			<if test="waybillId != null and waybillId != ''">
+				and a.waybill_id = #{waybillId} 
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status} 
+			</if>
+			<if test="stockId != null and stockId != ''">
+			    and a.stockId = #{stockId}
+			</if>
+		</where>
+			order by a.insert_time asc
+	</select>
+	
+  	<select id="getPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	  	SELECT * from (
+			SELECT row_number() over(order by a.id asc) as rownumber,a.*
+			From carDamageStock a
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="brand != null and brand != ''">
+				and a.brand LIKE concat('%', #{brand}, '%')
+			</if>
+			<if test="vin != null and vin != ''">
+				and a.vin LIKE concat('%', #{vin}, '%')
+			</if>
+			<if test="stockId != null and stockId != ''">
+				and a.stock_id = #{stockId}
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status} 
+			</if>
+			<if test="flag != null">
+			    and (
+					a.waybill_id is  null or a.waybill_id = ''
+					<if test="waybillId != null and waybillId != ''">
+						or a.waybill_id = #{waybillId} 
+					</if>
+				)
+			</if>
+		</where>
+		) as t 
+		WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+		ORDER BY t.insert_time ASC
+	</select>
+	  
+	<select id="getPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+		SELECT count(*)
+		FROM carDamageStock a
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="brand != null and brand != ''">
+				and a.brand LIKE concat('%', #{brand}, '%')
+			</if>
+			<if test="vin != null and vin != ''">
+				and a.vin LIKE concat('%', #{vin}, '%')
+			</if>
+			<if test="stockId != null and stockId != ''">
+				and a.stock_id = #{stockId}
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status} 
+			</if>
+			<if test="flag != null">
+			    and (
+					a.waybill_id is  null or a.waybill_id = ''
+					<if test="waybillId != null and waybillId != ''">
+						or a.waybill_id = #{waybillId} 
+					</if>
+				)
+			</if>
+		</where>
+	</select>
+	
+  <insert id="save" parameterType="com.jshpsoft.domain.CarDamageStock" useGeneratedKeys="true" keyProperty= "id">
+  	insert into carDamageStock (stock_id, waybill_id, 
+      brand, vin, model, 
+      color, engine_no, mark, 
+      position, key_position, 
+      insert_time, insert_user, del_flag, status,in_amount, out_amount)
+    values (#{stockId}, #{waybillId}, 
+      #{brand}, #{vin}, #{model}, 
+      #{color}, #{engineNo}, #{mark}, 
+      #{position}, #{keyPosition}, 
+      #{insertTime}, #{insertUser}, 
+      #{delFlag}, #{status},#{inAmount}, #{outAmount})
+  </insert>
+  
+  <update id="update" parameterType="com.jshpsoft.domain.CarDamageStock">
+  	update carDamageStock
+  	<set >
+      <if test="stockId != null" >
+        stock_id = #{stockId},
+      </if>
+      <if test="waybillId != null and waybillId != ''" >
+        waybill_id = #{waybillId},
+      </if>
+      <if test="brand != null and brand != ''" >
+        brand = #{brand},
+      </if>
+      <if test="vin != null and vin != ''" >
+        vin = #{vin},
+      </if>
+      <if test="model != null and model != ''" >
+        model = #{model},
+      </if>
+      <if test="color != null and color != ''" >
+        color = #{color},
+      </if>
+      <if test="engineNo != null and engineNo != ''" >
+        engine_no = #{engineNo},
+      </if>
+      <if test="mark != null and mark != ''" >
+        mark = #{mark},
+      </if>
+      <if test="position != null and position != ''" >
+        position = #{position},
+      </if>
+      <if test="keyPosition != null and keyPosition != ''" >
+        key_position = #{keyPosition},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime},
+      </if>
+      <if test="updateUser != null and updateUser != ''" >
+        update_user = #{updateUser},
+      </if>
+      <if test="delFlag != null and delFlag != ''" >
+        del_flag = #{delFlag},
+      </if>
+      <if test="status != null and status != ''" >
+        status = #{status},
+      </if>
+      <if test="inAmount != null" >
+        in_amount = #{inAmount},
+      </if>
+      <if test="outAmount != null" >
+        out_amount = #{outAmount},
+      </if>
+      </set>
+      where id = #{id}
+  </update>
+  
+  <update id="delete" parameterType="HashMap">
+  	update carDamageStock
+  	<set>
+	      	<if test="updateTime != null" >
+	        	update_time = #{updateTime},
+	      	</if>
+	      	<if test="updateUser != null and updateUser != ''" >
+	        	update_user = #{updateUser},
+	      	</if>
+	      	<if test="delFlag != null and delFlag != ''" >
+	        	del_flag = #{delFlag},
+	      	</if>
+      	</set>
+      	where id in (${id})
+  </update>
+  
+  <select id="getById" resultMap="BaseResultMap" parameterType="int">
+  	select * from carDamageStock where id = #{id}
+  </select>
+  
+  <select id="getCarDamRuList" parameterType="java.util.HashMap" resultMap="BaseResultMap" >
+  	SELECT *
+		FROM carDamageStock 
+		where status = '2' and del_flag ='N'
+			<if test="brand != null and brand != ''">
+  				and ( brand LIKE concat('%', #{brand}, '%')  )
+  			</if>
+  			<if test="stockId != null and stockId != ''">
+			    and stockId = #{stockId}
+			</if>
+  </select>
+  
+    <update id="updateByWaybillId" parameterType="java.util.HashMap">
+  		update carDamageStock
+  		<set>
+  			<if test="status != null and status != ''" >
+	        	 status = #{status} 
+	      	</if>
+	    </set>
+  		where waybill_id = #{waybillId}
+  	</update>
+  	
+  	<select id="selectCountByWayId" parameterType="HashMap" resultType="Integer">
+  		select count(1) from carDamageStock where waybill_id = #{id} and status = #{status} 
+  	</select>
+  	
+  	<update id="bindCarDamStock" parameterType="HashMap">
+  		update carDamageStock set waybill_id =#{waybillId} 
+  		where id in
+  		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+ 	</update>
+ 
+ 	<select id="queryCarDamStock" parameterType="Integer" resultMap="BaseResultMap">
+		select * from carDamageStock where waybill_id =#{waybillId}
+	</select>
+ 
+ 	<select id="getCarDamPageListByCarDamInOutId" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	  	SELECT * from (
+			SELECT row_number() over(order by a.id asc) as rownumber,a.*,cd.business_id as businessId,cs.id as carDamInOutId,cd.amount
+			From carDamageStock a
+			left join carDamageStockInOutDetail cd on cd.business_id = a.id and cd.del_flag = 'N'
+			left join carDamageStockInOut cs on cs.id = cd.parent_id
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="brand != null and brand != ''">
+				and a.brand LIKE concat('%', #{brand}, '%')
+			</if>
+			<if test="vin != null and vin != ''">
+				and a.vin LIKE concat('%', #{vin}, '%')
+			</if>
+			<if test="stockId != null and stockId != ''">
+				and a.stock_id = #{stockId}
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status} 
+			</if>
+			<if test="flag != null">
+			    and (
+					cs.id is  null
+					<if test="carDamInOutId != null">
+						or cs.id = #{carDamInOutId} 
+					</if> 
+				)
+			</if>
+		</where>
+		) as t 
+		WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+		ORDER BY t.insert_time ASC
+	</select>
+	
+ 	<select id="getCountByCarDamInOutId" parameterType="java.util.HashMap" resultType="Integer">
+			SELECT count(*)
+			From carDamageStock a
+			left join carDamageStockInOutDetail cd on cd.business_id = a.id
+			left join carDamageStockInOut cs on cs.id = cd.parent_id
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="brand != null and brand != ''">
+				and a.brand LIKE concat('%', #{brand}, '%')
+			</if>
+			<if test="vin != null and vin != ''">
+				and a.vin LIKE concat('%', #{vin}, '%')
+			</if>
+			<if test="stockId != null and stockId != ''">
+				and a.stock_id = #{stockId}
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status} 
+			</if>
+			<if test="flag != null">
+			    and (
+					cs.id is  null
+					<if test="carDamInOutId != null ">
+						or cs.id = #{carDamInOutId} 
+					</if> 
+				)
+			</if>
+		</where>
+		
+	</select>
+	
+</mapper>

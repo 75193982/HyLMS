@@ -1,0 +1,91 @@
+2016-12-21 14:30:14 [main] ERROR (com.jshpsoft.listener.InitListener.java:39) - *******************************listener init*************************
+2016-12-21 14:30:14 [main] ERROR (com.jshpsoft.listener.InitListener.java:41) - Constants.CTX=
+2016-12-21 14:30:42 [main] ERROR (org.springframework.test.context.TestContextManager.java:234) - Caught exception while allowing TestExecutionListener [org.springframework.test.context.web.ServletTestExecutionListener@4bdc0bc7] to prepare test instance [com.jshpsoft.test.controller.operationMng.CashInOutMngControllerTest@76ae88f4]
+java.lang.IllegalStateException: Failed to load ApplicationContext
+	at org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.loadContext(DefaultCacheAwareContextLoaderDelegate.java:124)
+	at org.springframework.test.context.support.DefaultTestContext.getApplicationContext(DefaultTestContext.java:83)
+	at org.springframework.test.context.web.ServletTestExecutionListener.setUpRequestContextIfNecessary(ServletTestExecutionListener.java:189)
+	at org.springframework.test.context.web.ServletTestExecutionListener.prepareTestInstance(ServletTestExecutionListener.java:131)
+	at org.springframework.test.context.TestContextManager.prepareTestInstance(TestContextManager.java:230)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.createTest(SpringJUnit4ClassRunner.java:228)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner$1.runReflectiveCall(SpringJUnit4ClassRunner.java:287)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.methodBlock(SpringJUnit4ClassRunner.java:289)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.runChild(SpringJUnit4ClassRunner.java:247)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.runChild(SpringJUnit4ClassRunner.java:94)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:238)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:63)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:236)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:53)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:229)
+	at org.springframework.test.context.junit4.statements.RunBeforeTestClassCallbacks.evaluate(RunBeforeTestClassCallbacks.java:61)
+	at org.springframework.test.context.junit4.statements.RunAfterTestClassCallbacks.evaluate(RunAfterTestClassCallbacks.java:70)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:309)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.run(SpringJUnit4ClassRunner.java:191)
+	at org.eclipse.jdt.internal.junit4.runner.JUnit4TestReference.run(JUnit4TestReference.java:50)
+	at org.eclipse.jdt.internal.junit.runner.TestExecution.run(TestExecution.java:38)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:467)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:683)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.run(RemoteTestRunner.java:390)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.main(RemoteTestRunner.java:197)
+Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'trackRepairApplyMngController': Unsatisfied dependency expressed through field 'trackRepairApplyService': No qualifying bean of type [com.jshpsoft.service.TrackRepairApplyService] found for dependency [com.jshpsoft.service.TrackRepairApplyService]: expected at least 1 bean which qualifies as autowire candidate for this dependency. Dependency annotations: {@org.springframework.beans.factory.annotation.Autowired(required=true)}; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type [com.jshpsoft.service.TrackRepairApplyService] found for dependency [com.jshpsoft.service.TrackRepairApplyService]: expected at least 1 bean which qualifies as autowire candidate for this dependency. Dependency annotations: {@org.springframework.beans.factory.annotation.Autowired(required=true)}
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:569)
+	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:88)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessPropertyValues(AutowiredAnnotationBeanPostProcessor.java:349)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1214)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:543)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:482)
+	at org.springframework.beans.factory.support.AbstractBeanFactory$1.getObject(AbstractBeanFactory.java:306)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:230)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:302)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:197)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:775)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:861)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:541)
+	at org.springframework.test.context.web.AbstractGenericWebContextLoader.loadContext(AbstractGenericWebContextLoader.java:134)
+	at org.springframework.test.context.web.AbstractGenericWebContextLoader.loadContext(AbstractGenericWebContextLoader.java:61)
+	at org.springframework.test.context.support.AbstractDelegatingSmartContextLoader.delegateLoading(AbstractDelegatingSmartContextLoader.java:108)
+	at org.springframework.test.context.support.AbstractDelegatingSmartContextLoader.loadContext(AbstractDelegatingSmartContextLoader.java:251)
+	at org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.loadContextInternal(DefaultCacheAwareContextLoaderDelegate.java:98)
+	at org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate.loadContext(DefaultCacheAwareContextLoaderDelegate.java:116)
+	... 25 more
+Caused by: org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type [com.jshpsoft.service.TrackRepairApplyService] found for dependency [com.jshpsoft.service.TrackRepairApplyService]: expected at least 1 bean which qualifies as autowire candidate for this dependency. Dependency annotations: {@org.springframework.beans.factory.annotation.Autowired(required=true)}
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.raiseNoSuchBeanDefinitionException(DefaultListableBeanFactory.java:1403)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1056)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1018)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:566)
+	... 43 more
+2016-12-21 14:31:38 [main] ERROR (com.jshpsoft.listener.InitListener.java:39) - *******************************listener init*************************
+2016-12-21 14:31:38 [main] ERROR (com.jshpsoft.listener.InitListener.java:41) - Constants.CTX=
+2016-12-21 14:43:08 [main] ERROR (com.jshpsoft.listener.InitListener.java:39) - *******************************listener init*************************
+2016-12-21 14:43:08 [main] ERROR (com.jshpsoft.listener.InitListener.java:41) - Constants.CTX=
+2016-12-21 14:44:24 [main] ERROR (com.jshpsoft.listener.InitListener.java:39) - *******************************listener init*************************
+2016-12-21 14:44:24 [main] ERROR (com.jshpsoft.listener.InitListener.java:41) - Constants.CTX=
+2016-12-21 14:48:45 [main] ERROR (com.jshpsoft.listener.InitListener.java:39) - *******************************listener init*************************
+2016-12-21 14:48:45 [main] ERROR (com.jshpsoft.listener.InitListener.java:41) - Constants.CTX=
+2016-12-21 14:49:47 [main] ERROR (com.jshpsoft.listener.InitListener.java:39) - *******************************listener init*************************
+2016-12-21 14:49:47 [main] ERROR (com.jshpsoft.listener.InitListener.java:41) - Constants.CTX=
+2016-12-21 16:57:59 [main] ERROR (com.jshpsoft.listener.InitListener.java:39) - *******************************listener init*************************
+2016-12-21 16:57:59 [main] ERROR (com.jshpsoft.listener.InitListener.java:41) - Constants.CTX=
+2016-12-21 16:59:18 [main] ERROR (com.jshpsoft.listener.InitListener.java:39) - *******************************listener init*************************
+2016-12-21 16:59:18 [main] ERROR (com.jshpsoft.listener.InitListener.java:41) - Constants.CTX=
+2016-12-21 17:01:29 [main] ERROR (com.jshpsoft.listener.InitListener.java:39) - *******************************listener init*************************
+2016-12-21 17:01:29 [main] ERROR (com.jshpsoft.listener.InitListener.java:41) - Constants.CTX=
+2016-12-21 17:03:33 [main] ERROR (com.jshpsoft.listener.InitListener.java:39) - *******************************listener init*************************
+2016-12-21 17:03:33 [main] ERROR (com.jshpsoft.listener.InitListener.java:41) - Constants.CTX=
+2016-12-21 17:05:09 [main] ERROR (com.jshpsoft.listener.InitListener.java:39) - *******************************listener init*************************
+2016-12-21 17:05:09 [main] ERROR (com.jshpsoft.listener.InitListener.java:41) - Constants.CTX=
+2016-12-21 17:06:12 [main] ERROR (com.jshpsoft.listener.InitListener.java:39) - *******************************listener init*************************
+2016-12-21 17:06:12 [main] ERROR (com.jshpsoft.listener.InitListener.java:41) - Constants.CTX=
+2016-12-21 17:09:48 [main] ERROR (com.jshpsoft.listener.InitListener.java:39) - *******************************listener init*************************
+2016-12-21 17:09:48 [main] ERROR (com.jshpsoft.listener.InitListener.java:41) - Constants.CTX=
+2016-12-21 17:14:07 [main] ERROR (com.jshpsoft.listener.InitListener.java:39) - *******************************listener init*************************
+2016-12-21 17:14:07 [main] ERROR (com.jshpsoft.listener.InitListener.java:41) - Constants.CTX=
+2016-12-21 17:25:28 [main] ERROR (com.jshpsoft.listener.InitListener.java:39) - *******************************listener init*************************
+2016-12-21 17:25:28 [main] ERROR (com.jshpsoft.listener.InitListener.java:41) - Constants.CTX=
+2016-12-21 17:26:04 [main] ERROR (com.jshpsoft.listener.InitListener.java:39) - *******************************listener init*************************
+2016-12-21 17:26:04 [main] ERROR (com.jshpsoft.listener.InitListener.java:41) - Constants.CTX=
+2016-12-21 17:27:24 [main] ERROR (com.jshpsoft.listener.InitListener.java:39) - *******************************listener init*************************
+2016-12-21 17:27:24 [main] ERROR (com.jshpsoft.listener.InitListener.java:41) - Constants.CTX=
+2016-12-21 17:28:34 [main] ERROR (com.jshpsoft.listener.InitListener.java:39) - *******************************listener init*************************
+2016-12-21 17:28:34 [main] ERROR (com.jshpsoft.listener.InitListener.java:41) - Constants.CTX=

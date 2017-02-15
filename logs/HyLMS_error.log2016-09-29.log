@@ -1,0 +1,45 @@
+2016-09-29 09:33:54 [main] ERROR (com.jshpsoft.listener.InitListener.java:20) - *******************************listener init*************************
+2016-09-29 09:33:54 [main] ERROR (com.jshpsoft.listener.InitListener.java:22) - Constants.CTX=
+2016-09-29 09:35:00 [main] ERROR (com.jshpsoft.listener.InitListener.java:20) - *******************************listener init*************************
+2016-09-29 09:35:00 [main] ERROR (com.jshpsoft.listener.InitListener.java:22) - Constants.CTX=
+2016-09-29 09:40:11 [main] ERROR (com.jshpsoft.listener.InitListener.java:20) - *******************************listener init*************************
+2016-09-29 09:40:11 [main] ERROR (com.jshpsoft.listener.InitListener.java:22) - Constants.CTX=
+2016-09-29 09:43:55 [main] ERROR (com.jshpsoft.listener.InitListener.java:20) - *******************************listener init*************************
+2016-09-29 09:43:55 [main] ERROR (com.jshpsoft.listener.InitListener.java:22) - Constants.CTX=
+2016-09-29 09:46:02 [main] ERROR (com.jshpsoft.listener.InitListener.java:20) - *******************************listener init*************************
+2016-09-29 09:46:02 [main] ERROR (com.jshpsoft.listener.InitListener.java:22) - Constants.CTX=
+2016-09-29 09:46:46 [main] ERROR (com.jshpsoft.listener.InitListener.java:20) - *******************************listener init*************************
+2016-09-29 09:46:46 [main] ERROR (com.jshpsoft.listener.InitListener.java:22) - Constants.CTX=
+2016-09-29 09:47:31 [main] ERROR (com.jshpsoft.listener.InitListener.java:20) - *******************************listener init*************************
+2016-09-29 09:47:31 [main] ERROR (com.jshpsoft.listener.InitListener.java:22) - Constants.CTX=
+2016-09-29 09:47:50 [main] ERROR (com.jshpsoft.listener.InitListener.java:20) - *******************************listener init*************************
+2016-09-29 09:47:50 [main] ERROR (com.jshpsoft.listener.InitListener.java:22) - Constants.CTX=
+2016-09-29 09:53:33 [main] ERROR (com.jshpsoft.listener.InitListener.java:20) - *******************************listener init*************************
+2016-09-29 09:53:33 [main] ERROR (com.jshpsoft.listener.InitListener.java:22) - Constants.CTX=
+2016-09-29 12:06:38 [main] ERROR (com.jshpsoft.listener.InitListener.java:20) - *******************************listener init*************************
+2016-09-29 12:06:38 [main] ERROR (com.jshpsoft.listener.InitListener.java:22) - Constants.CTX=
+2016-09-29 12:37:44 [main] ERROR (com.jshpsoft.listener.InitListener.java:20) - *******************************listener init*************************
+2016-09-29 12:37:44 [main] ERROR (com.jshpsoft.listener.InitListener.java:22) - Constants.CTX=
+2016-09-29 12:40:17 [main] ERROR (com.jshpsoft.listener.InitListener.java:20) - *******************************listener init*************************
+2016-09-29 12:40:17 [main] ERROR (com.jshpsoft.listener.InitListener.java:22) - Constants.CTX=
+2016-09-29 12:45:22 [main] ERROR (com.jshpsoft.listener.InitListener.java:20) - *******************************listener init*************************
+2016-09-29 12:45:22 [main] ERROR (com.jshpsoft.listener.InitListener.java:22) - Constants.CTX=
+2016-09-29 12:45:41 [main] ERROR (com.jshpsoft.listener.InitListener.java:20) - *******************************listener init*************************
+2016-09-29 12:45:41 [main] ERROR (com.jshpsoft.listener.InitListener.java:22) - Constants.CTX=
+2016-09-29 12:49:50 [main] ERROR (com.jshpsoft.listener.InitListener.java:20) - *******************************listener init*************************
+2016-09-29 12:49:50 [main] ERROR (com.jshpsoft.listener.InitListener.java:22) - Constants.CTX=
+2016-09-29 12:53:18 [main] ERROR (com.jshpsoft.listener.InitListener.java:20) - *******************************listener init*************************
+2016-09-29 12:53:18 [main] ERROR (com.jshpsoft.listener.InitListener.java:22) - Constants.CTX=
+2016-09-29 12:59:10 [main] ERROR (com.jshpsoft.listener.InitListener.java:20) - *******************************listener init*************************
+2016-09-29 12:59:10 [main] ERROR (com.jshpsoft.listener.InitListener.java:22) - Constants.CTX=
+2016-09-29 15:54:22 [main] ERROR (com.jshpsoft.listener.InitListener.java:20) - *******************************listener init*************************
+2016-09-29 15:54:22 [main] ERROR (com.jshpsoft.listener.InitListener.java:22) - Constants.CTX=
+2016-09-29 15:55:35 [main] ERROR (com.jshpsoft.listener.InitListener.java:20) - *******************************listener init*************************
+2016-09-29 15:55:35 [main] ERROR (com.jshpsoft.listener.InitListener.java:22) - Constants.CTX=
+2016-09-29 15:55:57 [main] ERROR (com.jshpsoft.listener.InitListener.java:20) - *******************************listener init*************************
+2016-09-29 15:55:57 [main] ERROR (com.jshpsoft.listener.InitListener.java:22) - Constants.CTX=
+2016-09-29 15:56:51 [main] ERROR (com.jshpsoft.listener.InitListener.java:20) - *******************************listener init*************************
+2016-09-29 15:56:51 [main] ERROR (com.jshpsoft.listener.InitListener.java:22) - Constants.CTX=
+2016-09-29 15:57:08 [main] ERROR (com.jshpsoft.listener.InitListener.java:20) - *******************************listener init*************************
+2016-09-29 15:57:08 [main] ERROR (com.jshpsoft.listener.InitListener.java:22) - Constants.CTX=
+2016-09-29 16:10:35 [main] ERROR (cn.jpush.api.common.connection.NativeHttpClient.java:201) - Your request params is invalid. Please check them according to error message.

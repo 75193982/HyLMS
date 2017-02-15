@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.SystemErrorLogMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.SystemErrorLog" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="operate_name" property="operateName" jdbcType="VARCHAR" />
+    <result column="exception_name" property="exceptionName" jdbcType="VARCHAR" />
+    <result column="params" property="params" jdbcType="VARCHAR" />
+    <result column="detail_info" property="detailInfo" jdbcType="VARCHAR"/>
+    <result column="operator" property="operator" jdbcType="VARCHAR" />
+    <result column="operate_time" property="operateTime" jdbcType="TIMESTAMP" />
+    <result column="login_ip" property="loginIp" jdbcType="VARCHAR" />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+    <result column="operatorUser" property="operatorUser" jdbcType="VARCHAR"/>
+  </resultMap>
+
+  <insert id="insert" parameterType="com.jshpsoft.domain.SystemErrorLog" >
+    insert into sys_systemErrorLog (type, operate_name, 
+      exception_name, params, operator, 
+      operate_time, login_ip, mark, 
+      detail_info)
+    values ( #{type}, #{operateName}, 
+      #{exceptionName}, #{params}, #{operator}, 
+      #{operateTime}, #{loginIp}, #{mark}, 
+      #{detailInfo})
+  </insert>
+ 
+	<select id="getByConditions" parameterType="java.util.HashMap" resultMap="BaseResultMap" >
+	    select * 
+	      from sys_systemErrorLog
+	    <where>
+	    	<if test="type != null and type != ''">
+	    		type = #{type}
+	    	</if>
+	    	<if test="operator != null and operator != ''">
+	    		and operator =  #{operator}
+	    	</if>
+	    	<if test="operateName != null and operateName != ''">
+	    		and operate_name like CONCAT('%',#{operateName},'%') 
+	    	</if>
+	    	<if test="startTime != null and startTime != ''">
+	    		and convert(char(10),operate_time,120) &gt;= #{startTime}
+	    	</if>
+	    	<if test="endTime != null and endTime != ''">
+				and convert(char(10),operate_time,120) &lt;= #{endTime}
+			</if>
+	    </where>
+	    order by operate_time desc
+	  </select>
+	  
+	  <select id="getById" resultMap="BaseResultMap" parameterType="int">
+	  	select * from sys_systemErrorLog where id = #{id}
+	  </select>
+	  
+	  <select id="getPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	  	SELECT * from (
+			SELECT row_number() over(order by s.operate_time desc) as rownumber,s.*,u.name as operatorUser
+			From sys_systemErrorLog s
+			left join sys_user u on u.id = s.operator
+			where 1=1
+			<if test="operatorUser != null and operatorUser != ''">
+    			and u.name like CONCAT('%',#{operatorUser},'%')
+    		</if>
+    		
+    	<if test="startTime != null and startTime != ''">
+    		and convert(char(10),s.operate_time,120) &gt;= #{startTime}
+    	</if>
+    	<if test="endTime != null and endTime != ''">
+			and convert(char(10),s.operate_time,120) &lt;= #{endTime}
+		</if>
+		) as t 
+		WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+		ORDER BY t.operate_time desc
+	</select>
+	  
+	<select id="getPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+		SELECT count(*)
+		FROM sys_systemErrorLog s
+		left join sys_user u on u.id = s.operator
+		where 1=1
+			<if test="operatorUser != null and operatorUser != ''">
+    			and u.name like CONCAT('%',#{operatorUser},'%')
+    		</if>
+    		
+    	<if test="startTime != null and startTime != ''">
+    		and convert(char(10),s.operate_time,120) &gt;= #{startTime}
+    	</if>
+    	<if test="endTime != null and endTime != ''">
+			and convert(char(10),s.operate_time,120) &lt;= #{endTime}
+		</if>
+	</select>
+	
+</mapper>

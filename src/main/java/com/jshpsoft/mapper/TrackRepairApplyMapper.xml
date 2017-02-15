@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.TrackRepairApplyMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.TrackRepairApply" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="apply_user_id" property="applyUserId" jdbcType="INTEGER" />
+    <result column="apply_time" property="applyTime" jdbcType="TIMESTAMP" />
+    <result column="car_stock_id" property="carStockId" jdbcType="INTEGER" />
+    <result column="repair_content" property="repairContent" jdbcType="VARCHAR" />
+    <result column="repair_company" property="repairCompany" jdbcType="VARCHAR" />
+    <result column="repair_telephone" property="repairTelephone" jdbcType="VARCHAR" />
+    <result column="repair_finished_time" property="repairFinishedTime" jdbcType="TIMESTAMP" />
+    <result column="repair_money" property="repairMoney" jdbcType="NUMERIC" />
+    <result column="file_path" property="filePath" jdbcType="VARCHAR" />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="finish_time" property="finishTime" jdbcType="TIMESTAMP" />
+    <result column="finish_user" property="finishUser" jdbcType="VARCHAR" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+    <result column="vin" property="vin" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+  </resultMap>
+  <insert id="save" parameterType="com.jshpsoft.domain.TrackRepairApply" >
+    insert into trackRepairApply ( apply_user_id, apply_time, 
+      car_stock_id, repair_content, repair_company, 
+      repair_telephone, repair_finished_time, 
+      repair_money, file_path, mark, 
+      status, finish_time, finish_user, 
+      insert_time, insert_user, update_time, 
+      update_user, del_flag)
+    values ( #{applyUserId,jdbcType=INTEGER}, #{applyTime,jdbcType=TIMESTAMP}, 
+      #{carStockId,jdbcType=INTEGER}, #{repairContent,jdbcType=VARCHAR}, #{repairCompany,jdbcType=VARCHAR}, 
+      #{repairTelephone,jdbcType=VARCHAR}, #{repairFinishedTime,jdbcType=TIMESTAMP}, 
+      #{repairMoney,jdbcType=NUMERIC}, #{filePath,jdbcType=VARCHAR}, #{mark,jdbcType=VARCHAR}, 
+      #{status,jdbcType=VARCHAR}, #{finishTime,jdbcType=TIMESTAMP}, #{finishUser,jdbcType=VARCHAR}, 
+      #{insertTime,jdbcType=TIMESTAMP}, #{insertUser,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{updateUser,jdbcType=VARCHAR}, #{delFlag,jdbcType=VARCHAR})
+  </insert>
+  <select id="getPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	  		SELECT * from (
+			SELECT row_number() over(order by a.id desc) as rownumber,
+			a.*,d.vin,f.name 
+			From trackRepairApply a
+			left join carDamageStock d on d.id = a.car_stock_id
+			left join sys_user f on f.id = a.apply_user_id
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="applyUserId != null and applyUserId != ''">
+				and a.apply_user_id = #{applyUserId} 
+			</if>
+			<if test="vin != null and vin != ''">
+				and d.vin like '%'+#{vin}+'%'
+			</if>
+			<if test="repairContent != null and repairContent != ''">
+			    and a.repair_content like '%'+#{repairContent}+'%'
+			</if>
+			<if test="repairCompany != null and repairCompany != ''">
+			    and a.repair_company like '%'+#{repairCompany}+'%'
+			</if>
+			<if test="name != null and name != ''">
+				and f.name like '%'+#{name}+'%'
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status} 
+			</if>	
+			<if test="startTime != null and startTime != ''">
+				and convert(char(10), a.apply_time,120) &gt;= convert(char(10), #{startTime},120)
+			</if>
+			<if test="endTime != null and endTime != ''">
+				and convert(char(10), a.apply_time,120) &lt;= convert(char(10), #{endTime},120)
+			</if>
+		</where>
+		) as t 
+		WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+	</select>
+	
+	
+	<select id="getPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+		SELECT count(*)
+		FROM trackRepairApply a
+		left join carDamageStock d on d.id = a.car_stock_id
+		left join sys_user f on f.id = a.apply_user_id
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="applyUserId != null and applyUserId != ''">
+				and a.apply_user_id = #{applyUserId} 
+			</if>
+			<if test="vin != null and vin != ''">
+				and d.vin like '%'+#{vin}+'%'
+			</if>
+			<if test="repairContent != null and repairContent != ''">
+			    and a.repair_content like '%'+#{repairContent}+'%'
+			</if>
+			<if test="repairCompany != null and repairCompany != ''">
+			    and a.repair_company like '%'+#{repairCompany}+'%'
+			</if>
+			<if test="name != null and name != ''">
+				and f.name like '%'+#{name}+'%'
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status} 
+			</if>	
+			<if test="startTime != null and startTime != ''">
+				and convert(char(10), a.apply_time,120) &gt;= convert(char(10), #{startTime},120)
+			</if>
+			<if test="endTime != null and endTime != ''">
+				and convert(char(10), a.apply_time,120) &lt;= convert(char(10), #{endTime},120)
+			</if>
+		</where>
+	</select>
+	
+	<select id="getDetail" parameterType="Integer" resultMap="BaseResultMap" >
+		select a.*,	(select name from sys_user b where a.apply_user_id=b.id) as name
+		,	(select vin from carDamageStock c where a.car_stock_id=c.id) as vin
+		 from  trackRepairApply a where id = #{id,jdbcType=INTEGER}
+	</select>
+	
+  <update id="update" parameterType="com.jshpsoft.domain.TrackRepairApply" >
+    update trackRepairApply
+    <set >
+      <if test="applyUserId != null" >
+        apply_user_id = #{applyUserId,jdbcType=INTEGER},
+      </if>
+      <if test="applyTime != null" >
+        apply_time = #{applyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="carStockId != null" >
+        car_stock_id = #{carStockId,jdbcType=INTEGER},
+      </if>
+      <if test="repairContent != null and repairContent !=''" >
+        repair_content = #{repairContent,jdbcType=VARCHAR},
+      </if>
+      <if test="repairCompany != null and repairCompany !=''" >
+        repair_company = #{repairCompany,jdbcType=VARCHAR},
+      </if>
+      <if test="repairTelephone != null and repairTelephone != ''" >
+        repair_telephone = #{repairTelephone,jdbcType=VARCHAR},
+      </if>
+      <if test="repairFinishedTime != null" >
+        repair_finished_time = #{repairFinishedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="repairMoney != null and repairMoney !=0.0" >
+        repair_money = #{repairMoney,jdbcType=NUMERIC},
+      </if>
+      <if test="filePath != null and filePath !='' " >
+        file_path = #{filePath,jdbcType=VARCHAR},
+      </if>
+      <if test="mark != null and mark !=''" >
+        mark = #{mark,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null and status !=''" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="finishTime != null" >
+        finish_time = #{finishTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="finishUser != null and finishUser !=''" >
+        finish_user = #{finishUser,jdbcType=VARCHAR},
+      </if>
+      <if test="insertTime != null" >
+        insert_time = #{insertTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="insertUser != null and insertUser !='' " >
+        insert_user = #{insertUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null and updateUser !=''" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  
+  <select id="getByConditions" resultMap="BaseResultMap" parameterType="java.util.HashMap" >
+  		SELECT 
+			a.*,d.vin,f.name 
+			From trackRepairApply a
+			left join carDamageStock d on d.id = a.car_stock_id
+			left join sys_user f on f.id = a.apply_user_id
+  		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="applyUserId != null and applyUserId != ''">
+				and a.apply_user_id = #{applyUserId} 
+			</if>
+			<if test="vin != null and vin != ''">
+				and d.vin like '%'+#{vin}+'%'
+			</if>
+			<if test="repairContent != null and repairContent != ''">
+			    and a.repair_content like '%'+#{repairContent}+'%'
+			</if>
+			<if test="repairCompany != null and repairCompany != ''">
+			    and a.repair_company like '%'+#{repairCompany}+'%'
+			</if>
+			<if test="name != null and name != ''">
+				and f.name like '%'+#{name}+'%'
+			</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status} 
+			</if>	
+			<if test="startTime != null and startTime != ''">
+				and convert(char(10), a.apply_time,120) &gt;= convert(char(10), #{startTime},120)
+			</if>
+			<if test="endTime != null and endTime != ''">
+				and convert(char(10), a.apply_time,120) &lt;= convert(char(10), #{endTime},120)
+			</if>
+		</where>
+  
+  </select>
+</mapper>

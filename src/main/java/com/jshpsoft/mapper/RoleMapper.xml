@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.RoleMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.Role" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="NVARCHAR" />
+    <result column="mark" property="mark" jdbcType="NVARCHAR" />
+    <result column="order_id" property="orderId" jdbcType="INTEGER" />
+    <result column="parent_id" property="parentId" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <select id="getRoleList" resultMap="BaseResultMap" parameterType="java.util.HashMap" >
+		select * from sys_role order by order_id asc
+	</select>
+	
+    <select id="getById" resultMap="BaseResultMap" parameterType="int">
+		select *
+		from sys_role
+		where id = #{id}
+	</select>
+	
+	<insert id="insert" parameterType="com.jshpsoft.domain.Role" useGeneratedKeys="true" keyProperty= "id">
+  		insert into sys_role(name,mark,order_id,parent_id) 
+  		values(#{name},#{mark},#{orderId},#{parentId})
+   </insert>
+   
+    <update id="update" parameterType="com.jshpsoft.domain.Role">
+  	update sys_role
+  	<set>
+  		<if test="name != null and name != ''">
+  			name = #{name},
+  		</if>
+  		<if test="parentId != null and parentId != ''">
+  			parent_id = #{parentId},
+  		</if>
+  		<if test="mark != null and mark != ''">
+  			mark = #{mark},
+  		</if>
+  		<if test="orderId != null and orderId != ''">
+  			order_id = #{orderId}
+  		</if>
+  	</set>
+  	where id = #{id}
+  </update>
+  
+  <delete id="delete" parameterType="int">
+  	delete from sys_role where id=#{id}
+  </delete>
+  
+  	<select id="getRoleByUserId" resultMap="BaseResultMap" parameterType="int">
+		select a.*
+		from sys_role a,sys_userRoles b
+		where a.id = b.role_id and b.user_id = #{userId}
+	</select>
+	
+  <resultMap id="BaseResultMap2" type="com.jshpsoft.domain.RoleAndParent" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="NVARCHAR" />
+    <result column="mark" property="mark" jdbcType="NVARCHAR" />
+    <result column="order_id" property="orderId" jdbcType="INTEGER" />
+    <result column="parent_id" property="parentId" jdbcType="INTEGER" />
+    <result column="parentName" property="parentName" jdbcType="NVARCHAR" />
+  </resultMap>
+  
+  <select id="getPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap2">
+	  	SELECT * from (
+			SELECT row_number() over(order by a.id asc) as rownumber,a.*,b.name as parentName
+			From sys_role a
+			left join sys_role b on a.parent_id = b.id
+			where 1=1
+			<if test="name != null and name != ''">
+  				and ( a.name LIKE concat('%', #{name}, '%')  )
+  			</if>
+	  		<if test="parentId != null and parentId != ''">
+	  			and a.parent_id = #{parentId}
+	  		</if>
+	  		<if test="mark != null and mark != ''">
+	  			and a.mark = #{mark}
+	  		</if>
+	  		<if test="orderId != null and orderId != ''">
+	  			and a.order_id = #{orderId}
+	  		</if>
+		) as t 
+		WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+		ORDER BY t.id ASC
+	</select>
+	  
+	<select id="getPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+		SELECT count(*)
+		FROM sys_role
+		where 1=1
+			<if test="name != null and name != ''">
+  				and ( name LIKE concat('%', #{name}, '%')  )
+  			</if>
+	  		<if test="parentId != null and parentId != ''">
+	  			and parent_id = #{parentId}
+	  		</if>
+	  		<if test="mark != null and mark != ''">
+	  			and mark = #{mark}
+	  		</if>
+	  		<if test="orderId != null and orderId != ''">
+	  			and order_id = #{orderId}
+	  		</if>
+	</select>
+	
+	<select id="getByConditions" parameterType="java.util.HashMap"  resultMap="BaseResultMap">
+		SELECT *
+		FROM sys_role
+		<where>
+			<if test="name != null and name != ''">
+  				name = #{name}
+  			</if>
+	  		<if test="parentId != null and parentId != ''">
+	  			and parent_id = #{parentId}
+	  		</if>
+	  		<if test="mark != null and mark != ''">
+	  			and mark = #{mark}
+	  		</if>
+	  		<if test="orderId != null and orderId != ''">
+	  			and order_id = #{orderId}
+	  		</if>
+		</where>
+	</select>
+</mapper>

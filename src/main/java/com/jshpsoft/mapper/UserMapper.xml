@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jshpsoft.dao.UserMapper">
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.User">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="department_id" jdbcType="INTEGER" property="departmentId" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="work_no" jdbcType="VARCHAR" property="workNo" />
+    <result column="name" jdbcType="NVARCHAR" property="name" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="brithday" jdbcType="TIMESTAMP" property="brithday" />
+    <result column="sex" jdbcType="VARCHAR" property="sex" />
+    <result column="telephone" jdbcType="VARCHAR" property="telephone" />
+    <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+    <result column="short_mobile" jdbcType="VARCHAR" property="shortMobile" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="id_card" jdbcType="VARCHAR" property="idCard" />
+    <result column="hiredate" jdbcType="TIMESTAMP" property="hiredate" />
+    <result column="signment_time" jdbcType="TIMESTAMP" property="signmentTime" />
+    <result column="salary" jdbcType="DECIMAL" property="salary" />
+    <result column="driver_flag" jdbcType="VARCHAR" property="driverFlag" />
+    <result column="certificate" jdbcType="VARCHAR" property="certificate" />
+    <result column="stock_id" jdbcType="VARCHAR" property="stockId" />
+    <result column="parent_id" jdbcType="INTEGER" property="parentId" />
+    <result column="insert_time" jdbcType="TIMESTAMP" property="insertTime" />
+    <result column="insert_user" jdbcType="VARCHAR" property="insertUser" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="update_user" jdbcType="VARCHAR" property="updateUser" />
+    <result column="del_flag" jdbcType="VARCHAR" property="delFlag" />
+    <result column="token" jdbcType="VARCHAR" property="token" />
+    <result column="order_id" property="orderId" />
+    <result column="import_linkman" property="importLinkman" />
+    <result column="id_card_file_path" property="idCardFilePath" />
+    <result column="certificate_file_path" property="certificateFilePath" />
+    <result column="out_sourcing_id" property="outSourcingId" />
+    <result column="duty_id" property="dutyId" />
+    
+    <result column="departmentName" property="departmentName" />
+    <result column="stockName" property="stockName" />
+    <result column="parentName" property="parentName" />
+    <result column="outSourcingName" property="outSourcingName" />
+  </resultMap>
+  
+  	<select id="getById" resultMap="BaseResultMap" parameterType="int">
+		select a.*,b.name departmentName
+		from sys_user a
+		left join sys_department b  on a.department_id=b.id
+		where a.del_flag='N' and a.id = #{id} 
+	</select>
+	
+	<select id="getByConditions" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+		Select a.*, b.name departmentName,c.name stockName, d.name parentName
+		From sys_user a 
+			left join sys_department b 
+			on a.department_id=b.id
+			left join basic_stock c 
+			on a.stock_id =c.id
+			left join sys_user d 
+			on a.parent_id=d.id
+		<where>
+			<if test="mobile != null and mobile != ''">
+				and a.mobile = #{mobile} 
+			</if>
+			<if test="password != null and password != ''">
+				and a.password = #{password} 
+			</if>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="searchInfo != null and searchInfo != ''">
+				and (a.work_no like '%'+#{searchInfo}+'%' or a.name like '%'+#{searchInfo}+'%' or a.mobile like '%'+#{searchInfo}+'%' )
+			</if>
+			<if test="departmentId != null and departmentId != ''">
+				and a.department_id = #{departmentId} 
+			</if>
+			<if test="dutyId != null">
+				and a.duty_id = #{dutyId} 
+			</if>
+			<if test="driverFlag != null and driverFlag != ''">
+				and a.driver_flag = #{driverFlag}
+			</if>
+			<if test="token != null and token != ''">
+				and a.token = #{token}
+			</if>
+			<if test="id != null and id != ''">
+				and a.id = #{id}
+			</if>
+			<if test="name != null and name != ''">
+				and a.name like '%'+#{name}+'%'
+			</if>
+			<if test="nickName != null and nickName != ''">
+				and a.name = #{nickName}
+			</if>
+			<if test="outSourcingIdForOwnCompany != null">
+				and ( a.out_sourcing_id = #{outSourcingIdForOwnCompany} or a.out_sourcing_id = 0 or a.out_sourcing_id is null )
+			</if>
+		</where>
+		order by a.order_id asc
+	</select>
+	
+	  <select id="getPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	  	SELECT * from (
+			SELECT row_number() over(order by a.order_id asc) as rownumber,a.*, b.name departmentName,c.name stockName, d.name parentName , bos.name as outSourcingName
+				FROM sys_user a  
+				left join sys_department b  on a.department_id=b.id
+				left join basic_stock c  on a.stock_id =c.id
+				left join sys_user d  on a.parent_id=d.id
+				left join basic_outSourcing bos on bos.id = a.out_sourcing_id
+				<where>
+					<if test="delFlag != null and delFlag != ''">
+						and a.del_flag = #{delFlag} 
+					</if>
+					<if test="name != null and name != ''">
+						and a.name = #{name} 
+					</if>
+					<if test="mobile != null and mobile != ''">
+						and a.mobile = #{mobile} 
+					</if>
+					<if test="password != null and password != ''">
+						and a.password = #{password} 
+					</if>
+					<if test="searchInfo != null and searchInfo != ''">
+						and (a.work_no like '%'+#{searchInfo}+'%' or a.name like '%'+#{searchInfo}+'%' or a.mobile like '%'+#{searchInfo}+'%' )
+					</if>
+					<if test="departmentId != null and departmentId != ''">
+						and a.department_id = #{departmentId} 
+					</if>
+					<if test="dutyId != null">
+						and a.duty_id = #{dutyId} 
+					</if>
+					<if test="driverFlag != null and driverFlag != ''">
+						and a.driver_flag = #{driverFlag}
+					</if>
+					<if test="token != null and token != ''">
+						and a.token = #{token}
+					</if>
+					<if test="outSourcingName != null and outSourcingName != ''">
+						and bos.name like '%'+#{outSourcingName}+'%'
+					</if>
+				</where>
+				) as t 
+				WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+				ORDER BY t.insert_time desc
+	  </select>
+	  
+	  <select id="getPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+		SELECT count(*)
+			FROM sys_user a
+			left join sys_department b  on a.department_id=b.id
+			left join basic_stock c  on a.stock_id =c.id
+			left join sys_user d  on a.parent_id=d.id
+			left join basic_outSourcing bos on bos.id = a.out_sourcing_id
+			<where>
+					<if test="delFlag != null and delFlag != ''">
+						and a.del_flag = #{delFlag} 
+					</if>
+					<if test="name != null and name != ''">
+						and a.name = #{name} 
+					</if>
+					<if test="mobile != null and mobile != ''">
+						and a.mobile = #{mobile} 
+					</if>
+					<if test="password != null and password != ''">
+						and a.password = #{password} 
+					</if>
+					<if test="searchInfo != null and searchInfo != ''">
+						and (a.work_no like '%'+#{searchInfo}+'%' or a.name like '%'+#{searchInfo}+'%' or a.mobile like '%'+#{searchInfo}+'%' )
+					</if>
+					<if test="departmentId != null and departmentId != ''">
+						and a.department_id = #{departmentId} 
+					</if>
+					<if test="dutyId != null">
+						and a.duty_id = #{dutyId} 
+					</if>
+					<if test="driverFlag != null and driverFlag != ''">
+						and a.driver_flag = #{driverFlag}
+					</if>
+					<if test="token != null and token != ''">
+						and a.token = #{token}
+					</if>
+					<if test="outSourcingName != null and outSourcingName != ''">
+						and bos.name like '%'+#{outSourcingName}+'%'
+					</if>
+			</where>
+	  </select>
+	
+	<insert id="insert" parameterType="com.jshpsoft.domain.User" useGeneratedKeys="true" keyProperty= "id">
+		insert into sys_user
+		( department_id, title, work_no, name, password, brithday, sex, telephone, mobile, short_mobile, address, id_card, hiredate, signment_time, 
+      		salary, driver_flag, certificate, stock_id, parent_id, insert_time, insert_user, update_time, update_user, del_flag, token,
+      		order_id,
+      		import_linkman,id_card_file_path,certificate_file_path,out_sourcing_id,duty_id
+    	)
+		values
+		( #{departmentId}, #{title}, #{workNo}, #{name}, #{password}, #{brithday}, #{sex}, #{telephone}, #{mobile}, #{shortMobile}, #{address}, 
+			#{idCard}, #{hiredate}, #{signmentTime}, #{salary}, #{driverFlag}, #{certificate}, #{stockId}, #{parentId}, #{insertTime}, 
+			#{insertUser}, #{updateTime}, #{updateUser}, #{delFlag}, #{token},
+			#{orderId},
+			#{importLinkman}, #{idCardFilePath}, #{certificateFilePath} ,#{outSourcingId},#{dutyId}
+		)
+	</insert>
+	
+ 	<update id="update" parameterType="com.jshpsoft.domain.User">
+		update sys_user
+		<set>
+			<if test="departmentId != null">
+				department_id = #{departmentId},
+			</if>
+			<if test="title != null and title != ''">
+				title = #{title},
+			</if>
+			<if test="workNo != null and workNo != ''">
+				work_no = #{workNo},
+			</if>
+			<if test="name != null and name != ''">
+				name = #{name},
+			</if>
+			<if test="password != null and password != ''">
+				password = #{password},
+			</if>
+			<if test="brithday != null">
+				brithday = #{brithday},
+			</if>
+			<if test="sex != null and sex != ''">
+				sex = #{sex},
+			</if>
+			<if test="telephone != null and telephone != ''">
+				telephone = #{telephone},
+			</if>
+			<if test="mobile != null and mobile != ''">
+				mobile = #{mobile},
+			</if>
+			<if test="shortMobile != null and shortMobile != ''">
+				short_mobile = #{shortMobile},
+			</if>
+			<if test="address != null and address != ''">
+				address = #{address},
+			</if>
+			<if test="idCard != null and idCard != ''">
+				id_card = #{idCard},
+			</if>
+			<if test="hiredate != null">
+				hiredate = #{hiredate},
+			</if>
+			<if test="signmentTime != null">
+				signment_time = #{signmentTime},
+			</if>
+			<if test="salary != null and salary != ''">
+				salary = #{salary},
+			</if>
+			<if test="driverFlag != null and driverFlag != ''">
+				driver_flag = #{driverFlag},
+			</if>
+			<if test="certificate != null and certificate != ''">
+				certificate = #{certificate},
+			</if>
+			<if test="stockId != null and stockId != ''">
+				stock_id = #{stockId},
+			</if>
+			<if test="parentId != null">
+				parent_id = #{parentId},
+			</if>
+			<if test="updateTime != null">
+				update_time = #{updateTime},
+			</if>
+			<if test="updateUser != null and updateUser != ''">
+				update_user = #{updateUser},
+			</if>
+			<if test="delFlag != null and delFlag != ''">
+				del_flag = #{delFlag},
+			</if>
+			<if test="token != null and token != ''">
+				token = #{token},
+			</if>
+			<if test="orderId != null">
+				order_id = #{orderId},
+			</if>
+			<if test="importLinkman != null and importLinkman != ''">
+				import_linkman = #{importLinkman},
+			</if>
+			<if test="idCardFilePath != null and idCardFilePath != ''">
+				id_card_file_path =  #{idCardFilePath}, 
+			</if>
+			<if test="certificateFilePath != null and certificateFilePath != ''">
+				certificate_file_path = #{certificateFilePath},
+			</if>
+			<if test="outSourcingId != null">
+				out_sourcing_id = #{outSourcingId},
+			</if>
+			<if test="dutyId != null">
+				duty_id = #{dutyId},
+			</if>
+		</set>
+		where id = #{id}
+	</update> 
+	
+	<update id="updateById"  parameterType="java.util.HashMap">
+		Update sys_user 
+		<set>
+			<if test="updateTime != null" >
+	        	update_time = #{updateTime},
+	      	</if>
+	      	<if test="updateUser != null and updateUser != ''" >
+	        	update_user = #{updateUser},
+	      	</if>
+	      	<if test="delFlag != null and delFlag != ''" >
+	        	del_flag = #{delFlag},
+	      	</if>
+	      	<if test="password != null and password != ''" >
+        		password = #{password},
+      		</if>
+		</set>
+		where id = #{id}
+	</update>
+
+	 <select id="getPageListForIntAddBook" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	  	SELECT * from (
+			SELECT row_number() over(order by a.order_id asc) as rownumber,a.*
+				FROM (
+						select DISTINCT u.id, u.name,d.id as department_id, d.name as departmentName, u.mobile, u.short_mobile, u.telephone, u.title, u.brithday, u.sex, u.work_no,u.insert_time,u.order_id
+						from sys_user u
+						LEFT JOIN sys_department d
+						ON u.department_id = d.id
+						where 
+							u.del_flag = 'N'
+							and u.id in 
+										(
+											select user_id
+											from sys_userGroupUsers
+											where user_group_id in 
+														(
+															select rug.user_group_id
+															from sys_role r,sys_roleUserGroups rug
+															where r.id = rug.role_id
+																and r.id in 
+																			(
+																				select role_id 
+																				from sys_userRoles 
+																				where user_id = #{userId}
+																			)
+														)
+										) 
+				) a
+				<where>
+					<if test="mobile != null and mobile != ''">
+						and a.mobile = #{mobile} 
+					</if>
+					<if test="searchInfo != null and searchInfo != ''">
+						and (a.work_no like '%'+#{searchInfo}+'%' or a.name like '%'+#{searchInfo}+'%' or a.mobile like '%'+#{searchInfo}+'%' )
+					</if>
+					<if test="departmentId != null and departmentId != ''">
+						and a.department_id = #{departmentId} 
+					</if>
+				</where>
+			) as t 
+			WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+			ORDER BY t.insert_time desc
+	  </select>
+	  
+	  <select id="getPageTotalCountForIntAddBook" parameterType="java.util.HashMap" resultType="Integer">
+		SELECT count(id)
+			FROM (
+					select DISTINCT u.id, u.name, d.id as department_id, d.name as departmentName, u.mobile, u.short_mobile, u.telephone, u.title, u.brithday, u.sex, u.work_no,u.insert_time
+						from sys_user u
+						LEFT JOIN sys_department d
+						ON u.department_id = d.id
+						where 
+							u.del_flag = 'N'
+							and u.id in 
+										(
+											select user_id
+											from sys_userGroupUsers
+											where user_group_id in 
+														(
+															select user_group_id
+															from sys_roleUserGroups
+															where role_id in 
+																			(
+																				select role_id 
+																				from sys_userRoles 
+																				where user_id = #{userId}
+																			)
+														)
+										)
+			) a
+			<where>
+					<if test="mobile != null and mobile != ''">
+						and a.mobile = #{mobile} 
+					</if>
+					<if test="searchInfo != null and searchInfo != ''">
+						and (a.work_no like '%'+#{searchInfo}+'%' or a.name like '%'+#{searchInfo}+'%' or a.mobile like '%'+#{searchInfo}+'%' )
+					</if>
+					<if test="departmentId != null and departmentId != ''">
+						and a.department_id = #{departmentId} 
+					</if>
+			</where>
+	  </select>
+	
+</mapper>

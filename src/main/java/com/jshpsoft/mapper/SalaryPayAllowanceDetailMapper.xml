@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.SalaryPayAllowanceDetailMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.SalaryPayAllowanceDetail" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="salary_pay_detail_id" property="salaryPayDetailId" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="amount" property="amount" jdbcType="NUMERIC" />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <insert id="insert" parameterType="com.jshpsoft.domain.SalaryPayDetail" useGeneratedKeys="true" keyProperty="id">
+    insert into salary_payAllowanceDetail (salary_pay_detail_id, type, 
+      name, amount, mark, 
+      insert_time, insert_user, update_time, 
+      update_user, del_flag)
+    values (#{salaryPayDetailId,jdbcType=INTEGER}, #{type,jdbcType=INTEGER}, 
+      #{namesalary_pay_detail_id}, #{amount,jdbcType=NUMERIC}, #{marksalary_pay_detail_id}, 
+      #{insertTime,jdbcType=TIMESTAMP}, #{insertUsersalary_pay_detail_id}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{updateUsersalary_pay_detail_id}, #{delFlagsalary_pay_detail_id})
+  </insert>
+  
+  <update id="update" parameterType="com.jshpsoft.domain.SalaryPayDetail" >
+    update salary_payAllowanceDetail
+    <set >
+      <if test="salaryPayDetailId != null" >
+        salary_pay_detail_id = #{salaryPayDetailId,jdbcType=INTEGER},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        name = #{namesalary_pay_detail_id},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount,jdbcType=NUMERIC},
+      </if>
+      <if test="mark != null" >
+        mark = #{marksalary_pay_detail_id},
+      </if>
+      <if test="insertTime != null" >
+        insert_time = #{insertTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="insertUser != null" >
+        insert_user = #{insertUsersalary_pay_detail_id},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUsersalary_pay_detail_id},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlagsalary_pay_detail_id},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+    <select id="getPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+  	SELECT * from (
+		SELECT row_number() over(order by p.id asc) as rownumber,p.* 
+			FROM salary_payAllowanceDetail p
+			<where>
+				<if test="salaryPayDetailId != null" >
+			        AND p.salary_pay_detail_id = #{salaryPayDetailId}
+			    </if>
+				<if test="type != null" >
+			        AND p.type = #{type}
+			    </if>
+				<if test="delFlag != null and delFlag != ''" >
+			        AND p.del_flag = #{delFlag}
+			    </if>
+			    <if test="name != null and name != ''" >
+		           	AND ( p.name LIKE concat('%', #{name}, '%') )
+		      	</if>
+			</where> 
+	) as t 
+	WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+  </select>
+  
+  <select id="getPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+	SELECT count(*)
+		FROM salary_payAllowanceDetail p
+		<where>
+			<if test="salaryPayDetailId != null" >
+		        AND p.salary_pay_detail_id = #{salaryPayDetailId}
+		    </if>
+			<if test="type != null" >
+		        AND p.type = #{type}
+		    </if>
+			<if test="delFlag != null and delFlag != ''" >
+		        AND p.del_flag = #{delFlag}
+		    </if>
+		    <if test="name != null and name != ''" >
+	           	AND ( p.name LIKE concat('%', #{name}, '%') )
+	      	</if>
+		</where>  
+  </select>
+  
+  <select id="getByConditions" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	SELECT p.*
+		FROM salary_payAllowanceDetail p
+		<where>
+			<if test="salaryPayDetailId != null" >
+		        AND p.salary_pay_detail_id = #{salaryPayDetailId}
+		    </if>
+			<if test="type != null" >
+		        AND p.type = #{type}
+		    </if>
+			<if test="delFlag != null and delFlag != ''" >
+		        AND p.del_flag = #{delFlag}
+		    </if>
+		    <if test="name != null and name != ''" >
+	           	AND ( p.name LIKE concat('%', #{name}, '%') )
+	      	</if>
+		</where> 
+		ORDER BY order_id ASC 
+  </select>
+	
+  <select id="getById" parameterType="int"  resultMap="BaseResultMap">
+	SELECT *
+		FROM salary_payAllowanceDetail
+		WHERE id = #{id}
+  </select>
+</mapper>

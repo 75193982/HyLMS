@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.ScheduleTrackChangeApplyMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.ScheduleTrackChangeApply" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="schedule_bill_no" property="scheduleBillNo" jdbcType="VARCHAR" />
+    <result column="reason" property="reason" jdbcType="VARCHAR" />
+    <result column="old_driver_id" property="oldDriverId" jdbcType="INTEGER" />
+    <result column="old_car_number" property="oldCarNumber" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+    <result column="new_driver_id" property="newDriverId" jdbcType="INTEGER" />
+    <result column="new_car_number" property="newCarNumber" jdbcType="VARCHAR" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+    <result column="oldDriverName" property="oldDriverName" jdbcType="VARCHAR" />
+    <result column="newDriverName" property="newDriverName" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <insert id="insert" parameterType="com.jshpsoft.domain.ScheduleTrackChangeApply" >
+    insert into scheduleTrackChangeApply 
+    ( schedule_bill_no, reason,  old_driver_id, old_car_number, status, mark, new_driver_id, new_car_number, insert_time, insert_user, update_time, 
+      update_user, del_flag)
+    values 
+    ( #{scheduleBillNo}, #{reason}, #{oldDriverId}, #{oldCarNumber}, #{status}, #{mark}, #{newDriverId}, #{newCarNumber}, #{insertTime}, #{insertUser}, #{updateTime}, 
+      #{updateUser}, #{delFlag})
+  </insert>
+ 
+  	<select id="getPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	  	SELECT * from (
+			SELECT row_number() over(order by a.insert_time desc) as rownumber,
+				a.id,a.schedule_bill_no,a.old_car_number,a.old_driver_id,a.new_car_number,a.new_driver_id,
+				a.reason,a.insert_time,a.status,
+				u.name as insert_user,c.name as oldDriverName,d.name as newDriverName
+			From scheduleTrackChangeApply a
+			left join sys_user u on u.id = a.insert_user
+			left join sys_user c on c.id = a.old_driver_id
+			left join sys_user d on d.id = a.new_driver_id
+			<where>
+				<if test="delFlag != null and delFlag != ''">
+					and a.del_flag = #{delFlag} 
+				</if>
+				<if test="oldDriverName != null and oldDriverName != ''">
+					and c.name like '%'+#{oldDriverName}+'%'
+				</if>
+				<if test="newDriverName != null and newDriverName != ''">
+					and d.name like '%'+#{newDriverName}+'%' 
+				</if>
+				<if test="scheduleBillNo != null and scheduleBillNo != ''">
+					and a.schedule_bill_no like '%'+#{scheduleBillNo}+'%' 
+				</if>
+				<if test="status != null and status != ''">
+					and a.status = #{status} 
+				</if>
+				<if test="stockId != null and stockId != ''">
+				    and u.stock_id = #{stockId}
+				</if>
+			</where>
+		) as t 
+		WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+	</select>
+	  
+	<select id="getPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+		SELECT count(*)
+		FROM scheduleTrackChangeApply a
+		left join sys_user u on u.id = a.insert_user
+		left join sys_user c on c.id = a.old_driver_id
+			left join sys_user d on d.id = a.new_driver_id
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="oldDriverName != null and oldDriverName != ''">
+				and c.name like '%'+#{oldDriverName}+'%'
+			</if>
+			<if test="newDriverName != null and newDriverName != ''">
+				and d.name like '%'+#{newDriverName}+'%' 
+			</if>
+			<if test="scheduleBillNo != null and scheduleBillNo != ''">
+					and a.schedule_bill_no like '%'+#{scheduleBillNo}+'%' 
+				</if>
+			<if test="status != null and status != ''">
+				and a.status = #{status} 
+			</if>
+			<if test="stockId != null and stockId != ''">
+				and u.stock_id = #{stockId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getById" resultMap="BaseResultMap" parameterType="int">
+		select a.*,c.name as oldDriverName,d.name as newDriverName
+		from scheduleTrackChangeApply a
+		left join sys_user c on c.id = a.old_driver_id
+		left join sys_user d on d.id = a.new_driver_id
+		where a.id = #{id}
+	</select>
+	
+	<update id="update" parameterType="com.jshpsoft.domain.ScheduleTrackChangeApply" >
+    update scheduleTrackChangeApply
+    <set >
+      <if test="scheduleBillNo != null and scheduleBillNo != ''" >
+        schedule_bill_no = #{scheduleBillNo},
+      </if>
+      <if test="reason != null and reason != ''" >
+        reason = #{reason},
+      </if>
+      <if test="oldDriverId != null and oldDriverId != ''">
+		old_driver_id = #{oldDriverId},
+	 </if>
+	 <if test="oldCarNumber != null and oldCarNumber != ''" >
+        old_car_number = #{oldCarNumber},
+      </if>
+      <if test="status != null and status != ''" >
+        status = #{status},
+      </if>
+      <if test="mark != null and mark != ''" >
+        mark = #{mark},
+      </if>
+      <if test="newDriverId != null and newDriverId != ''" >
+        new_driver_id = #{newDriverId},
+      </if>
+      <if test="newCarNumber != null and newCarNumber != ''" >
+        new_car_number = #{newCarNumber},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime},
+      </if>
+      <if test="updateUser != null and updateUser != ''" >
+        update_user = #{updateUser},
+      </if>
+      <if test="delFlag != null and delFlag != ''" >
+        del_flag = #{delFlag},
+      </if>
+    </set>
+    where id = #{id}
+  </update>
+  
+  	<select id="getByConditions" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+		Select a.*,c.name as oldDriverName,d.name as newDriverName
+		From scheduleTrackChangeApply a 
+		left join sys_user u on u.id = a.insert_user
+		left join sys_user c on c.id = a.old_driver_id
+		left join sys_user d on d.id = a.new_driver_id
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="scheduleBillNo != null and scheduleBillNo != ''">
+				and a.schedule_bill_no = #{scheduleBillNo} 
+			</if>
+			<if test="oldCarNumber != null and oldCarNumber != ''">
+				and a.old_car_number = #{oldCarNumber} 
+			</if>
+			<if test="stockId != null and stockId != ''">
+				and u.stock_id = #{stockId}
+			</if>
+		</where>
+			order by a.insert_time asc
+	</select>
+	
+</mapper>

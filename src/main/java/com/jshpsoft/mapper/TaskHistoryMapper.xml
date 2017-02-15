@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.TaskHistoryMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.TaskHistory" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="item_id" property="itemId" jdbcType="INTEGER" />
+    <result column="process_detail_id" property="processDetailId" jdbcType="INTEGER" />
+    <result column="operate_user_id" property="operateUserId" jdbcType="VARCHAR" />
+    <result column="operate_time" property="operateTime" jdbcType="TIMESTAMP" />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+    <result column="attach_file_name" property="attachFileName" jdbcType="VARCHAR" />
+    <result column="attach_file_path" property="attachFilePath" jdbcType="VARCHAR" />
+    <result column="success_flag" property="successFlag" jdbcType="VARCHAR" />
+    
+    <result column="operateUserName" property="operateUserName" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <insert id="insert" parameterType="com.jshpsoft.domain.TaskHistory" >
+    insert into office_taskHistory (item_id, process_detail_id, 
+      operate_user_id, operate_time, mark, attach_file_name, attach_file_path,success_flag
+      )
+    values (#{itemId}, #{processDetailId}, 
+      #{operateUserId}, #{operateTime}, #{mark}, #{attachFileName}, #{attachFilePath},#{successFlag}
+      )
+  </insert>
+  
+  <select id="getByConditions" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	SELECT *
+		FROM office_taskHistory
+		<where>
+			<if test="itemId != null and itemId != ''" >
+				AND item_id = #{itemId}
+			</if>
+			<if test="operateUserId != null and operateUserId != ''" >
+				AND operate_user_id = #{operateUserId}
+			</if>
+			<if test="successFlag != null and successFlag != ''" >
+				AND success_flag = #{successFlag}
+			</if>
+			order by operate_time asc
+		</where>
+  </select>
+  
+  <select id="getTaskList" parameterType="java.util.HashMap" resultMap="BaseResultMap">			
+	select * from ( 
+			SELECT a.id,a.process_detail_id,a.operate_time,a.mark,
+					(select name from sys_user c where a.operate_user_id = c.id ) operateUserName,
+					ROW_NUMBER() over(PARTITION by a.process_detail_id order by a.id desc) as num
+			FROM office_taskHistory a,office_item b
+			where a.item_id = b.id and a.success_flag = #{successFlag} 
+					and b.process_id = #{processId} and b.detail_id = #{detailId} and b.del_flag = #{delFlag}
+			) T 
+	where T.num &lt;= 1 
+	order by process_detail_id asc
+  </select>
+  
+  <resultMap id="BaseResultMap2" type="com.jshpsoft.domain.TaskHistory" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="item_id" property="itemId" jdbcType="INTEGER" />
+    <result column="process_detail_id" property="processDetailId" jdbcType="INTEGER" />
+    <result column="operate_user_id" property="operateUserId" jdbcType="VARCHAR" />
+    <result column="operate_time" property="operateTime" jdbcType="TIMESTAMP" />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+    <result column="attach_file_name" property="attachFileName" jdbcType="VARCHAR" />
+    <result column="attach_file_path" property="attachFilePath" jdbcType="VARCHAR" />
+    <result column="success_flag" property="successFlag" jdbcType="VARCHAR" />
+    
+     <result column="itemName" property="itemName" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="getPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap2">
+  	SELECT * from (
+		SELECT row_number() over(order by t.operate_time desc) as rownumber,t.*,i.item_name as itemName
+			FROM office_taskHistory t 
+			LEFT JOIN office_item i
+			ON t.item_id = i.id
+			<where>
+				<if test="userId != null and userId != ''" >
+					AND t.operate_user_id = #{userId}
+				</if>
+				<if test="itemName != null and itemName != ''" >
+					AND ( i.itemName LIKE concat('%', #{itemName}, '%') )
+				</if>
+			</where>
+	) as t 
+	WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+  </select>
+  
+  <select id="getPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+	SELECT count(t.id)
+			FROM office_taskHistory t 
+			LEFT JOIN office_item i
+			ON t.item_id = i.id
+			<where> 
+				<if test="userId != null and userId != ''" >
+					AND t.operate_user_id = #{userId}
+				</if>
+				<if test="itemName != null and itemName != ''" >
+					AND ( i.itemName LIKE concat('%', #{itemName}, '%') )
+				</if>
+			</where>
+  </select>
+  
+  <update id="update" parameterType="com.jshpsoft.domain.TaskHistory" >
+    update office_taskHistory
+    <set >
+      <if test="itemId != null" >
+        item_id = #{itemId},
+      </if>
+      <if test="processDetailId != null" >
+        process_detail_id = #{processDetailId},
+      </if>
+      <if test="operateUserId != null" >
+        operate_user_id = #{operateUserId},
+      </if>
+      <if test="operateTime != null" >
+        operate_time = #{operateTime},
+      </if>
+      <if test="mark != null" >
+        mark = #{mark},
+      </if>
+      <if test="attachFileName != null" >
+        attach_file_name = #{attachFileName},
+      </if>
+      <if test="attachFilePath != null" >
+        attach_file_path = #{attachFilePath}
+      </if>
+      <if test="successFlag != null" >
+        success_flag = #{successFlag}
+      </if>
+    </set>
+    where id = #{id}
+  </update>
+  
+</mapper>

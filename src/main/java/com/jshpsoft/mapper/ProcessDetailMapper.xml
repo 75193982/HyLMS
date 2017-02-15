@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.ProcessDetailMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.ProcessDetail" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="process_id" property="processId" jdbcType="INTEGER" />
+    <result column="order_no" property="orderNo" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="operate_user_id" property="operateUserId" jdbcType="VARCHAR" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+    
+    <result column="need_suggest_flag" property="needSuggestFlag" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <select id="getByConditions" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	SELECT *
+		FROM office_processDetail
+		WHERE 
+			del_flag = 'N'
+			<if test="processId != null" >
+				AND process_id = #{processId}
+			</if>
+			<if test="name != null and name != ''" >
+				AND ( name LIKE concat('%', #{name}, '%') OR name LIKE concat('%', #{name}, '%') )
+			</if>
+		<if test="orderBy != null" >
+		ORDER BY ${orderBy}
+		</if>
+		
+  </select>
+  
+  <insert id="insert" parameterType="com.jshpsoft.domain.ProcessDetail" >
+    insert into office_processDetail (process_id, order_no, 
+      name, type, operate_user_id, insert_time, 
+      insert_user, update_time, update_user, 
+      del_flag,need_suggest_flag)
+    values (#{processId,jdbcType=INTEGER}, #{orderNo,jdbcType=INTEGER}, 
+      #{name,jdbcType=VARCHAR},#{type}, #{operateUserId,jdbcType=VARCHAR}, #{insertTime,jdbcType=TIMESTAMP}, 
+      #{insertUser,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{updateUser,jdbcType=VARCHAR}, 
+      #{delFlag,jdbcType=VARCHAR},#{needSuggestFlag})
+  </insert>
+  
+  <select id="getById" parameterType="int"  resultMap="BaseResultMap">
+	SELECT *
+		FROM office_processDetail
+		WHERE id = #{id}
+  </select>
+  
+  <update id="update" parameterType="com.jshpsoft.domain.ProcessDetail" >
+    update office_processDetail
+    <set >
+      <if test="processId != null" >
+        process_id = #{processId,jdbcType=INTEGER},
+      </if>
+      <if test="orderNo != null" >
+        order_no = #{orderNo,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="operateUserId != null" >
+        operate_user_id = #{operateUserId,jdbcType=VARCHAR},
+      </if>
+      <if test="insertTime != null" >
+        insert_time = #{insertTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="insertUser != null" >
+        insert_user = #{insertUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="needSuggestFlag != null" >
+        need_suggest_flag = #{needSuggestFlag,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <update id="deleteByProcessId" parameterType="com.jshpsoft.domain.ProcessDetail" >
+    update office_processDetail
+    set del_flag = 'Y'
+    where process_id = #{processId,jdbcType=INTEGER} and  del_flag = 'N'
+  </update>
+  
+  
+</mapper>

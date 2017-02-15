@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.TrackInsurancePayLogMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.TrackInsurancePayLog" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="parent_id" property="parentId" jdbcType="INTEGER" />
+    <result column="insurance_id" property="insuranceId" jdbcType="INTEGER" />
+    <result column="insurance_no" property="insuranceNo" jdbcType="VARCHAR" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+    
+  </resultMap>
+  
+  <insert id="insert" parameterType="com.jshpsoft.domain.TrackInsurancePayLog" useGeneratedKeys="true" keyProperty= "id" >
+    insert into trackInsurancePayLog (type, parent_id, insurance_id, 
+      insurance_no, amount, mark, 
+      insert_time, insert_user, update_time, 
+      update_user, del_flag)
+    values (#{type}, #{parentId}, #{insuranceId}, 
+      #{insuranceNo}, #{amount}, #{mark}, 
+      #{insertTime}, #{insertUser}, #{updateTime}, 
+      #{updateUser}, #{delFlag})
+  </insert>
+ 
+      <select id="getPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	  	SELECT * from (
+			SELECT row_number() over(order by a.id asc) as rownumber,
+			a.id,a.insurance_no,a.amount,a.mark,a.insert_time,
+			(select name from sys_user b where a.insert_user=b.id) insert_user
+			From trackInsurancePayLog a
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="type != null and type != ''">
+				and a.type in (${type})
+			</if>
+			<if test="startInTime != null and startInTime != ''">
+				and convert(char(10), a.insert_time,120) &gt;= convert(char(10), #{startInTime},120)
+			</if>
+			<if test="endInTime != null and endInTime != ''">
+				and convert(char(10), a.insert_time,120) &lt;= convert(char(10), #{endInTime},120)
+			</if>
+		</where>
+		) as t 
+		WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+		ORDER BY t.insert_time ASC
+	</select>
+	  
+	<select id="getPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+		SELECT count(*)
+		FROM trackInsurancePayLog a
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="type != null and type != ''">
+				and a.type in (${type})
+			</if>
+			<if test="startInTime != null and startInTime != ''">
+				and convert(char(10), a.insert_time,120) &gt;= convert(char(10), #{startInTime},120)
+			</if>
+			<if test="endInTime != null and endInTime != ''">
+				and convert(char(10), a.insert_time,120) &lt;= convert(char(10), #{endInTime},120)
+			</if>
+		</where>
+	</select>
+	
+  	<select id="getByConditions" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+		Select a.id,a.insurance_no,a.amount,a.mark,a.insert_time,
+			(select name from sys_user b where a.insert_user=b.id) insert_user
+		From trackInsurancePayLog a
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="parentId != null and parentId != ''">
+				and a.parent_id = #{parentId} 
+			</if>
+			<if test="insuranceId != null and insuranceId != ''">
+			    and a.insurance_id = #{insuranceId}
+			</if>
+		</where>
+			order by a.insert_time asc
+	</select>
+	
+	<select id="getGroupAmount" resultMap="BaseResultMap" >
+		Select type,sum(amount) amount
+		From trackInsurancePayLog 
+		group by type
+	</select>
+	
+</mapper>

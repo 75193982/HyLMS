@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.CarDamageStockInOutDetailMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.CarDamageStockInOutDetail" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="parent_id" property="parentId" jdbcType="INTEGER" />
+    <result column="business_id" property="businessId" jdbcType="INTEGER" />
+    <result column="stock_id" property="stockId" jdbcType="INTEGER" />
+    <result column="waybill_id" property="waybillId" jdbcType="INTEGER" />
+    <result column="brand" property="brand" jdbcType="VARCHAR" />
+    <result column="vin" property="vin" jdbcType="VARCHAR" />
+    <result column="model" property="model" jdbcType="VARCHAR" />
+    <result column="color" property="color" jdbcType="VARCHAR" />
+    <result column="engine_no" property="engineNo" jdbcType="VARCHAR" />
+    <result column="position" property="position" jdbcType="VARCHAR" />
+    <result column="key_position" property="keyPosition" jdbcType="VARCHAR" />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+    <result column="amount" property="amount" />
+  </resultMap>
+  
+  <insert id="save" parameterType="com.jshpsoft.domain.CarDamageStockInOutDetail">
+  	insert into carDamageStockInOutDetail (parent_id, business_id, stock_id, 
+      waybill_id, brand, vin, 
+      model, color, engine_no, 
+      position,key_position, mark,insert_time, insert_user, 
+      update_time, update_user, del_flag, amount
+      )
+    values ( #{parentId}, #{businessId}, #{stockId}, 
+      #{waybillId}, #{brand}, #{vin}, 
+      #{model}, #{color}, #{engineNo}, 
+      #{position},#{keyPosition},#{mark}, #{insertTime}, #{insertUser}, 
+      #{updateTime}, #{updateUser}, #{delFlag}, #{amount}
+      )
+  </insert>
+  
+  <update id="update" parameterType="com.jshpsoft.domain.CarDamageStockInOutDetail">
+  	 update carDamageStockInOutDetail
+    <set >
+      <if test="businessId != null" >
+        business_id = #{businessId},
+      </if>
+      <if test="stockId != null" >
+        stock_id = #{stockId},
+      </if>
+      <if test="waybillId != null and waybillId != ''" >
+        waybill_id = #{waybillId},
+      </if>
+      <if test="brand != null and brand != ''" >
+        brand = #{brand},
+      </if>
+      <if test="vin != null and vin != ''" >
+        vin = #{vin},
+      </if>
+      <if test="model != null and model != ''" >
+        model = #{model},
+      </if>
+      <if test="color != null and color != ''" >
+        color = #{color},
+      </if>
+      <if test="engineNo != null and engineNo != ''" >
+        engine_no = #{engineNo},
+      </if>
+      <if test="position != null and position != ''" >
+        position = #{position},
+      </if>
+      <if test="keyPosition != null and keyPosition != ''" >
+        key_position = #{keyPosition},
+      </if>
+      <if test="mark != null and mark != ''" >
+        mark = #{mark},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime},
+      </if>
+      <if test="updateUser != null and updateUser != ''" >
+        update_user = #{updateUser},
+      </if>
+      <if test="delFlag != null and delFlag != ''" >
+        del_flag = #{delFlag},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount},
+      </if>
+    </set>
+    where parent_id = #{parentId}
+  </update>
+  
+  <update id="delete" parameterType="java.util.HashMap">
+  	update carDamageStockInOutDetail set update_time = #{updateTime},update_user = #{updateUser},del_flag = #{delFlag} where parent_id = #{parentId}
+  </update>
+  
+  
+  
+  <select id="getByParent" resultMap="BaseResultMap" parameterType="int">
+  	select * from carDamageStockInOutDetail where del_flag= 'N' and  parent_id = #{parentId}
+  </select>
+  
+  <select id="getPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	  	SELECT * from (
+			SELECT row_number() over(order by d.id asc) as rownumber,d.*,c.status
+			From carDamageStockInOutDetail d
+			left join carDamageStockInOut c on c.id = d.parent_id
+			left join waybill w on w.id = c.business_id
+			where c.type = '0' and c.del_flag ='N'
+			<if test="brand != null and brand != ''">
+  				and ( d.brand LIKE concat('%', #{brand}, '%')  )
+  			</if>
+		) as t 
+		WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+		ORDER BY t.id ASC
+	</select>
+	  
+	<select id="getPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+		SELECT count(*)
+		FROM carDamageStockInOutDetail d
+		left join carDamageStockInOut c on c.id = d.parent_id
+		where c.type = '0' and c.del_flag ='N'
+			<if test="brand != null and brand != ''">
+  				and ( d.brand LIKE concat('%', #{brand}, '%')  )
+  			</if>
+	</select>
+	
+	<select id="getBystockId" resultMap="BaseResultMap" parameterType="int">
+  		select * from carDamageStockInOutDetail where stock_id = #{stockId}
+  	</select>
+  	
+  	<select id="getOutDetailListByParentId" resultMap="BaseResultMap" parameterType="int">
+  	select u.*,t.bId,t.outId from 
+			(select d.*
+			From carDamageStockInOutDetail d
+			left join carDamageStockInOut c on c.id = d.parent_id
+			where c.type = '0' and c.del_flag ='N'
+			) u
+			left join 
+			(
+			SELECT e.business_id as bId,e.parent_id as outId
+			From carDamageStockInOutDetail e
+			left join carDamageStockInOut f on f.id = e.parent_id 
+			where f.type = '1' and f.del_flag ='N'
+			)t on t.bId = u.id 
+			where t.outId= #{id} 
+  </select>
+  
+    <update id="updateByBusinessId" parameterType="java.util.HashMap">
+  		update carDamageStockInOutDetail
+  		<set>
+	      	<if test="updateUser != null and updateUser != ''" >
+	        	update_user = #{updateUser}
+	      	</if>
+	      	<if test="updateTime != null" >
+	        	update_time = #{updateTime}
+	      	</if>
+	      	<if test="delFlag != null and delFlag != ''" >
+	        	del_flag = #{delFlag}
+	      	</if>
+	    </set>
+  		where business_id = #{businessId}
+  	</update>
+  	
+  	<select id="getByConditions" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+		Select a.*
+		From carDamageStockInOutDetail a 
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag}
+			</if>
+			<if test="parentId != null and parentId != ''">
+				and a.parent_id = #{parentId}
+			</if>
+			<if test="stockId != null and stockId != ''">
+				and a.stock_id = #{stockId}
+			</if>
+		</where>
+		order by a.insert_time asc
+	</select>
+	
+  	<select id="getDetailByParentId" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+	    select * from (
+  			select row_number() over(order by id asc) as rownumber,*
+  			from carDamageStockInOutDetail c
+  	   	<where>
+  			del_flag='N'
+  			<if test="parentId != null and parentId != '' ">
+				and parent_id=#{parentId}
+			</if>
+		</where>
+		) as t
+		WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+		ORDER BY t.insert_time ASC
+		
+	</select>
+  
+	<select id="getDetailPageTotalCount" resultType="Integer" parameterType="java.util.HashMap" >
+  	select count(*) from carDamageStockInOutDetail 
+  	   <where>
+  			del_flag='N'
+			<if test="parentId != null and parentId != '' ">
+				and parent_id=#{parentId}
+			</if>
+		</where>
+  </select>
+  
+ </mapper>

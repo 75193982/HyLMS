@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.UserGroupMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.UserGroup" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+    <result column="order_id" property="orderId" jdbcType="INTEGER" />
+    <result column="insert_time" jdbcType="TIMESTAMP" property="insertTime" />
+    <result column="insert_user" jdbcType="VARCHAR" property="insertUser" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="update_user" jdbcType="VARCHAR" property="updateUser" />
+    <result column="del_flag" jdbcType="VARCHAR" property="delFlag" />
+  </resultMap>
+  
+  <select id="getById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select *
+    from sys_userGroup
+    where id = #{id}
+  </select>
+  
+  <select id="getByConditions" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+	select *
+	from sys_userGroup
+	<where>
+		<if test="delFlag != null and delFlag != ''">
+			and del_flag = #{delFlag} 
+		</if>
+		<if test="name != null and name != ''">
+			and (name like '%'+#{name}+'%' )
+		</if>
+	</where>
+	order by order_id asc
+  </select>
+  
+  <insert id="insert" parameterType="com.jshpsoft.domain.UserGroup" useGeneratedKeys="true" keyProperty="id" >
+    insert into sys_userGroup (name, mark, 
+      order_id, insert_time, insert_user, update_time, update_user, del_flag)
+    values ( #{name}, #{mark}, 
+      #{orderId}, #{insertTime}, 
+			#{insertUser}, #{updateTime}, #{updateUser}, #{delFlag})
+  </insert>
+
+  <update id="update" parameterType="com.jshpsoft.domain.UserGroup" >
+    update sys_userGroup
+    <set >
+      <if test="name != null" >
+        name = #{name},
+      </if>
+      <if test="mark != null" >
+        mark = #{mark},
+      </if>
+      <if test="orderId != null" >
+        order_id = #{orderId},
+      </if>
+      <if test="updateTime != null">
+		update_time = #{updateTime},
+	 </if>
+	 <if test="updateUser != null and updateUser != ''">
+		update_user = #{updateUser},
+	 </if>
+	 <if test="delFlag != null and delFlag != ''">
+		del_flag = #{delFlag}
+	 </if>
+     </set>
+    where id = #{id}
+  </update>
+  
+  <select id="getPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	  	SELECT * from (
+			SELECT row_number() over(order by order_id asc) as rownumber,*
+				FROM sys_userGroup  
+				<where>
+					<if test="delFlag != null and delFlag != ''">
+						and del_flag = #{delFlag} 
+					</if>
+					<if test="name != null and name != ''">
+						and (name like '%'+#{name}+'%' )
+					</if>
+				</where>
+				) as t 
+				WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+				ORDER BY t.insert_time desc
+	  </select>
+	  
+	  <select id="getPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+		SELECT count(*)
+			FROM sys_userGroup
+			<where>
+				<if test="delFlag != null and delFlag != ''">
+					and del_flag = #{delFlag} 
+				</if>
+				<if test="name != null and name != ''">
+					and (name like '%'+#{name}+'%' )
+				</if>
+			</where>
+	  </select>
+</mapper>

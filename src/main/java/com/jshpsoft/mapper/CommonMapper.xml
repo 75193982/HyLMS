@@ -1,0 +1,505 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.CommonMapper">
+
+	<select id="getDepartmentList" resultType="com.jshpsoft.domain.Department" parameterType="java.util.HashMap">
+		select * from sys_department where del_flag = #{delFlag} order by order_id asc
+	</select>
+	
+	<select id="getStockList" resultType="com.jshpsoft.domain.Stock" parameterType="java.util.HashMap">
+		select * from basic_stock where del_flag = #{delFlag} order by order_id asc
+	</select>
+	
+	<select id="getRoleList" resultType="com.jshpsoft.domain.Role" >
+		select * from sys_role order by order_id asc
+	</select>
+	
+	<select id="getMenuList" resultType="com.jshpsoft.domain.Menu" >
+		select * from sys_menu order by order_id asc
+	</select>
+	
+	<select id="getBasicSuppliersList" resultType="com.jshpsoft.domain.Supplier" parameterType="java.util.HashMap">
+		select id , name  from basic_supplier  where del_flag = #{delFlag} 
+		<if test="name != null and name != ''">
+		    and ( name LIKE concat('%', #{name}, '%') )
+		</if>
+		order by id asc
+	</select>
+	
+	<select id="getComSuppliersList" resultType="com.jshpsoft.domain.SupplierJson">
+		select id as supplierId, name as supplierName from basic_supplier  
+		where del_flag = 'N' 
+		order by id asc
+	</select>
+	
+	<select id="getCarBrandList" resultType="com.jshpsoft.domain.CarBrand" parameterType="java.util.HashMap">
+		select id ,brand_name as brandName,car_type as carType from basic_carBrand  where del_flag = #{delFlag} 
+		<if test="brandName != null and brandName != ''">
+		    and ( brand_name LIKE concat('%', #{brandName}, '%') or py LIKE concat('%', #{brandName}, '%') or wb LIKE concat('%', #{brandName}, '%') )
+		    
+		</if>
+		 order by id asc
+	</select>
+	
+	<select id="getCarShopList" resultType="com.jshpsoft.domain.CarShop" parameterType="java.util.HashMap">
+		select * from basic_carShop  where del_flag = #{delFlag} 
+		<if test="name != null and name != ''">
+		    and ( name LIKE concat('%', #{name}, '%') or py LIKE concat('%', #{name}, '%') or wb LIKE concat('%', #{name}, '%') )
+		</if>
+		 order by id asc
+	</select>
+	
+	<select id="getOutSourcingList" resultType="com.jshpsoft.domain.OutSourcing" parameterType="java.util.HashMap">
+		select id,name from basic_outSourcing  where del_flag = #{delFlag}
+		<if test="name != null and name != ''">
+		    and ( name LIKE concat('%', #{name}, '%') )
+		</if>
+		 order by id asc
+	</select>
+	
+	<select id="getTrackList" resultType="com.jshpsoft.domain.Track" parameterType="java.util.HashMap">
+		select a.*,b.mobile,b.name as driverName,a.driver_id as driverId,
+		c.name as codriverName,a.codriver_id as codriverId
+		from basic_track a 
+		left join sys_user b 
+			on a.driver_id = b.id and b.driver_flag = 'Y'
+		left join sys_user c
+			on a.codriver_id = c.id and c.driver_flag = 'Y'
+		where a.del_flag = #{delFlag} 
+		<if test="type != null and type != ''">
+			and a.type = #{type} 
+		</if>
+		<if test="no != null and no != ''">
+		    and ( a.no LIKE concat('%', #{no}, '%')  )
+		</if>
+		order by a.id asc
+	</select>
+	
+	<!-- 运单中车辆统计 -->
+	<select id="getReportForWaybill" parameterType="java.util.HashMap" resultType="com.jshpsoft.domain.ReportForWaybill">
+		select t.*
+		from (
+				select 
+					cs.stock_id as stockId,
+					wb.id as waybillId, wb.waybill_no as waybillNo, wb.car_shop_id as carShopId,(select name from basic_carShop cs where cs.id = wb.car_shop_id) as carShopName, wb.supplier_id as supplierId, (select name from basic_supplier s where s.id = wb.supplier_id) as supplierName,wb.start_address as startAddress, wb.target_province as targetProvince,
+					wb.target_city as targetCity, wb.send_time as waybillSendTime, wb.status as waybillStatus,
+					cs.id as carStockId, cs.type as carType, cs.brand, cs.model, cs.vin, cs.storage_time as carInStockTime, cs.transport_price as carPrice, cs.status as carStatus
+				from waybill wb
+				inner join carStock cs on wb.id = cs.waybill_id and cs.del_flag = 'N' and cs.status not in ('0')
+				where wb.del_flag = 'N' and wb.status not in ('0')
+			 ) t
+		<where>
+			<if test="stockId != null and stockId != ''">
+				and t.stockId = #{stockId} 
+			</if>
+			<if test="waybillId != null and waybillId != ''">
+				and t.waybillId = #{waybillId} 
+			</if>
+			<if test="waybillNo != null and waybillNo != ''">
+				and t.waybillNo like '%'+#{waybillNo}+'%'
+			</if>
+			<if test="carShopId != null and carShopId !=''">
+				and t.carShopId = #{carShopId} 
+			</if>
+			<if test="supplierId != null and supplierId != ''">
+				and t.supplier_id = #{supplierId} 
+			</if>
+			<if test="startAddress != null and startAddress != ''">
+				and t.startAddress like '%'+#{startAddress}+'%'
+			</if>
+			<if test="targetProvince != null and targetProvince != ''">
+				and t.targetProvince like '%'+#{targetProvince}+'%'
+			</if>
+			<if test="targetCity != null and targetCity != ''">
+				and t.targetCity like '%'+#{targetCity}+'%'
+			</if>
+			<if test="brand != null and brand != ''">
+				and t.brand like '%'+#{brand}+'%'
+			</if>
+			<if test="startWaybillSendTime != null and startWaybillSendTime != ''">
+				and convert(char(10), t.waybillSendTime,120) &gt;= #{startWaybillSendTime}
+			</if>
+			<if test="endWaybillSendTime != null and endWaybillSendTime != ''">
+				and convert(char(10), t.waybillSendTime,120) &lt;= #{endWaybillSendTime}
+			</if>
+			<if test="waybillStatus != null and waybillStatus != ''">
+				and t.waybillStatus = #{waybillStatus} 
+			</if>
+			<if test="model != null and model != ''">
+				and t.model like '%'+#{model}+'%'
+			</if>
+			<if test="vin != null and vin != ''">
+				and t.vin like '%'+#{vin}+'%' 
+			</if>
+		</where>
+		order by t.waybillSendTime desc
+	</select>
+	
+	<select id="getReportForWaybillPageList" parameterType="java.util.HashMap" resultType="com.jshpsoft.domain.ReportForWaybill">
+		SELECT tp.* from (
+			SELECT row_number() over(order by t.waybillSendTime desc) as rownumber,t.*
+			from (
+					select 
+						cs.stock_id as stockId,
+						wb.id as waybillId, wb.waybill_no as waybillNo, wb.car_shop_id as carShopId, (select name from basic_carShop cs where cs.id = wb.car_shop_id) as carShopName, wb.supplier_id as supplierId, (select name from basic_supplier s where s.id = wb.supplier_id) as supplierName, wb.start_address as startAddress, wb.target_province as targetProvince,
+						wb.target_city as targetCity, wb.send_time as waybillSendTime, wb.status as waybillStatus,
+						cs.id as carStockId, cs.type as carType, cs.brand, cs.model, cs.vin, cs.storage_time as carInStockTime, cs.transport_price as carPrice, cs.status as carStatus
+					from waybill wb
+					inner join carStock cs on wb.id = cs.waybill_id and cs.del_flag = 'N' and cs.status not in ('0')
+					where wb.del_flag = 'N' and wb.status not in ('0')
+				 ) t
+			<where>
+				<if test="stockId != null and stockId != ''">
+					and t.stockId = #{stockId} 
+				</if>
+				<if test="waybillId != null and waybillId != ''">
+					and t.waybillId = #{waybillId} 
+				</if>
+				<if test="waybillNo != null and waybillNo != ''">
+					and t.waybillNo like '%'+#{waybillNo}+'%'
+				</if>
+				<if test="carShopId != null and carShopId != ''">
+					and t.carShopId = #{carShopId} 
+				</if>
+				<if test="supplierId != null and supplierId != ''">
+					and t.supplier_id = #{supplierId} 
+				</if>
+				<if test="startAddress != null and startAddress != ''">
+					and t.startAddress like '%'+#{startAddress}+'%'
+				</if>
+				<if test="targetProvince != null and targetProvince != ''">
+					and t.targetProvince like '%'+#{targetProvince}+'%'
+				</if>
+				<if test="targetCity != null and targetCity != ''">
+					and t.targetCity like '%'+#{targetCity}+'%'
+				</if>
+				<if test="brand != null and brand != ''">
+					and t.brand like '%'+#{brand}+'%'
+				</if>
+				<if test="startWaybillSendTime != null and startWaybillSendTime != ''">
+					and convert(char(10), t.waybillSendTime,120) &gt;= #{startWaybillSendTime}
+				</if>
+				<if test="endWaybillSendTime != null and endWaybillSendTime != ''">
+					and convert(char(10), t.waybillSendTime,120) &lt;= #{endWaybillSendTime}
+				</if>
+				<if test="waybillStatus != null and waybillStatus != ''">
+					and t.waybillStatus = #{waybillStatus} 
+				</if>
+				<if test="model != null and model != ''">
+					and t.model like '%'+#{model}+'%'
+				</if>
+				<if test="vin != null and vin != ''">
+					and t.vin like '%'+#{vin}+'%' 
+				</if>
+			</where>
+		) as tp 
+		WHERE tp.rownumber &gt; #{pageStartIndex} And tp.rownumber &lt;= #{pageEndIndex}
+	</select>
+	
+	<select id="getReportForWaybillPageCount" parameterType="java.util.HashMap" resultType="int">
+		select count(tt.carStockId)
+		from (
+			select t.*
+			from (
+				select 
+					cs.stock_id as stockId,
+					wb.id as waybillId, wb.waybill_no as waybillNo, wb.car_shop_id as carShopId, (select name from basic_carShop cs where cs.id = wb.car_shop_id) as carShopName, wb.supplier_id as supplierId, (select name from basic_supplier s where s.id = wb.supplier_id) as supplierName,wb.start_address as startAddress, wb.target_province as targetProvince,
+					wb.target_city as targetCity, wb.send_time as waybillSendTime, wb.status as waybillStatus,
+					cs.id as carStockId, cs.type as carType, cs.brand, cs.model, cs.vin, cs.storage_time as carInStockTime, cs.transport_price as carPrice, cs.status as carStatus
+				from waybill wb
+				inner join carStock cs on wb.id = cs.waybill_id and cs.del_flag = 'N' and cs.status not in ('0')
+				where wb.del_flag = 'N' and wb.status not in ('0')
+			 ) t
+		<where>
+			<if test="stockId != null and stockId != ''">
+				and t.stockId = #{stockId} 
+			</if>
+			<if test="waybillId != null and waybillId != ''">
+				and t.waybillId = #{waybillId} 
+			</if>
+			<if test="waybillNo != null and waybillNo != ''">
+				and t.waybillNo like '%'+#{waybillNo}+'%'
+			</if>
+			<if test="carShopId != null and carShopId != ''">
+				and t.carShopId = #{carShopId} 
+			</if>
+			<if test="supplierId != null and supplierId != ''">
+				and t.supplier_id = #{supplierId} 
+			</if>
+			<if test="startAddress != null and startAddress != ''">
+				and t.startAddress like '%'+#{startAddress}+'%'
+			</if>
+			<if test="targetProvince != null and targetProvince != ''">
+				and t.targetProvince like '%'+#{targetProvince}+'%'
+			</if>
+			<if test="targetCity != null and targetCity != ''">
+				and t.targetCity like '%'+#{targetCity}+'%'
+			</if>
+			<if test="brand != null and brand != ''">
+				and t.brand like '%'+#{brand}+'%'
+			</if>
+			<if test="startWaybillSendTime != null and startWaybillSendTime != ''">
+				and convert(char(10), t.waybillSendTime,120) &gt;= #{startWaybillSendTime}
+			</if>
+			<if test="endWaybillSendTime != null and endWaybillSendTime != ''">
+				and convert(char(10), t.waybillSendTime,120) &lt;= #{endWaybillSendTime}
+			</if>
+			<if test="waybillStatus != null and waybillStatus != ''">
+				and t.waybillStatus = #{waybillStatus} 
+			</if>
+			<if test="model != null and model != ''">
+				and t.model like '%'+#{model}+'%' 
+			</if>
+			<if test="vin != null and vin != ''">
+				and t.vin like '%'+#{vin}+'%' 
+			</if>
+		</where>
+		) tt
+	</select>
+	
+	<!-- 调度单中的车辆统计 -->
+	<select id="getReportForSchedulebillPageList" parameterType="java.util.HashMap" resultType="com.jshpsoft.domain.ReportForSchedulebill">
+		SELECT tp.* from (
+			SELECT row_number() over(order by t.scheduleSendTime desc) as rownumber,t.*
+			from (
+					select 
+						cs.stock_id as stockId,
+						wb.id as waybillId,wb.waybill_no as waybillNo,wb.car_shop_id as carShopId, (select name from basic_carShop cs where cs.id = wb.car_shop_id) as carShopName,wb.supplier_id as supplierId,(select name from basic_supplier s where s.id = wb.supplier_id) as supplierName,wb.start_address as startAddress,wb.target_province as targetProvince,
+						wb.target_city as targetCity,wb.send_time as waybillSendTime,wb.status as waybillStatus,
+						cs.id as carStockId,cs.type as carType,cs.brand,cs.model,cs.vin,cs.storage_time as carInStockTime,cs.transport_price as carPrice,cs.status as carStatus,
+						sb.schedule_bill_no as scheduleBillNo,sb.send_time as scheduleSendTime,sb.car_number as carNumber,sb.driver_id as driverId,sb.out_sourcing_id as outSourcingId,(select name from basic_outSourcing os where os.id = sb.out_sourcing_id) as outSourcingName,sb.type as scheduleType,sb.status as scheduleStatus,sb.insert_user as scheduleApplyUserId,sb.amount as scheduleAmount
+					from waybill wb
+					inner join carStock cs on wb.id = cs.waybill_id and cs.del_flag = 'N' and cs.status not in ('0')
+					left join scheduleBillDetail sbd on charindex(','+ltrim(cs.id)+',',','+  sbd.car_stock_ids+',' ) > 0 and sbd.del_flag = 'N' and sbd.type in ('0','2')
+					left join scheduleBill sb on sbd.schedule_bill_no = sb.schedule_bill_no and sb.del_flag = 'N' and sb.status not in ('0')
+					where wb.del_flag = 'N' and wb.status not in ('0')
+				 ) t
+			<where>
+				<if test="stockId != null and stockId !=''">
+					and t.stockId = #{stockId} 
+				</if>
+				<if test="waybillId != null and waybillId != ''">
+					and t.waybillId = #{waybillId} 
+				</if>
+				<if test="waybillNo != null and waybillNo != ''">
+					and t.waybillNo like '%'+#{waybillNo}+'%'
+				</if>
+				<if test="carShopId != null and carShopId !=''">
+					and t.carShopId = #{carShopId} 
+				</if>
+				<if test="supplierId != null and supplierId != ''">
+					and t.supplier_id = #{supplierId} 
+				</if>
+				<if test="startAddress != null and startAddress != ''">
+					and t.startAddress like '%'+#{startAddress}+'%'
+				</if>
+				<if test="targetProvince != null and targetProvince != ''">
+					and t.targetProvince like '%'+#{targetProvince}+'%'
+				</if>
+				<if test="targetCity != null and targetCity != ''">
+					and t.targetCity like '%'+#{targetCity}+'%'
+				</if>
+				<if test="brand != null and brand != ''">
+					and t.brand like '%'+#{brand}+'%'
+				</if>
+				<if test="startWaybillSendTime != null and startWaybillSendTime != ''">
+					and convert(char(10), t.waybillSendTime,120) &gt;= #{startWaybillSendTime}
+				</if>
+				<if test="endWaybillSendTime != null and endWaybillSendTime != ''">
+					and convert(char(10), t.waybillSendTime,120) &lt;= #{endWaybillSendTime}
+				</if>
+				<if test="waybillStatus != null and waybillStatus != ''">
+					and t.waybillStatus = #{waybillStatus} 
+				</if>
+				<if test="scheduleBillNo != null and scheduleBillNo != ''">
+					and t.scheduleBillNo like '%'+#{scheduleBillNo}+'%'
+				</if>
+				<if test="startScheduleSendTime != null and startScheduleSendTime != ''">
+					and convert(char(10), t.scheduleSendTime,120) &gt;= #{startScheduleSendTime}
+				</if>
+				<if test="endScheduleSendTime != null and endScheduleSendTime != ''">
+					and convert(char(10), t.scheduleSendTime,120) &lt;= #{endScheduleSendTime}
+				</if>
+				<if test="carNumber != null and carNumber != ''">
+					and t.carNumber like '%'+#{carNumber}+'%'
+				</if>
+				<if test="driverId != null and driverId !=''">
+					and t.driverId = #{driverId} 
+				</if>
+				<if test="outSourcingId != null and outSourcingId != ''">
+					and t.outSourcingId = #{outSourcingId} 
+				</if>
+				<if test="scheduleStatus != null and scheduleStatus != ''">
+					and t.scheduleStatus = #{scheduleStatus} 
+				</if>
+				<if test="scheduleApplyUserId != null and scheduleApplyUserId != ''">
+					and t.scheduleApplyUserId = #{scheduleApplyUserId} 
+				</if>
+			</where>
+		) as tp 
+		WHERE tp.rownumber &gt; #{pageStartIndex} And tp.rownumber &lt;= #{pageEndIndex}
+	</select>
+	
+	<select id="getReportForSchedulebillPageCount" parameterType="java.util.HashMap" resultType="int">
+	select count(tt.carStockId)
+		from (
+			select t.*
+			from (
+					select 
+						cs.stock_id as stockId,
+						wb.id as waybillId,wb.waybill_no as waybillNo,wb.car_shop_id as carShopId, (select name from basic_carShop cs where cs.id = wb.car_shop_id) as carShopName,wb.supplier_id as supplierId,(select name from basic_supplier s where s.id = wb.supplier_id) as supplierName,wb.start_address as startAddress,wb.target_province as targetProvince,
+						wb.target_city as targetCity,wb.send_time as waybillSendTime,wb.status as waybillStatus,
+						cs.id as carStockId,cs.type as carType,cs.brand,cs.model,cs.vin,cs.storage_time as carInStockTime,cs.transport_price as carPrice,cs.status as carStatus,
+						sb.schedule_bill_no as scheduleBillNo,sb.send_time as scheduleSendTime,sb.car_number as carNumber,sb.driver_id as driverId,sb.out_sourcing_id as outSourcingId,(select name from basic_outSourcing os where os.id = sb.out_sourcing_id) as outSourcingName,sb.type as scheduleType,sb.status as scheduleStatus,sb.insert_user as scheduleApplyUserId,sb.amount as scheduleAmount
+					from waybill wb
+					inner join carStock cs on wb.id = cs.waybill_id and cs.del_flag = 'N' and cs.status not in ('0')
+					left join scheduleBillDetail sbd on charindex(','+ltrim(cs.id)+',',','+  sbd.car_stock_ids+',' ) > 0 and sbd.del_flag = 'N' and sbd.type in ('0','2')
+					left join scheduleBill sb on sbd.schedule_bill_no = sb.schedule_bill_no and sb.del_flag = 'N' and sb.status not in ('0')
+					where wb.del_flag = 'N' and wb.status not in ('0')
+				 ) t
+			<where>
+				<if test="stockId != null and stockId != ''">
+					and t.stockId = #{stockId} 
+				</if>
+				<if test="waybillId != null and waybillId != ''">
+					and t.waybillId = #{waybillId} 
+				</if>
+				<if test="waybillNo != null and waybillNo != ''">
+					and t.waybillNo like '%'+#{waybillNo}+'%'
+				</if>
+				<if test="carShopId != null and carShopId != ''">
+					and t.carShopId = #{carShopId} 
+				</if>
+				<if test="supplierId != null and supplierId != ''">
+					and t.supplier_id = #{supplierId} 
+				</if>
+				<if test="startAddress != null and startAddress != ''">
+					and t.startAddress like '%'+#{startAddress}+'%'
+				</if>
+				<if test="targetProvince != null and targetProvince != ''">
+					and t.targetProvince like '%'+#{targetProvince}+'%'
+				</if>
+				<if test="targetCity != null and targetCity != ''">
+					and t.targetCity like '%'+#{targetCity}+'%'
+				</if>
+				<if test="brand != null and brand != ''">
+					and t.brand like '%'+#{brand}+'%'
+				</if>
+				<if test="startWaybillSendTime != null and startWaybillSendTime != ''">
+					and convert(char(10), t.waybillSendTime,120) &gt;= #{startWaybillSendTime}
+				</if>
+				<if test="endWaybillSendTime != null and endWaybillSendTime != ''">
+					and convert(char(10), t.waybillSendTime,120) &lt;= #{endWaybillSendTime}
+				</if>
+				<if test="waybillStatus != null and waybillStatus != ''">
+					and t.waybillStatus = #{waybillStatus} 
+				</if>
+				<if test="scheduleBillNo != null and scheduleBillNo != ''">
+					and t.scheduleBillNo like '%'+#{scheduleBillNo}+'%'
+				</if>
+				<if test="startScheduleSendTime != null and startScheduleSendTime != ''">
+					and convert(char(10), t.scheduleSendTime,120) &gt;= #{startScheduleSendTime}
+				</if>
+				<if test="endScheduleSendTime != null and endScheduleSendTime != ''">
+					and convert(char(10), t.scheduleSendTime,120) &lt;= #{endScheduleSendTime}
+				</if>
+				<if test="carNumber != null and carNumber != ''">
+					and t.carNumber like '%'+#{carNumber}+'%'
+				</if>
+				<if test="driverId != null and driverId != ''">
+					and t.driverId = #{driverId} 
+				</if>
+				<if test="outSourcingId != null and outSourcingId != ''">
+					and t.outSourcingId = #{outSourcingId} 
+				</if>
+				<if test="scheduleStatus != null and scheduleStatus != ''">
+					and t.scheduleStatus = #{scheduleStatus} 
+				</if>
+				<if test="scheduleApplyUserId != null and scheduleApplyUserId != ''">
+					and t.scheduleApplyUserId = #{scheduleApplyUserId} 
+				</if>
+			</where>
+		) tt
+	</select>
+	
+	<select id="getReportForSchedulebill" parameterType="java.util.HashMap" resultType="com.jshpsoft.domain.ReportForSchedulebill">
+		select t.*
+		from (
+				select 
+					cs.stock_id as stockId,
+					wb.id as waybillId,wb.waybill_no as waybillNo,wb.car_shop_id as carShopId, (select name from basic_carShop cs where cs.id = wb.car_shop_id) as carShopName,wb.supplier_id as supplierId,(select name from basic_supplier s where s.id = wb.supplier_id) as supplierName,wb.start_address as startAddress,wb.target_province as targetProvince,
+					wb.target_city as targetCity,wb.send_time as waybillSendTime,wb.status as waybillStatus,
+					cs.id as carStockId,cs.type as carType,cs.brand,cs.model,cs.vin,cs.storage_time as carInStockTime,cs.transport_price as carPrice,cs.status as carStatus,
+					sb.schedule_bill_no as scheduleBillNo,sb.send_time as scheduleSendTime,sb.car_number as carNumber,sb.driver_id as driverId,sb.out_sourcing_id as outSourcingId,(select name from basic_outSourcing os where os.id = sb.out_sourcing_id) as outSourcingName,sb.type as scheduleType,sb.status as scheduleStatus,sb.insert_user as scheduleApplyUserId,sb.amount as scheduleAmount
+				from waybill wb
+				inner join carStock cs on wb.id = cs.waybill_id and cs.del_flag = 'N' and cs.status not in ('0')
+				left join scheduleBillDetail sbd on charindex(','+ltrim(cs.id)+',',','+  sbd.car_stock_ids+',' ) > 0 and sbd.del_flag = 'N' and sbd.type in ('0','2')
+				left join scheduleBill sb on sbd.schedule_bill_no = sb.schedule_bill_no and sb.del_flag = 'N' and sb.status not in ('0')
+				where wb.del_flag = 'N' and wb.status not in ('0')
+			 ) t
+		<where>
+			<if test="stockId != null and stockId != ''">
+				and t.stockId = #{stockId} 
+			</if>
+			<if test="waybillId != null and waybillId != ''">
+				and t.waybillId = #{waybillId} 
+			</if>
+			<if test="waybillNo != null and waybillNo != ''">
+				and t.waybillNo like '%'+#{waybillNo}+'%'
+			</if>
+			<if test="carShopId != null and carShopId != ''">
+				and t.carShopId = #{carShopId} 
+			</if>
+			<if test="supplierId != null and supplierId != ''">
+				and t.supplier_id = #{supplierId} 
+			</if>
+			<if test="startAddress != null and startAddress != ''">
+				and t.startAddress like '%'+#{startAddress}+'%'
+			</if>
+			<if test="targetProvince != null and targetProvince != ''">
+				and t.targetProvince like '%'+#{targetProvince}+'%'
+			</if>
+			<if test="targetCity != null and targetCity != ''">
+				and t.targetCity like '%'+#{targetCity}+'%'
+			</if>
+			<if test="brand != null and brand != ''">
+				and t.brand like '%'+#{brand}+'%'
+			</if>
+			<if test="startWaybillSendTime != null and startWaybillSendTime != ''">
+				and convert(char(10), t.waybillSendTime,120) &gt;= #{startWaybillSendTime}
+			</if>
+			<if test="endWaybillSendTime != null and endWaybillSendTime != ''">
+				and convert(char(10), t.waybillSendTime,120) &lt;= #{endWaybillSendTime}
+			</if>
+			<if test="waybillStatus != null and waybillStatus != ''">
+				and t.waybillStatus = #{waybillStatus} 
+			</if>
+			<if test="scheduleBillNo != null and scheduleBillNo != ''">
+				and t.scheduleBillNo like '%'+#{scheduleBillNo}+'%'
+			</if>
+			<if test="startScheduleSendTime != null and startScheduleSendTime != ''">
+				and convert(char(10), t.scheduleSendTime,120) &gt;= #{startScheduleSendTime}
+			</if>
+			<if test="endScheduleSendTime != null and endScheduleSendTime != ''">
+				and convert(char(10), t.scheduleSendTime,120) &lt;= #{endScheduleSendTime}
+			</if>
+			<if test="carNumber != null and carNumber != ''">
+				and t.carNumber like '%'+#{carNumber}+'%'
+			</if>
+			<if test="driverId != null and driverId !=''">
+				and t.driverId = #{driverId} 
+			</if>
+			<if test="outSourcingId != null and outSourcingId != ''">
+				and t.outSourcingId = #{outSourcingId} 
+			</if>
+			<if test="scheduleStatus != null and scheduleStatus != ''">
+				and t.scheduleStatus = #{scheduleStatus} 
+			</if>
+			<if test="scheduleApplyUserId != null and scheduleApplyUserId !=''">
+				and t.scheduleApplyUserId = #{scheduleApplyUserId} 
+			</if>
+		</where>
+		order by t.scheduleSendTime desc
+	</select>
+	
+</mapper>

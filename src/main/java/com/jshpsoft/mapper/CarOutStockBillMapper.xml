@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.CarOutStockBillMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.CarOutStockBill" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="stock_id" property="stockId" jdbcType="INTEGER" />
+    <result column="schedule_bill_id" property="scheduleBillId" jdbcType="INTEGER" />
+    <result column="schedule_bill_detail_id" property="scheduleBillDetailId" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="start_address" property="startAddress" jdbcType="VARCHAR" />
+    <result column="target_province" property="targetProvince" jdbcType="VARCHAR" />
+    <result column="target_city" property="targetCity" jdbcType="VARCHAR" />
+    <result column="receive_user" property="receiveUser" jdbcType="VARCHAR" />
+    <result column="receive_user_telephone" property="receiveUserTelephone" jdbcType="VARCHAR" />
+    <result column="receive_user_mobile" property="receiveUserMobile" jdbcType="VARCHAR" />
+    <result column="car_brand" property="carBrand" jdbcType="VARCHAR" />
+    <result column="car_vin" property="carVin" jdbcType="VARCHAR" />
+    <result column="car_model" property="carModel" jdbcType="VARCHAR" />
+    <result column="car_color" property="carColor" jdbcType="VARCHAR" />
+    <result column="car_engine_no" property="carEngineNo" jdbcType="VARCHAR" />
+    <result column="car_mark" property="carMark" jdbcType="VARCHAR" />
+    <result column="attachment_name" property="attachmentName" jdbcType="VARCHAR" />
+    <result column="attachment_count" property="attachmentCount" jdbcType="INTEGER" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    
+    <result column="schedule_bill_no" property="scheduleBillNo" jdbcType="VARCHAR" />
+    <result column="carShopName" property="carShopName" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <insert id="insertByParams" parameterType="java.util.HashMap" >     
+      insert into carOutStockBill
+      ( stock_id, schedule_bill_id, schedule_bill_detail_id, type, start_address, target_province, target_city,
+		receive_user, receive_user_telephone, receive_user_mobile, car_brand, car_vin, car_model, car_color, car_engine_no,
+		insert_time, insert_user)
+	  select #{stockId}, #{scheduleBillId}, #{scheduleBillDetailId}, #{type}, b.start_address,b.target_province,b.target_city,
+	  	b.receive_user, b.receive_user_telephone,b.receive_user_mobile,a.brand, a.vin, a.model,a.color,a.engine_no, 
+	  	#{insertTime}, #{insertUser} 
+	  from carStock a, waybill b
+	  where a.waybill_id=b.id and a.id in (${carStockIds})  
+  </insert>
+
+  	<select id="getOutBillPrintData" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select a.*,b.schedule_bill_no,(select name from basic_carShop d where b.car_shop_id = d.id ) carShopName
+		from carOutStockBill a
+		left join scheduleBillDetail b on a.schedule_bill_detail_id = b.id
+		where b.schedule_bill_no = #{scheduleBillNo}
+	</select>
+  
+</mapper>

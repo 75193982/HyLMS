@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.CarShopMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.CarShop" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="province" property="province" jdbcType="VARCHAR" />
+    <result column="city" property="city" jdbcType="VARCHAR" />
+    <result column="org_code" property="orgCode" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="link_user" property="linkUser" jdbcType="VARCHAR" />
+    <result column="link_telephone" property="linkTelephone" jdbcType="VARCHAR" />
+    <result column="link_mobile" property="linkMobile" jdbcType="VARCHAR" />
+    <result column="brithday" property="brithday" jdbcType="TIMESTAMP" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+    <result column="py" property="py" jdbcType="VARCHAR"/>
+    <result column="wb" property="wb" jdbcType="VARCHAR"/>
+  </resultMap>
+  
+  	<select id="getById" resultMap="BaseResultMap" parameterType="int">
+		select *
+		from basic_carShop
+		where id = #{id}
+	</select>
+	
+	<select id="getByConditions" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+		Select a.*
+		From basic_carShop a 
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="name != null and name != ''">
+				and ( a.name LIKE concat('%', #{name}, '%') or a.py LIKE concat('%', #{name}, '%') or a.wb LIKE concat('%', #{name}, '%') )
+			</if>
+			<if test="orgCode != null and orgCode != ''">
+				and a.org_code like '%'+#{orgCode}+'%'
+			</if>
+			<if test="beforeDays != null">
+				and month( a.brithday ) = month( dateadd (dd, #{beforeDays} ,getdate() ) ) and day( a.brithday ) = day( dateadd( dd, #{beforeDays} ,getdate() ) )
+			</if> 
+		</where>
+		order by a.name asc
+	</select>
+	
+	<select id="getPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	  	SELECT * from (
+			SELECT row_number() over(order by a.id asc) as rownumber,a.*
+			From basic_carShop a
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="name != null and name != ''">
+				and ( a.name LIKE concat('%', #{name}, '%') or a.py LIKE concat('%', #{name}, '%') or a.wb LIKE concat('%', #{name}, '%') )
+			</if>
+			<if test="orgCode != null and orgCode != ''">
+				and a.org_code like '%'+#{orgCode}+'%'
+			</if>
+		</where>
+		) as t 
+		WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+		ORDER BY t.name ASC
+	</select>
+	  
+	<select id="getPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+		SELECT count(*)
+		FROM basic_carShop a
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="name != null and name != ''">
+				and ( a.name LIKE concat('%', #{name}, '%') or a.py LIKE concat('%', #{name}, '%') or a.wb LIKE concat('%', #{name}, '%') )
+			</if>
+			<if test="orgCode != null and orgCode != ''">
+				and a.org_code like '%'+#{orgCode}+'%'
+			</if>
+		</where>
+	</select>
+	
+	<insert id="insert" parameterType="com.jshpsoft.domain.CarShop" useGeneratedKeys="true" keyProperty="id" >
+		insert into basic_carShop 
+		( province, city, org_code, name, address, link_user, link_telephone, link_mobile, brithday, 
+      		insert_time, insert_user, update_time, update_user, del_flag,py,wb)
+    	values 
+    	( #{province}, #{city}, #{orgCode}, #{name}, #{address}, #{linkUser}, #{linkTelephone}, #{linkMobile}, #{brithday}, 
+      		#{insertTime}, #{insertUser}, #{updateTime}, #{updateUser}, #{delFlag},#{py},#{wb})
+	</insert>
+	
+ 	<update id="update" parameterType="com.jshpsoft.domain.CarShop">
+		update basic_carShop
+	    <set >
+	      <if test="province != null and province != ''" >
+	        province = #{province},
+	      </if>
+	      <if test="city != null and city != ''" >
+	        city = #{city},
+	      </if>
+	      <if test="orgCode != null and orgCode != ''" >
+	        org_code = #{orgCode},
+	      </if>
+	      <if test="name != null and name != ''" >
+	        name = #{name},
+	      </if>
+	      <if test="address != null and address != ''" >
+	        address = #{address},
+	      </if>
+	      <if test="linkUser != null and linkUser != ''" >
+	        link_user = #{linkUser},
+	      </if>
+	      <if test="linkTelephone != null and linkTelephone != ''" >
+	        link_telephone = #{linkTelephone},
+	      </if>
+	      <if test="linkMobile != null and linkMobile != ''" >
+	        link_mobile = #{linkMobile},
+	      </if>
+	     <if test="brithday != null" >
+	        brithday = #{brithday},
+	      </if>
+	      <if test="updateTime != null" >
+	        update_time = #{updateTime},
+	      </if>
+	      <if test="updateUser != null and updateUser != ''" >
+	        update_user = #{updateUser},
+	      </if>
+	      <if test="delFlag != null and delFlag != ''" >
+	        del_flag = #{delFlag},
+	      </if>
+	      <if test="py != null and py != ''">
+	          py = #{py},
+	      </if>
+	      <if test="wb != null and wb != ''">
+	          wb = #{wb}
+	      </if>
+	    </set>
+	    where id = #{id}
+	</update>
+	
+	<update id="updateById"  parameterType="java.util.HashMap">
+		Update basic_carShop set update_time = #{updateTime}, update_user = #{updateUser}, del_flag = #{delFlag}
+		where id = #{id}
+	</update>
+	
+	<select id="getCarNameById" parameterType="int" resultMap="BaseResultMap">
+  	select name from basic_carShop
+  		where id = #{id}
+  </select>
+ 
+</mapper>

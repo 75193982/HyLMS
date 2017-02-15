@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.FineMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.Fine" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="proportion" property="proportion" jdbcType="DECIMAL" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+  </resultMap>
+
+	<select id="getById" resultMap="BaseResultMap" parameterType="int">
+		select *
+		from basic_fine
+		where id = #{id}
+	</select>
+	
+	<select id="getByConditions" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+		Select a.*
+		From basic_fine a 
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				a.del_flag = #{delFlag} 
+			</if>
+		</where>
+	</select>
+	
+  	<insert id="insert" parameterType="com.jshpsoft.domain.Fine" >
+    	insert into basic_fine (proportion, insert_time, insert_user,update_time, update_user, del_flag )
+    	values ( #{proportion}, #{insertTime}, #{insertUser}, #{updateTime}, #{updateUser}, #{delFlag} )
+  	</insert>
+  
+  	<update id="update" parameterType="com.jshpsoft.domain.Fine" >
+    	update basic_fine
+	    <set >
+	      <if test="proportion != null and proportion != ''" >
+	        proportion = #{proportion},
+	      </if>
+	      <if test="updateTime != null" >
+	        update_time = #{updateTime},
+	      </if>
+	      <if test="updateUser != null and updateUser != ''" >
+	        update_user = #{updateUser},
+	      </if>
+	      <if test="delFlag != null and delFlag != ''" >
+	        del_flag = #{delFlag},
+	      </if>
+	    </set>
+	    where id = #{id}
+  	</update>
+  	
+</mapper>

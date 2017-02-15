@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.RoleUserGroupsMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.RoleUserGroups" >
+    <result column="id" property="id" jdbcType="INTEGER" />
+    <result column="role_id" property="roleId" jdbcType="INTEGER" />
+    <result column="user_group_id" property="userGroupId" jdbcType="INTEGER" />
+  </resultMap>
+  
+     <select id="getByRoleId" resultMap="BaseResultMap" parameterType="int">
+		select *
+		from sys_roleUserGroups
+		where role_id = #{roleId}
+	</select>
+	
+	<insert id="insert" parameterType="com.jshpsoft.domain.RoleMenus">
+  		insert into sys_roleUserGroups 
+  			(role_id,user_group_id) 
+  		values
+  			(#{roleId},#{userGroupId})
+   </insert>
+  
+  <delete id="deleteByRoleId" parameterType="int">
+  	delete from sys_roleUserGroups where role_id=#{roleId}
+  </delete>
+</mapper>

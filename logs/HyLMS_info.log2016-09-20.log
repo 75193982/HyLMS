@@ -1,0 +1,19 @@
+2016-09-20 09:19:21 [main]  INFO (cn.jpush.api.common.connection.NativeHttpClient.java:54) - Created instance with connectionTimeout 5,000, readTimeout 30,000, maxRetryTimes 3, SSL Version TLS
+2016-09-20 09:19:21 [main]  INFO (cn.jpush.api.common.connection.NativeHttpClient.java:54) - Created instance with connectionTimeout 5,000, readTimeout 30,000, maxRetryTimes 3, SSL Version TLS
+2016-09-20 09:19:21 [main]  INFO (cn.jpush.api.common.connection.NativeHttpClient.java:54) - Created instance with connectionTimeout 5,000, readTimeout 30,000, maxRetryTimes 3, SSL Version TLS
+2016-09-20 09:19:21 [main]  INFO (cn.jpush.api.common.connection.NativeHttpClient.java:54) - Created instance with connectionTimeout 5,000, readTimeout 30,000, maxRetryTimes 3, SSL Version TLS
+2016-09-20 09:19:21 [main]  WARN (cn.jpush.api.push.model.notification.PlatformNotification.java:142) - Null extras param. Throw away it.
+2016-09-20 09:20:03 [main]  INFO (cn.jpush.api.common.connection.NativeHttpClient.java:54) - Created instance with connectionTimeout 5,000, readTimeout 30,000, maxRetryTimes 3, SSL Version TLS
+2016-09-20 09:20:03 [main]  INFO (cn.jpush.api.common.connection.NativeHttpClient.java:54) - Created instance with connectionTimeout 5,000, readTimeout 30,000, maxRetryTimes 3, SSL Version TLS
+2016-09-20 09:20:03 [main]  INFO (cn.jpush.api.common.connection.NativeHttpClient.java:54) - Created instance with connectionTimeout 5,000, readTimeout 30,000, maxRetryTimes 3, SSL Version TLS
+2016-09-20 09:20:03 [main]  INFO (cn.jpush.api.common.connection.NativeHttpClient.java:54) - Created instance with connectionTimeout 5,000, readTimeout 30,000, maxRetryTimes 3, SSL Version TLS
+2016-09-20 09:20:03 [main]  WARN (cn.jpush.api.push.model.notification.PlatformNotification.java:142) - Null extras param. Throw away it.
+2016-09-20 09:20:35 [main]  INFO (cn.jpush.api.common.connection.NativeHttpClient.java:54) - Created instance with connectionTimeout 5,000, readTimeout 30,000, maxRetryTimes 3, SSL Version TLS
+2016-09-20 09:20:36 [main]  INFO (cn.jpush.api.common.connection.NativeHttpClient.java:54) - Created instance with connectionTimeout 5,000, readTimeout 30,000, maxRetryTimes 3, SSL Version TLS
+2016-09-20 09:20:36 [main]  INFO (cn.jpush.api.common.connection.NativeHttpClient.java:54) - Created instance with connectionTimeout 5,000, readTimeout 30,000, maxRetryTimes 3, SSL Version TLS
+2016-09-20 09:20:36 [main]  INFO (cn.jpush.api.common.connection.NativeHttpClient.java:54) - Created instance with connectionTimeout 5,000, readTimeout 30,000, maxRetryTimes 3, SSL Version TLS
+2016-09-20 09:20:36 [main]  WARN (cn.jpush.api.push.model.notification.PlatformNotification.java:142) - Null extras param. Throw away it.
+2016-09-20 09:26:13 [main]  INFO (cn.jpush.api.common.connection.NativeHttpClient.java:54) - Created instance with connectionTimeout 5,000, readTimeout 30,000, maxRetryTimes 3, SSL Version TLS
+2016-09-20 09:26:14 [main]  INFO (cn.jpush.api.common.connection.NativeHttpClient.java:54) - Created instance with connectionTimeout 5,000, readTimeout 30,000, maxRetryTimes 3, SSL Version TLS
+2016-09-20 09:26:14 [main]  INFO (cn.jpush.api.common.connection.NativeHttpClient.java:54) - Created instance with connectionTimeout 5,000, readTimeout 30,000, maxRetryTimes 3, SSL Version TLS
+2016-09-20 09:26:14 [main]  INFO (cn.jpush.api.common.connection.NativeHttpClient.java:54) - Created instance with connectionTimeout 5,000, readTimeout 30,000, maxRetryTimes 3, SSL Version TLS

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.CarDamageCostApplyDetailMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.CarDamageCostApplyDetail" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="parent_id" property="parentId" jdbcType="INTEGER" />
+    <result column="car_stock_id" property="carStockId" jdbcType="INTEGER" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <insert id="insert" parameterType="com.jshpsoft.domain.CarDamageCostApplyDetail" >
+    insert into carDamageCostApplyDetail (parent_id, car_stock_id, 
+      amount, mark, insert_time, 
+      insert_user, update_time, update_user, 
+      del_flag)
+    values (#{parentId}, #{carStockId}, 
+      #{amount}, #{mark}, #{insertTime}, 
+      #{insertUser}, #{updateTime}, #{updateUser}, 
+      #{delFlag})
+  </insert>
+  
+  <update id="update" parameterType="com.jshpsoft.domain.CarDamageCostApplyDetail" >
+    update carDamageCostApplyDetail
+    <set >
+      <if test="parentId != null" >
+        parent_id = #{parentId},
+      </if>
+      <if test="carStockId != null" >
+        car_stock_id = #{carStockId},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount},
+      </if>
+      <if test="mark != null" >
+        mark = #{mark},
+      </if>
+      <if test="insertTime != null" >
+        insert_time = #{insertTime},
+      </if>
+      <if test="insertUser != null" >
+        insert_user = #{insertUser},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag},
+      </if>
+    </set>
+    where id = #{id}
+  </update>
+ 
+ 	<select id="getByConditions" resultMap="BaseResultMap" parameterType="java.util.HashMap">
+		select a.*
+		from carDamageCostApplyDetail a 
+		<where>
+			<if test="delFlag != null and delFlag != ''">
+				and a.del_flag = #{delFlag} 
+			</if>
+			<if test="parentId != null and parentId != ''">
+				and a.parent_id = #{parentId} 
+			</if>
+		</where>
+		order by a.insert_time asc
+	</select>
+  
+	<delete id="deleteByParentId" parameterType="Integer" >
+		delete from carDamageCostApplyDetail where parent_id = #{parentId} 
+	</delete>
+	
+	<update id="updateByParentId"  parameterType="java.util.HashMap">
+		update carDamageCostApplyDetail 
+		<set>
+			<if test="updateTime != null" >
+	        	update_time = #{updateTime},
+	      	</if>
+	      	<if test="updateUser != null and updateUser != ''" >
+	        	update_user = #{updateUser},
+	      	</if>
+	      	<if test="delFlag != null and delFlag != ''" >
+	        	del_flag = #{delFlag},
+	      	</if>
+		</set>
+		where parent_id = #{parentId} 
+	</update>
+	
+</mapper>

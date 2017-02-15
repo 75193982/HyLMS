@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.ItemTypeMapper" >
+
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.ItemType" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <insert id="insert" parameterType="com.jshpsoft.domain.ItemType" >
+    insert into office_itemType (name, type, 
+      insert_time, insert_user, update_time, 
+      update_user, del_flag)
+    values (#{name,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, 
+      #{insertTime,jdbcType=TIMESTAMP}, #{insertUser,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{updateUser,jdbcType=VARCHAR}, #{delFlag,jdbcType=VARCHAR})
+  </insert>
+  
+  <update id="update" parameterType="com.jshpsoft.domain.ItemType" >
+    update office_itemType
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateUser != null" >
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="delFlag != null" >
+        del_flag = #{delFlag,jdbcType=VARCHAR}
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <select id="getPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+  	SELECT * from (
+		SELECT row_number() over(order by id asc) as rownumber,* 
+			FROM office_itemType 
+			WHERE 
+				del_flag = 'N'
+				<if test="type != null and type != ''" >
+					AND type = #{type}
+				</if>
+				<if test="name != null and name != ''" >
+					AND ( name LIKE concat('%', #{name}, '%') )
+				</if>  
+	) as t 
+	WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+  </select>
+  
+  <select id="getPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+	SELECT count(*)
+		FROM office_itemType
+		WHERE 
+			del_flag = 'N'
+			<if test="type != null and type != ''" >
+				AND type = #{type}
+			</if>
+			<if test="name != null and name != ''" >
+				AND ( name LIKE concat('%', #{name}, '%')  )
+			</if>
+  </select>
+	
+  <select id="getByConditions" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+	SELECT *
+		FROM office_itemType
+		WHERE 
+			del_flag = 'N'
+			<if test="type != null and type != ''" >
+				AND type = #{type}
+			</if>
+			<if test="name != null and name != ''" >
+				AND ( name LIKE concat('%',#{name}, '%') )
+			</if>
+  </select>
+	
+  <select id="getById" parameterType="int"  resultMap="BaseResultMap">
+	SELECT *
+		FROM office_itemType
+		WHERE id = #{id}
+  </select>
+  
+</mapper>

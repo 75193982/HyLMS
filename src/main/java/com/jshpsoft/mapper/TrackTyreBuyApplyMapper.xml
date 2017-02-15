@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jshpsoft.dao.TrackTyreBuyApplyMapper" >
+  <resultMap id="BaseResultMap" type="com.jshpsoft.domain.TrackTyreBuyApply" >
+    <result column="id" property="id" jdbcType="INTEGER" />
+    <result column="department_id" property="departmentId" jdbcType="INTEGER" />
+    <result column="apply_user_id" property="applyUserId" jdbcType="INTEGER" />
+    <result column="bill_no" property="billNo" jdbcType="NVARCHAR" />
+    <result column="type" property="type" jdbcType="NVARCHAR" />
+    <result column="brand" property="brand" jdbcType="NVARCHAR" />
+    <result column="size" property="size" jdbcType="NVARCHAR" />
+    <result column="sum" property="sum" jdbcType="INTEGER" />
+    <result column="price" property="price"  />
+    <result column="mark" property="mark" jdbcType="NVARCHAR" />
+    <result column="status" property="status" jdbcType="NVARCHAR" />
+    <result column="insert_time" property="insertTime" jdbcType="TIMESTAMP" />
+    <result column="insert_user" property="insertUser" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="VARCHAR" />
+    <result column="departmentName" property="departmentName" jdbcType="NVARCHAR" />
+    <result column="applyUserName" property="applyUserName" jdbcType="NVARCHAR" />
+    
+  </resultMap>
+  
+  <insert id="insert" parameterType="com.jshpsoft.domain.TrackTyreBuyApply" >
+    insert into trackTyreBuyApply ( department_id,apply_user_id,bill_no,type, brand, size, 
+      sum,price, mark, status,insert_time,insert_user, update_time,update_user,del_flag)
+    values ( #{departmentId},#{applyUserId},#{billNo},#{type},#{brand},#{size}, 
+      #{sum},#{price},#{mark}, #{status}, #{insertTime}, #{insertUser},#{updateTime},#{updateUser},#{delFlag})
+  </insert>
+  
+  <select id="getPageList" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+  	SELECT * from (
+		SELECT row_number() over(order by a.id desc) as rownumber,a.*,d.name as departmentName,u.name as applyUserName
+			FROM trackTyreBuyApply a
+			left join sys_department d on d.id = a.department_id
+			left join sys_user u on u.id = a.apply_user_id
+			WHERE 
+				a.del_flag = 'N'
+				<if test="type != null and type != ''">
+    				and a.type = #{type}
+		    	</if>
+		    	<if test="billNo != null and billNo != ''">
+		    		and ( a.bill_no LIKE concat('%', #{billNo}, '%')  )
+		    	</if>
+		    	<if test="departmentId != null and departmentId != ''">
+		    		and a.department_id = #{departmentId}
+		    	</if>
+		    	<if test="startTime != null and startTime != ''">
+					and convert(char(16), a.insert_time,120) &gt;= convert(char(16), #{startTime},120) 
+				</if>
+				<if test="endTime != null and endTime != ''">
+					and convert(char(16), a.insert_time,120) &lt;= convert(char(16), #{endTime},120) 
+				</if>
+				<if test="insertUser != null and insertUser != ''">
+				    and a.insert_user =#{insertUser}
+				</if>
+		    	
+	) as t 
+	WHERE t.rownumber &gt; #{pageStartIndex} And t.rownumber &lt;= #{pageEndIndex}
+	ORDER BY t.id desc
+  </select>
+  
+  <select id="getPageTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+	SELECT count(*)
+		FROM trackTyreBuyApply a
+		left join sys_department d on d.id = a.department_id
+		left join sys_user u on u.id = a.apply_user_id
+		WHERE 
+			a.del_flag = 'N'
+			<if test="type != null and type != ''">
+    				and a.type = #{type}
+		    	</if>
+		    	<if test="billNo != null and billNo != ''">
+		    		and ( a.bill_no LIKE concat('%', #{billNo}, '%')  )
+		    	</if>
+		    	<if test="departmentId != null and departmentId != ''">
+		    		and a.department_id = #{departmentId}
+		    	</if>
+		    	<if test="startTime != null and startTime != ''">
+					and convert(char(16), a.insert_time,120) &gt;= convert(char(16), #{startTime},120)
+				</if>
+				<if test="endTime != null and endTime != ''">
+					and convert(char(16), a.insert_time,120) &lt;= convert(char(16), #{endTime},120) 
+				</if>
+				<if test="insertUser != null and insertUser != ''">
+				    and a.insert_user =#{insertUser}
+				</if>
+  </select>
+  
+  <select id="getByConditions" parameterType="java.util.HashMap" resultMap="BaseResultMap" >
+    select a.*,d.name as departmentName,u.name as applyUserName
+      from trackTyreBuyApply a
+      left join sys_department d on d.id = a.department_id
+	  left join sys_user u on u.id = a.apply_user_id
+    <where>
+    	a.del_flag='N'
+    			<if test="type != null and type != ''">
+    				and a.type = #{type}
+		    	</if>
+		    	<if test="billNo != null and billNo != ''">
+		    		and a.bill_no = #{billNo}
+		    	</if>
+		    	<if test="departmentId != null and departmentId != ''">
+		    		and a.department_id = #{departmentId}
+		    	</if>
+		    	<if test="startTime != null and startTime != ''">
+					and convert(char(16), a.insert_time,120) &gt;= convert(char(16), #{startTime},120)
+				</if>
+				<if test="endTime != null and endTime != ''">
+					and convert(char(16), a.insert_time,120) &lt;= convert(char(16), #{endTime},120)
+				</if>
+				<if test="status != null and status != ''">
+				    and a.status = #{status}
+				</if>
+				<if test="insertTime != null and insertTime != ''">
+				    and convert(char(10), a.insert_time,120) = convert(char(10), #{insertTime},120)
+				</if>
+				<if test="insertUser != null and insertUser != ''">
+				    and a.insert_user =#{insertUser}
+				</if>
+    </where>
+    order by a.insert_time desc
+  </select>
+  
+  <select id="getById" parameterType="int"  resultMap="BaseResultMap">
+  	select a.*,d.name as departmentName,u.name as applyUserName
+  	from 
+  	trackTyreBuyApply a
+  	left join sys_department d on d.id = a.department_id
+	left join sys_user u on u.id = a.apply_user_id
+  	where a.id = #{id}
+  </select>
+  
+  <update id="update" parameterType="com.jshpsoft.domain.TrackTyreBuyApply">
+  	update trackTyreBuyApply
+  	<set>
+  	    <if test="billNo != null and billNo != ''">
+  	        bill_no = #{billNo},
+  	    </if>
+  		<if test="type != null and type != ''">
+    		type = #{type},
+    	</if>
+    	<if test="departmentId != null and departmentId != ''">
+		    department_id = #{departmentId},
+		</if>
+		<if test="applyUserId != null and applyUserId != ''">
+		    apply_user_id = #{applyUserId},
+		</if>
+    	<if test="brand != null and brand != ''">
+    		brand = #{brand},
+    	</if>
+    	<if test="size != null and size != ''">
+    		size = #{size},
+    	</if>
+    	<if test="sum != null ">
+    		sum = #{sum},
+    	</if>
+    	<if test="price != null ">
+    		price = #{price},
+    	</if>
+    	<if test="mark != null">
+    		mark = #{mark},
+    	</if>
+    	<if test="status != null and status != ''">
+    		status = #{status},
+    	</if>
+    	<if test="updateTime != null ">
+    		update_time = #{updateTime},
+    	</if>
+    	<if test="updateUser != null ">
+    		update_user = #{updateUser},
+    	</if>
+    	<if test="delFlag != null and delFlag != ''">
+    		del_flag = #{delFlag} 
+    	</if>
+  	</set>
+  	where id = #{id}
+  </update> 
+  
+  
+</mapper>
